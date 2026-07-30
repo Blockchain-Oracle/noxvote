@@ -1,0 +1,14 @@
+.DS_Store
+.env
+.env.*
+!.env.example
+node_modules/
+out/
+cache/
+artifacts/
+broadcast/
+coverage/
+dist/
+.mise.local.toml
+offchain-services.log
+.thoughts/raw/
