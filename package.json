@@ -1,0 +1,41 @@
+{
+  "name": "nox-confidential-governance-spike",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "packageManager": "pnpm@10.33.0",
+  "engines": {
+    "node": ">=22 <25"
+  },
+  "scripts": {
+    "build": "pnpm build:forge && pnpm build:hardhat",
+    "build:forge": "forge build",
+    "build:hardhat": "hardhat compile",
+    "test": "pnpm test:forge && pnpm test:integration",
+    "test:forge": "forge test -vvv",
+    "test:integration": "hardhat test",
+    "format": "forge fmt && prettier --write \"**/*.{ts,json,md}\"",
+    "format:check": "forge fmt --check && prettier --check \"**/*.{ts,json,md}\"",
+    "clean": "forge clean && hardhat clean"
+  },
+  "dependencies": {
+    "@iexec-nox/handle": "0.1.0-beta.13",
+    "@iexec-nox/nox-protocol-contracts": "0.2.4",
+    "@openzeppelin/contracts": "5.6.1",
+    "@safe-global/safe-smart-account": "1.5.0",
+    "encrypted-types": "0.0.4"
+  },
+  "devDependencies": {
+    "@iexec-nox/nox-hardhat-plugin": "0.2.0",
+    "@nomicfoundation/hardhat-foundry": "3.0.4",
+    "@nomicfoundation/hardhat-node-test-runner": "3.0.17",
+    "@nomicfoundation/hardhat-toolbox-viem": "5.0.7",
+    "@tsconfig/node24": "24.0.1",
+    "@types/node": "^24.0.0",
+    "forge-std": "github:foundry-rs/forge-std#v1.16.1",
+    "hardhat": "3.11.1",
+    "prettier": "3.8.3",
+    "typescript": "5.8.3",
+    "viem": "2.55.10"
+  }
+}

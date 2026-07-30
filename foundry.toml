@@ -1,0 +1,21 @@
+[profile.default]
+src = "src"
+test = "test/foundry"
+script = "script"
+out = "out"
+libs = ["node_modules"]
+solc_version = "0.8.35"
+optimizer = true
+optimizer_runs = 200
+remappings = [
+  "@iexec-nox/=node_modules/@iexec-nox/",
+  "@openzeppelin/=node_modules/@openzeppelin/",
+  "@safe-global/=node_modules/@safe-global/",
+  "encrypted-types/=node_modules/encrypted-types/",
+  "forge-std/=node_modules/forge-std/src/"
+]
+
+[fmt]
+line_length = 100
+tab_width = 4
+bracket_spacing = true
