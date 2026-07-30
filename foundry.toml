@@ -19,3 +19,11 @@ remappings = [
 line_length = 100
 tab_width = 4
 bracket_spacing = true
+
+[lint]
+lint_on_build = false
+
+[profile.invariant.invariant]
+runs = 10000
+depth = 32
+fail_on_revert = false

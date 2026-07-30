@@ -9,11 +9,12 @@
   },
   "scripts": {
     "build": "pnpm build:forge && pnpm build:hardhat",
-    "build:forge": "forge build",
+    "build:forge": "forge build --skip test",
     "build:hardhat": "hardhat compile",
+    "lint:forge": "forge lint src/contracts --severity high med --out out/lint-src --cache-path cache/lint-src && forge lint test/foundry --skip ConfidentialBallotCasting.t.sol --skip ConfidentialBallotTally.t.sol --skip ConfidentialBallotProofNegativeMatrix.t.sol --skip TallyFixtures.sol --skip ConfidentialGovernorLifecycle.t.sol --skip ConfidentialGovernorTimelock.t.sol --skip GovernorFixtures.sol --skip SafeConfidentialVotingModuleExecution.t.sol --skip SafeConfidentialVotingModuleBatchExecution.t.sol --skip SafeExecutionFixtures.sol --skip SafeBatchExecutionFixtures.sol --skip ConfidentialGovernanceInvariants.t.sol --severity high med --out out/lint-test --cache-path cache/lint-test",
     "test": "pnpm test:forge && pnpm test:integration",
     "test:forge": "forge test -vvv",
-    "test:integration": "hardhat test",
+    "test:integration": "hardhat test nodejs",
     "format": "forge fmt && prettier --write \"**/*.{ts,json,md}\"",
     "format:check": "forge fmt --check && prettier --check \"**/*.{ts,json,md}\"",
     "clean": "forge clean && hardhat clean"
@@ -30,6 +31,7 @@
     "@nomicfoundation/hardhat-foundry": "3.0.4",
     "@nomicfoundation/hardhat-node-test-runner": "3.0.17",
     "@nomicfoundation/hardhat-toolbox-viem": "5.0.7",
+    "@openzeppelin/contracts-upgradeable": "5.6.1",
     "@tsconfig/node24": "24.0.1",
     "@types/node": "^24.0.0",
     "forge-std": "github:foundry-rs/forge-std#v1.16.1",
