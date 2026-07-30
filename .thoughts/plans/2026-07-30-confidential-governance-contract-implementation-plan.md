@@ -1,7 +1,7 @@
 # Plan: Confidential Governance Contracts On Nox
 
 **Date:** 2026-07-30  
-**Status:** Contract-only implementation plan for review; implementation not authorized  
+**Status:** Accepted; local phased contract implementation authorized
 **UI boundary:** External designer owns visual direction. This plan defines public contract data and
 events needed by a later UI but does not choose a frontend stack, layout, component, or visual token.
 
@@ -282,6 +282,21 @@ No `REAL_LATER` or `SIMULATED_DEMO_ONLY` integration supports the contract produ
 
 ## Phase 1: Production Boundaries And Pure State
 
+### Implementation Progress — 2026-07-30
+
+The first bounded RED-to-GREEN slice passes. New production code now provides shared types and errors,
+the host and eligibility interfaces, versioned domain-separated hashing, immutable adapter-owned core
+construction, host-only registration and pre-open cancellation, host-clock-derived lifecycle state,
+public commitment/read models, and terminal-result/receipt foundations. The production core is 6,983
+bytes, all production Solidity files remain below the 200-line target, and the full Forge suite passes
+23/23 including 256-run commitment fuzz coverage.
+
+Concrete factory deployment entrypoints remain pending until the concrete Safe and Governor adapters
+exist. A generic deployable host would not supply a valid governance clock or execution boundary and
+would violate the product architecture. `ConfidentialCoreHost` already enforces the required
+adapter-owned core construction; the versioned factory will directly deploy those real adapters in
+their implementation phases, with no unbound initialization window.
+
 ### Goal
 
 Create the production source tree and public interfaces without importing spike code.
@@ -316,6 +331,88 @@ Stop if the core cannot remain host-neutral while matching both the Safe timesta
 Governor ERC-6372 clock without adapter-specific branches.
 
 ## Phase 2: Eligibility, Confidential Ballots, And Verdict
+
+### Implementation Progress — Eligibility Slice — 2026-07-30
+
+The production eligibility-strategy slice passes RED-to-GREEN. `IVotesSnapshotStrategy` validates a
+deployed token configuration, rejects an unexpected proof, reads a strictly past OpenZeppelin
+`getPastVotes` checkpoint, and rejects zero public weight. `MerkleWeightedAllowlistStrategy` validates
+the committed root, snapshot ID, nonzero eligible count, chain, and host; its double-hashed typed leaf
+binds chain, host, snapshot ID, voter, and weight before OpenZeppelin sorted-pair proof verification.
+Malformed proofs, zero weight, and cross-host/cross-chain reuse reject.
+
+The full Forge suite passes 33/33. Both Foundry and Hardhat builds, formatting, high/medium lint,
+TypeScript, and size gates pass. Runtime sizes are 972 bytes for `IVotesSnapshotStrategy` and 2,112
+bytes for `MerkleWeightedAllowlistStrategy`. No confidential cast, replacement, ACL, tally, or verdict
+claim is made by this pure strategy slice. Concrete factory publication remains coupled to the real
+adapter deployment paths.
+
+### Implementation Progress — Confidential Cast Slice — 2026-07-30
+
+The production direct-wallet cast path passes RED-to-GREEN. The first successful operation resolves
+the public strategy weight and records sequence 1. Replacements reuse that fixed weight, require empty
+eligibility proof bytes, advance deterministically through sequences 2 and 3, and stop at the committed
+two-replacement ceiling. Only the first Recorded operation increments unique participation and public
+recorded weight. Unknown/non-Open ballots, wrong sequences, ineligible voters, unexpected replacement
+proofs, and over-limit replacements all reject before Nox input validation.
+
+The graph uses released Nox SDK operations for total choice normalization, encrypted weighted
+contributions, and replacement subtraction/addition. It stores no encrypted-handle getter or operation
+trace. Its persistent ACL events grant only the core, with no voter viewer/admin grant and no cast-stage
+public-decryption grant. The Nox input proof remains bound to both the direct wallet and ballot core.
+
+Eight focused tests deploy the released `NoxCompute` implementation behind a real `ERC1967Proxy` at
+the released local address and use a test Gateway signer. The full Forge suite passes 41/41; formatting,
+production high/medium lint, TypeScript, Foundry/Hardhat builds, and the size gate pass.
+`ConfidentialBallotCore` runtime size is 10,654 bytes. Foundry's current linter cannot parse the
+Solidity 0.8.35 `erc7201(...)` builtin in the imported released Nox implementation, so production lint
+targets `src/contracts` while the concrete upstream implementation fixture remains compiler- and
+test-covered. The core, cast boundary, storage boundary, and Nox graph library are split so every
+production Solidity file remains under the 200-line target. Docker was unavailable for this slice, so
+the real Handle Gateway/KMS/JetStream/Runner path was not rerun and no new resolved-result or off-chain
+privacy claim is made. The subsequent tally and verdict slice is recorded below.
+
+### Implementation Progress — Tally And Verdict Slice — 2026-07-30
+
+The production tally/finalization path passes RED-to-GREEN. `requestTally` is permissionless but only
+valid after the host clock closes voting. Below the public privacy floor, it moves directly to
+Withheld, stores no expected verdict, and makes no Nox call. At or above the floor, the core obtains the
+host's governance quorum for the committed host proposal and snapshot, constructs encrypted total
+participation and `For > Against` checks, derives one boolean verdict, persists graph access only for
+the core, and grants public decryption only to that expected verdict handle.
+
+`finalize` remains permissionless and accepts only configured-Gateway evidence for the stored boolean
+handle while the ballot is TallyPending. The released Nox SDK enforces proof signer/handle binding,
+one-byte length, and canonical `0x00`/`0x01` encoding; core state enforces proposal association and
+finalize-once replay safety. Success stores only Rejected or Passed. No exact option total or
+intermediate getter was introduced.
+
+Eight focused tests use the released `NoxCompute` implementation behind its real proxy shape with a
+test Gateway signer. A forced clean full run passes 49/49 Forge tests; formatting, production and
+non-Nox-fixture high/medium lint, TypeScript, Foundry/Hardhat builds, and size gates pass. The core is
+12,807 runtime bytes, and every production Solidity file remains under the 200-line target. The test
+signer can attest a chosen canonical boolean, so this evidence proves the production contract's state,
+ACL, expected-handle proof binding, malformed-value rejection, and replay behavior—not the off-chain
+computed plaintext. The subsequently completed released-stack integration below supplies that separate
+off-chain evidence.
+
+### Integration Completion — Released Nox Stack — 2026-07-30
+
+Phase 2 is integration-complete for the judged four-wallet/floor-four configuration. The production
+`ConfidentialBallotCore`, production weighted-Merkle strategy, and a test-only host clock/quorum fixture
+ran twice consecutively through the released Docker-backed Handle Gateway, KMS, ingestor, JetStream,
+Runner, and `NoxCompute` contract. Both runs submitted six Gateway-encrypted operations: four initial
+ballots plus two replacements by one voter. The final encrypted graph is sensitive to correct removal
+of both replaced contributions, uses unequal weights 4/3/2/1, normalizes `65535` to Abstain, applies
+governance quorum seven, and resolves true.
+
+The real Gateway returned a boolean decryption proof for the exact expected verdict handle, and the
+production core finalized to Passed. Across the complete cast-and-tally graph, input handles remained
+non-public, no viewer grant was emitted, every persistent ACL grant emitted by the core targeted the
+core, and exactly one handle—the expected verdict—was marked publicly decryptable. End-to-end timings
+were 13.289 seconds and 12.136 seconds; warm tally-request-to-proof timings were 535 ms and 431 ms.
+This closes the remaining Phase 2 gate without using a spike contract or a test proof signer. It does
+not prove a production host adapter because the clock/quorum host remains an explicit test fixture.
 
 ### Goal
 
@@ -365,6 +462,121 @@ stack.
 
 ## Phase 3: Safe Module And Atomic Actions
 
+### Implementation Progress — Registration And Commitment Slice — 2026-07-30
+
+The first production Safe-adapter slice passes RED-to-GREEN. `SafeConfidentialVotingModule` is
+non-upgradeable and immutably bound to one deployed Safe, its adapter-owned production core, the two
+published eligibility strategies supplied at construction, the organization privacy minimum, and one
+deployed `MultiSendCallOnly` address plus its construction-time code hash. It exposes the timestamp
+host clock and immutable per-proposal absolute quorum required by the core.
+
+Registration accepts one or more actions only when `msg.sender` is the bound Safe and the Safe reports
+the module enabled. The module-local nonce produces
+`keccak256(abi.encode(chainId, module, Safe, nonce))`; every action hash commits target, value, and
+calldata hash, and the ordered bundle hash also commits chain, module, Safe, and proposal ID. That exact
+bundle hash is stored in the adapter and linked core. Empty action arrays, zero targets, zero quorum,
+invalid Safe/batch construction, direct owner calls, and disabled-module Safe calls reject atomically.
+
+Seven focused tests use an official Safe 1.5.0 singleton/proxy with two owners, threshold two, and real
+ordered ECDSA owner signatures. They verify normal Safe enablement and registration, full action-hash
+formula/domain sensitivity, distinct module/core proposal identities for repeated action bundles,
+config propagation, and rollback on rejection. The full Forge suite passes 56/56. Foundry and Hardhat
+builds, TypeScript, formatting, and production high/medium lint pass. The module is 131 source lines,
+3,613 runtime bytes, and 17,603 initcode bytes. Slither is not installed in the current workspace.
+
+This slice does not implement or claim Safe execution. Direct single-call execution, Safe boolean
+failure rollback, Passed-only checks, retry/reentrancy/replay behavior, batch packing and code-hash
+revalidation, and the versioned factory remain Phase 3 work.
+
+### Implementation Progress — Direct Single-Call Execution Slice — 2026-07-30
+
+The production module now executes one committed Safe action through the official module path. The
+entrypoint is permissionless, but requires a known proposal, exactly one action, the module still
+enabled on its bound Safe, an unconsumed record, a final core result of Passed, and an exact recomputation
+of the registered target/value/calldata commitment. The outer Safe operation is fixed to Call. Pending,
+Rejected, Withheld, and Canceled proposals cannot execute.
+
+The module marks the record executed before its external Safe call, so a target cannot reenter and
+execute the same proposal twice. If Safe returns false because the target reverts, the module reverts as
+well, rolling the flag back and permitting a later exact retry. Successful execution leaves the Safe
+owner transaction nonce unchanged because replay protection is the module's proposal record.
+
+Six focused tests use an official Safe 1.5.0 singleton/proxy with two owners and threshold two, the
+production adapter-owned core, the released `NoxCompute` proxy shape, and a test Gateway signer. They
+cover exact permissionless success, changed target/value/data, multi-action rejection, every non-Passed
+result, failed-target rollback and retry, reentrant target behavior, replay, and module disablement. The
+full Forge suite passes 62/62; Foundry and Hardhat builds, TypeScript, formatting, production
+high/medium lint, and size gates pass. The module is 163 source lines, 4,678 runtime bytes, and 18,697
+initcode bytes. Solar cannot resolve the upstream Nox `erc7201(...)` symbol, so this concrete Nox fixture
+joins the already documented test-only lint exceptions while remaining Solc-compiled and executed.
+Slither is not installed in the current workspace.
+
+This slice does not implement or claim multi-action execution. Official `MultiSendCallOnly` byte
+packing, construction-bound runtime code-hash revalidation, call-only inner operations, atomic batch
+failure, and the versioned factory remain Phase 3 work. The Docker-backed Nox services were not rerun;
+the test Gateway signer proves the on-chain state gate and proof binding, not the off-chain computed
+plaintext.
+
+### Implementation Progress — Atomic Multi-Action Execution Slice — 2026-07-30
+
+The production module now executes an exact committed multi-action bundle through the official
+`MultiSendCallOnly` path. Its bounded encoder matches the official packed format
+`operation | target | value | dataLength | data`, fixes every inner operation byte to Call, preserves
+action order and arbitrary calldata length, and supplies that payload only to the immutable batch
+address through the Safe's outer DelegateCall operation. Immediately before that delegatecall, the
+module revalidates the batch contract's construction-bound runtime code hash.
+
+The existing Passed-only, enabled-module, exact-hash, pre-call consumption, failure rollback, retry,
+reentrancy, and execute-once gates apply identically to batches. A failed inner call makes the official
+batch contract revert, Safe returns false, and the module reverts the complete transaction; prior inner
+effects and the consumed flag therefore roll back together. A later retry must supply the same exact
+ordered bundle.
+
+Five focused batch tests use the official Safe 1.5.0 singleton/proxy and official
+`MultiSendCallOnly`. They cover ordered value-bearing success in the Safe call context, execute-once,
+changed-order rejection before any inner call, atomic failure and exact retry, batch reentrancy, and
+runtime code-hash drift. A separate byte-level conformance test covers empty, short, and dynamic action
+data and proves every packed operation byte is Call. The 11 combined execution tests and full 68/68
+Forge suite pass; Foundry and Hardhat builds, TypeScript, formatting, and production high/medium lint
+pass. The module is 182 source lines, 5,523 runtime bytes, and 19,584 initcode bytes; the encoder library
+is 39 source lines. Solar's existing upstream Nox `erc7201(...)` limitation requires the new concrete
+Nox batch fixture to share the documented test-only lint exception while Solc compiles and executes it.
+Slither remains unavailable.
+
+The Docker-backed Nox services were not rerun because this slice changes only post-verdict Safe
+execution; the Foundry test Gateway signer proves the on-chain state gate and proof binding, not the
+off-chain computed plaintext. The versioned factory deployment/event path is the remaining Phase 3
+slice.
+
+### Implementation Progress — Versioned Safe Factory Slice — 2026-07-30
+
+Phase 3 is complete. `ConfidentialGovernanceFactory` publishes contract/rules version 1, deploys one
+production `IVotesSnapshotStrategy` and one production `MerkleWeightedAllowlistStrategy`, and fixes one
+official `MultiSendCallOnly` address. It stores each dependency's construction-time runtime code hash
+and revalidates all three immediately before every module deployment.
+
+Safe/module/core deployment is permissionless and has no owner, proxy, implementation pointer, or
+upgrade administrator. The caller supplies the reviewed `SafeConfidentialVotingModule` creation
+bytecode; the factory accepts it only when its hash matches the pinned compile-time artifact hash,
+appends the exact Safe/strategy/floor/batch constructor arguments, and performs CREATE while preserving
+constructor revert data. The exact module constructor creates its core with `host = module`, so there
+is still no unbound initialization window. Each deployment emits the contract version, organization
+floor, every Safe/module/core/strategy/batch address, the approved creation-code hash, and the current
+runtime code hash of every component.
+
+This verified-bytecode input keeps the shared versioned factory at 2,023 runtime bytes and 5,666
+initcode bytes instead of embedding the 19,584-byte Safe-module initcode in factory runtime. That leaves
+the accepted shared factory shape viable for the Phase 4 Governor deployment entrypoint without
+crossing EIP-170. A test asserts that the pinned hash always equals the current compiler artifact, so
+any reviewed module/compiler change fails locally until the version binding is deliberately updated.
+
+Seven focused tests cover published versions/strategies/dependency hashes, permissionless exact pair
+creation, host/core/floor binding, complete event evidence, distinct deployments, invalid Safe/floor/
+batch construction, unreviewed creation bytecode, and strategy/batch runtime drift. The full Forge
+suite passes 75/75; Foundry and Hardhat builds, TypeScript, formatting, production high/medium lint, and
+size gates pass. The factory is 139 source lines. Slither remains unavailable. The Docker-backed Nox
+stack was not rerun because this slice changes deployment/evidence only, not confidential computation.
+
 ### Goal
 
 Deliver the installable Safe path with least possible executable authority.
@@ -408,6 +620,130 @@ Stop if the module can reach an uncommitted target/data/value, perform arbitrary
 twice, or mark execution successful when Safe reports failure.
 
 ## Phase 4: Compatible Governor And Timelock
+
+### Implementation Progress — Construction, Proposal Binding, And Plaintext Shutdown — 2026-07-30
+
+The production `ConfidentialGovernor` now composes OpenZeppelin 5.6.1 `Governor`,
+`GovernorSettings`, `GovernorVotes`, `GovernorVotesQuorumFraction`, and `GovernorTimelockControl`
+around an adapter-owned `ConfidentialBallotCore`. A single typed construction config preserves all
+immutable token, timelock, settings, strategy, and privacy-floor inputs while avoiding the non-IR
+compiler's constructor stack limit.
+
+The only usable proposal entrypoint is `proposeConfidential`. It reproduces OpenZeppelin's restricted
+description and proposal-threshold checks before `_propose`, supports normal one- or multi-action
+arrays, and then atomically registers the linked core ballot. The core commitment uses the normal
+proposal snapshot/deadline, the production token strategy and token config, two replacements, and
+`bytes32(proposalId)` as both host proposal identity and exact OpenZeppelin action binding. If core
+registration rejects, the proposal creation and event roll back with it.
+
+Standard `propose`, all five public plaintext voting functions, both internal `_castVote` overloads,
+and `_countVote` now revert with the same dedicated error. The signed entrypoints reject before
+signature validation and nonce use. `hasVoted` reads the linked core receipt, and the host supplies the
+Governor's ERC-6372 clock/mode and snapshot quorum to the core.
+
+Eight focused tests cover construction/core ownership, exact multi-action binding, proposer guard
+parity, atomic registration rollback, disabled standard proposal creation, five public plaintext
+routes with unchanged nonce, and all three internal plaintext seams. The full Forge suite passes
+83/83. Hardhat compile, TypeScript, and production high/medium Forge lint pass. Runtime is 16,849 bytes
+and initcode is 33,304 bytes. The repository-wide format check still reports eight untouched historical
+2026-07-29 Markdown files; all new Solidity passes Forge formatting. Slither remains unavailable, and
+the Docker-backed Nox stack was not rerun because this slice does not change confidential computation.
+
+This is deliberately not yet the complete Governor path. The next bounded slice must project Closed
+and TallyPending truthfully, expose detailed state, synchronize proposer-only Scheduled cancellation
+with the core, and prove that unresolved/withheld/rejected proposals cannot reach queue. Timelock role
+configuration, real queue/delay/batch execution, and the factory Governor entrypoint remain after that.
+
+### Implementation Progress — Async State And Synchronized Cancellation — 2026-07-30
+
+The production Governor now exposes a truthful combined lifecycle: Uninitialized, Scheduled, Open,
+Closed, TallyPending, Withheld, Rejected, Passed, Queued, Executed, and Canceled. Standard OpenZeppelin
+state projects ended unresolved Closed/TallyPending ballots to Pending, keeps Withheld/Rejected at
+Defeated, and restores normal Succeeded only for a finalized Passed core result. Queue validation
+therefore rejects every unresolved or terminal non-Passed state before touching the timelock.
+
+The inherited standard `cancel` route is disabled because it cannot synchronize the linked core.
+`cancelConfidential` preserves OpenZeppelin's proposer-only Pending check and additionally requires the
+core ballot to be Scheduled. It allows the exact snapshot boundary, matching OpenZeppelin's Pending
+semantics, but rejects every block after voting opens. The Governor cancellation runs before the core
+cancellation in one transaction; if the core rejects, all Governor state and events roll back.
+
+Nine focused tests use the real production Governor/core, ERC20Votes strategy, TimelockController, and
+released NoxCompute proxy shape. They cover Scheduled/Open/Closed detail, Closed/TallyPending standard
+Pending projection and queue rejection, Withheld/Rejected standard Defeated and queue rejection,
+Passed-to-Succeeded projection without execution, unknown detail, synchronized cancellation, outsider
+and alternate-route rejection, post-open rejection, and the exact snapshot boundary. The 17 combined
+Governor tests and full 92/92 Forge suite pass.
+
+The implementation was split into a single linear inheritance chain after the combined adapter crossed
+the quality profile's 300-line cap: a 116-line OpenZeppelin framework, 156-line proposal/core layer,
+141-line counting/lifecycle layer, and 9-line concrete Governor. Runtime is 18,220 bytes and initcode is
+34,722 bytes. Hardhat compile, TypeScript, production high/medium lint, scoped formatting, and diff
+checks pass. Solar still cannot parse Nox's Solidity 0.8.35 `erc7201(...)` builtin, so the concrete Nox
+lifecycle test and fixture share the established test-only lint exclusion while remaining compiler- and
+execution-covered. The repository-wide format baseline still reports the same eight untouched
+historical 2026-07-29 Markdown files. Slither remains unavailable, and the Docker-backed Nox stack was
+not rerun.
+
+The next bounded slice configures the real TimelockController with Governor as sole proposer/canceller,
+renounces the setup administrator after verification, and proves Passed one- and multi-action queue,
+delay, and execution behavior plus timestamp-clock compatibility. The factory Governor entrypoint
+remains after that.
+
+### Implementation Progress — Real Timelock And Clock Compatibility — 2026-07-30
+
+The production Governor now passes its real OpenZeppelin 5.6.1 timelock execution boundary. The
+production-shaped fixture deploys `TimelockController` with empty proposer/executor arrays and one
+temporary setup administrator, deploys the immutable Governor, grants proposer and canceller only to
+that Governor, opens execution through the zero-address executor role, verifies every required role,
+then renounces the setup administrator. The timelock retains only self-administration outside normal
+governance.
+
+Finalized Passed proposals queue through the normal Governor API as real timelock batches. Single and
+two-action proposals stay untouched before their exact ETA, reject early execution, and execute
+permissionlessly at the ETA. Direct outsider scheduling and cancellation reject, so no alternate
+proposer/canceller can inject or erase operations. `TimelockController.updateDelay` also rejects direct
+callers but succeeds as a normal confidential proposal executed by the timelock itself.
+
+A timestamp-mode ERC20Votes fixture proves the same production Governor inherits its ERC-6372 clock
+from the token. Advancing block number without advancing time leaves the proposal Scheduled/Pending;
+timestamp advances open and close the ballot, then the finalized Passed proposal uses the same real
+queue/delay/execute path. The existing block-number tests and this timestamp execution test cover both
+accepted host clock modes without adding a custom production clock override.
+
+Six focused tests, 23 combined Governor tests, and the full 98/98 Forge suite pass. Hardhat compile,
+TypeScript, production high/medium lint, size checks, scoped formatting, and diff checks pass. No
+production contract changed in this slice, so Governor runtime remains 18,220 bytes and initcode
+remains 34,722 bytes. The concrete Nox-backed test shares the established test-only Solar exclusion
+because Solar cannot parse the upstream Solidity 0.8.35 `erc7201(...)` builtin, while Solc and runtime
+execution pass. Node 25 remains outside the declared Node 22-24 range. Slither remains unavailable, and
+the Docker-backed Nox stack was not rerun because no confidential-computation behavior changed.
+
+The compatible Governor adapter and real timelock/clock execution path are complete. The next bounded
+slice adds the versioned factory Governor/timelock deployment entrypoint with immutable binding and
+complete creation/runtime code-hash evidence.
+
+### Implementation Progress — Versioned Governor Factory — 2026-07-30
+
+Phase 4 is complete. The versioned factory pins the exact reviewed Governor and TimelockController
+creation-code hashes, revalidates every shared strategy and batch dependency runtime hash, and rejects
+zero or non-contract vote tokens before deployment. One permissionless call atomically deploys the
+TimelockController, Governor, and Governor-owned core with the complete immutable token, strategy,
+settings, quorum, privacy-floor, and timelock binding.
+
+The factory grants only the deployed Governor proposer/canceller authority, opens execution through
+the zero-address executor role, verifies every required role and timelock self-administration, then
+renounces and verifies removal of its temporary administrator. Its events bind the complete deployment
+configuration hash and emit the reviewed creation-code and deployed runtime-code evidence. Invalid
+creation code, dependency drift, invalid tokens, and Governor-constructor failure all roll the complete
+deployment back; the constructor-failure test also proves the factory CREATE nonce remains reusable.
+
+Eight focused Governor-factory tests, all 15 factory tests, 31 production Governor-plus-factory tests,
+and the full 106/106 Forge suite pass. The factory's source split is 80/81/181/10 lines, and its concrete
+runtime/initcode sizes are 5,731/9,424 bytes. Hardhat compile, TypeScript, Forge lint/build/tests/size,
+scoped formatting, and diff checks pass. The Docker-backed Nox stack was not rerun because this slice
+does not change confidential computation. The user explicitly removed Slither from the project
+requirements; it is not a Phase 5 gate. The combined production invariant suite is next.
 
 ### Goal
 
@@ -458,19 +794,73 @@ core verdict can authorize a different Governor action batch.
 
 ## Phase 5: Security, Failure Recovery, And Release Evidence
 
+### Implementation Progress — Combined Production Invariants — 2026-07-30
+
+The first Phase 5 slice passes one explicit stateful handler against production ballot cores, the
+production Safe module, the official Safe 1.5.0 proxy/module path, and the released NoxCompute proxy
+shape with a test Gateway signer. Deterministic token and clock fixtures control local inputs but do not
+replace the production core, Nox proof validation, Safe module, or official execution path.
+
+Three invariant properties jointly cover one effective public weight per voter, monotonic unique
+participation, fixed snapshot weight despite later token minting, at most two replacements,
+failed-sequence immutability, no below-floor verdict handle/result, single finalization, immutable Safe
+action/ballot binding, retry-safe execution, and execute-once. The initial RED run showed that selector
+targeting alone still permitted direct fuzzer calls to every deployed fixture; the final harness fixes
+both the handler contract and its seven modeled selectors explicitly.
+
+The `invariant` Foundry profile runs each property 10,000 times at depth 32. All three properties pass
+320,000 modeled calls each—960,000 total—with zero handler reverts or discards. The full Forge suite
+passes 110/110; Hardhat compile, TypeScript, Forge high/medium lint, production size checks, scoped
+formatting, and diff checks pass. Production bytecode and size measurements are unchanged. The
+Docker-backed off-chain Nox stack was not rerun because this slice adds local stateful verification, not
+confidential-computation behavior. The then-next cross-proposal/cross-host/cross-chain proof-negative
+matrix is resolved by the following slice.
+
+### Implementation Progress — Proof-Negative Domain Matrix — 2026-07-31
+
+Five focused production tests now cover the complete local verdict-proof matrix: short proof, signature
+mutation, wrong signer, wrong EIP-712 version, wrong verifying contract, wrong stored handle, malformed
+boolean length, noncanonical boolean value, identical-input reuse across proposals, same encrypted
+handles with separate app signatures across hosts, a foreign chain domain, and foreign-host/
+foreign-chain input proofs. Every negative preserves TallyPending/result/expected-handle state or an
+unrecorded public receipt, and the corresponding correct proof remains usable.
+
+The adversarial RED test deliberately reused the same four valid encrypted input handles and proofs on
+two proposals in one core. Because the original tally graph did not consume `ballotId`, both proposals
+produced the same deterministic expected verdict handle. The production tally now subtracts encrypted
+total participation from itself, multiplies that encrypted zero by the public `ballotId`, and adds it
+back before quorum evaluation. The plaintext participation and verdict remain unchanged, while every
+downstream handle now consumes the already chain/core/host/proposal/config-separated ballot domain.
+The same-handle cross-host case signs each shared input for its correct core and independently proves
+the host boundary.
+
+The factory's reviewed Safe-module and Governor creation-code hashes were repinned to the changed core
+bytecode. Five focused matrix tests and the clean full 115/115 Forge suite pass. The 10,000-run invariant
+profile also passes all three properties at 320,000 calls each with zero handler reverts or discards.
+Hardhat and Forge builds, TypeScript, Forge high/medium lint, formatting, production sizes, and diff
+checks pass. Runtime sizes are 12,908 bytes for `ConfidentialBallotCore`, 5,523 for
+`SafeConfidentialVotingModule`, 18,220 for `ConfidentialGovernor`, and 5,731 for the factory.
+
+Because ballot-domain separation changes the real confidential graph, the Docker-backed released Nox
+integration must pass again before this slice is integration-complete. The 2026-07-31 run attempt
+stopped during environment setup because the plugin could not connect to the Docker daemon; none of the
+nine integration cases exercised a contract path, and plugin cleanup completed. The previous Phase 2
+real-stack passes do not substitute for this rerun.
+
 ### Goal
 
 Prove the combined production contracts meet the accepted claim boundary.
 
 ### Work
 
-- Run the complete cross-proposal/cross-host/cross-chain proof-negative matrix.
+- Run the complete cross-proposal/cross-host/cross-chain proof-negative matrix. **PASS locally; real
+  released-stack rerun pending Docker availability.**
 - Add invariants for one effective ballot, monotonic unique participation, fixed first weight, maximum
   two replacements, no below-floor verdict, single finalization, and execute-once.
 - Repeat cold/warm Nox timing, Safe direct/batch gas, Governor queue/execute gas, Runner restart, and
   JetStream redelivery.
-- Run Forge high/medium lint, Slither 0.11.5, contract sizes, fuzz/invariants, and manual ACL/action
-  review under the quality profile.
+- Run Forge high/medium lint, contract sizes, fuzz/invariants, and manual ACL/action review under the
+  quality profile.
 - Produce a verification audit that separates real proof, inferred safety, external trust, and unrun
   live behavior.
 

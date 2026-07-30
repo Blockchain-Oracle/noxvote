@@ -1,7 +1,7 @@
 # Project Quality Profile: Confidential Governance Contracts
 
 **Date:** 2026-07-30  
-**Status:** Active for contract planning and future contract implementation  
+**Status:** Active for contract planning and implementation
 **Scope:** Solidity contracts, Foundry tests, Hardhat real-Nox integration tests, TypeScript harnesses,
 and contract CI. Frontend and visual-design quality gates are intentionally excluded.
 
@@ -21,16 +21,16 @@ research mirrors, not project source, and are excluded from every quality, size,
 
 ## Existing Commands
 
-| Purpose              | Command                                                        | Current state                                                                          |
-| -------------------- | -------------------------------------------------------------- | -------------------------------------------------------------------------------------- |
-| Full build           | `mise exec -- pnpm build`                                      | PASS                                                                                   |
-| Forge build          | `mise exec -- pnpm build:forge`                                | PASS                                                                                   |
-| Hardhat build        | `mise exec -- pnpm build:hardhat`                              | PASS                                                                                   |
-| TypeScript           | `mise exec -- pnpm exec tsc --noEmit`                          | PASS                                                                                   |
-| Forge format         | `mise exec -- forge fmt --check`                               | PASS                                                                                   |
-| Forge lint           | `mise exec -- forge lint src test/foundry --severity high med` | PASS                                                                                   |
-| Forge tests          | `mise exec -- pnpm test:forge`                                 | PASS, 11/11                                                                            |
-| Real Nox integration | `mise exec -- pnpm test:integration`                           | Requires running Docker; latest audited run PASS, current Docker-off rerun unavailable |
+| Purpose              | Command                               | Current state                                                                                                        |
+| -------------------- | ------------------------------------- | -------------------------------------------------------------------------------------------------------------------- |
+| Full build           | `mise exec -- pnpm build`             | PASS                                                                                                                 |
+| Forge build          | `mise exec -- pnpm build:forge`       | PASS                                                                                                                 |
+| Hardhat build        | `mise exec -- pnpm build:hardhat`     | PASS                                                                                                                 |
+| TypeScript           | `mise exec -- pnpm exec tsc --noEmit` | PASS                                                                                                                 |
+| Forge format         | `mise exec -- forge fmt --check`      | PASS                                                                                                                 |
+| Forge lint           | `mise exec -- pnpm lint:forge`        | PASS                                                                                                                 |
+| Forge tests          | `mise exec -- pnpm test:forge`        | PASS, 115/115                                                                                                        |
+| Real Nox integration | `mise exec -- pnpm test:integration`  | Latest audited Phase 2 path PASS twice; 2026-07-31 changed-graph rerun NOT RUN because Docker daemon was unavailable |
 
 The repository-wide Prettier command also checks historical Markdown and currently reports formatting
 drift in eight untouched research files. Contract acceptance must not be blocked by that historical
@@ -42,10 +42,23 @@ documentation-format cleanup is authorized.
 ### Fast loop for each contract change
 
 1. `mise exec -- forge fmt --check`
-2. `mise exec -- forge lint src/contracts test/foundry --severity high med`
-3. `mise exec -- forge build --sizes`
+2. `mise exec -- pnpm lint:forge`
+3. `mise exec -- forge build --sizes --skip test`
 4. `mise exec -- pnpm exec tsc --noEmit`
 5. `mise exec -- forge test -vvv`
+
+The Foundry tests that deploy the released `NoxCompute` implementation are the test-file exceptions to
+Solar lint. Foundry's current linter cannot parse Solidity 0.8.35's `erc7201(...)` builtin in that
+upstream implementation, although Solc compiles it and the tests execute it. `lint:forge` therefore
+lints all production source and all other Foundry tests in isolated lint caches, while `forge test`
+remains the compile/execution gate for the concrete Nox fixtures. Automatic lint-on-build is disabled
+so a prior fixture compilation cannot contaminate later Solar input; explicit `pnpm lint:forge` is the
+required lint gate. Production builds skip test artifacts for the same parser limitation; they do not
+skip production contracts.
+
+On 2026-07-30 the user explicitly removed Slither from the project requirements. Do not run it,
+report its availability as a blocker, or gate any phase on it. Forge lint, builds, tests, fuzz and
+invariant suites, bytecode-size checks, and manual contract review remain required.
 
 ### Real-integration loop before completing an integration phase
 
@@ -59,9 +72,9 @@ documentation-format cleanup is authorized.
 
 - Run Forge fuzz and invariant suites with at least 10,000 fuzz cases per property locally and 50,000
   in CI for the privacy/action invariants.
-- Run Slither `0.11.5` against production contracts through Foundry, excluding `node_modules`,
-  `.thoughts/raw`, `src/spike`, generated artifacts, and test fixtures. Every high/medium finding must
-  be fixed or documented with a contract-specific false-positive rationale.
+- The local high-confidence profile is
+  `FOUNDRY_PROFILE=invariant forge test --match-contract ConfidentialGovernanceInvariantTest -vv`.
+  It fixes 10,000 runs at depth 32 against the explicit production handler boundary.
 - Inspect deployed bytecode size. Target each deployable contract below 22 KiB and hard-fail at the
   EIP-170 24,576-byte limit.
 - Establish gas snapshots after the first production-shaped real-Nox run; fail later regressions above
@@ -75,7 +88,8 @@ CI is absent today. Future contract implementation must add four required jobs:
 
 1. **Static:** Forge format, high/medium lint, TypeScript check, and edited-file Prettier check.
 2. **Build/unit:** Forge and Hardhat builds, contract-size report, unit tests, fuzz, and invariants.
-3. **Security:** Slither `0.11.5` plus selector/interface and storage-layout reports for review.
+3. **Contract review:** Selector/interface and storage-layout reports plus manual role, ACL,
+   external-call, and action-commitment review.
 4. **Real Nox integration:** Docker-backed released Nox stack, official Safe proxy/module path,
    compatible Governor/timelock path, proof-negative matrix, Runner restart, and JetStream redelivery.
 
@@ -120,9 +134,14 @@ core, Safe, Governor, and verification changes so each security boundary is revi
 - Treat external-designer work as visual evidence, not contract or frontend implementation authority.
 - Require explicit authorization before deployment, funding, public publishing, or submission claims.
 
-## Open Environmental Gate
+## Open Environmental Gates
 
-Docker Desktop was not running during the 2026-07-30 planning baseline rerun. The Forge and build gates
-pass; the last audited real-Nox run passes 19/19. Before contract implementation claims completion, run
-the complete integration suite again with Docker available. Do not diagnose or change Docker without a
+The latest audited Phase 2 production-core path passes twice against the Docker-backed released Nox
+stack. The Phase 5 ballot-domain fix changes the confidential tally graph, so those prior runs do not
+verify the new graph. A complete rerun was attempted on 2026-07-31, but the plugin could not connect to
+the Docker daemon; all nine cases stopped during environment setup before exercising a contract path,
+and plugin cleanup completed. Run the complete integration suite again before this slice or the
+combined contract system is called integration-complete. Do not diagnose or change Docker without a
 separate request.
+
+Slither is not an open environmental gate and is not required for project completion.

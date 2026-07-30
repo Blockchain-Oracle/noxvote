@@ -13,8 +13,38 @@ released Nox. On 2026-07-30 the user accepted the complete product definition, u
 boundaries, normal-DAO execution semantics, and production technical architecture. The bounded local technical gate passes: real
 Nox-to-Safe, Runner restart, explicit JetStream negative-acknowledgement redelivery, the complete named
 proof-negative matrix, and real Nox-to-compatible-Governor-to-Timelock execution all pass. A production
-contract quality profile and contract-only implementation plan are active for review. The spike
-artifacts are not production components, and general implementation is not yet approved.
+contract quality profile and contract-only implementation plan are accepted. Local phased contract
+implementation is authorized. Production registration, public eligibility, direct-wallet confidential
+casting/replacement, privacy-floor withholding, encrypted verdict derivation, verdict-only ACL, and
+proof finalization pass local Foundry gates. The production core also passes two consecutive
+Docker-backed runs through the released Gateway/KMS/JetStream/Runner stack for the judged
+four-wallet/floor-four graph. Phase 2 is complete. The Phase 3 production Safe module now passes its
+official-Safe registration, exact-commitment, direct single-call execution, and official
+`MultiSendCallOnly` atomic-batch slices. Passed-only, exact-bundle, call-only inner operations,
+runtime batch-code-hash revalidation, atomic failure/retry, reentrancy, execute-once, and
+disabled-module gates pass. The versioned factory now publishes the two reviewed strategies and
+deploys immutable Safe/module/core pairs with complete creation/runtime code-hash evidence. Phase 3 is
+complete. The production compatible Governor now passes immutable construction, exact confidential
+proposal/core registration, OpenZeppelin proposer-guard parity, normal multi-action binding, and
+complete public/internal plaintext-cast shutdown. Its detailed lifecycle and standard asynchronous
+projection now prevent unresolved or non-Passed queueing, and proposer-only Scheduled cancellation
+atomically cancels both Governor and core. The real TimelockController path now passes Governor-only
+proposer/canceller authority, bootstrap-admin renunciation, permissionless execution, one- and
+multi-action queue/delay/execution, governance-only delay changes, direct-interference rejection, and
+block-number/timestamp clock coverage. The versioned factory now atomically deploys the exact reviewed
+TimelockController, Governor, and Governor-owned core, verifies the complete role handoff, renounces its
+temporary admin, and emits complete creation/runtime code-hash evidence. Phase 4 is complete. The first
+Phase 5 stateful suite now passes one-effective-ballot accounting, monotonic unique participation, fixed
+snapshot weight, two-replacement maximum, below-floor withholding, finalize-once, and Safe execute-once
+at 10,000 runs per property. The complete local proof-negative matrix now passes signer/domain/handle/
+encoding, identical-input cross-proposal, same-handle cross-host, and cross-chain boundaries. Its RED
+case exposed same-core proposal verdict-handle aliasing when every encrypted input was deliberately
+reused; the production tally now injects a ballot-ID-derived encrypted zero, preserving the plaintext
+result while separating downstream handles by ballot, host, and chain. The full Forge suite passes
+115/115 and the high-confidence invariant profile passes again. Because this changes the real Nox
+graph, the released Docker-backed integration rerun remains required; the 2026-07-31 attempt stopped
+before execution because the Docker daemon was unavailable. Do not call this slice integration-complete
+until that rerun passes. The spike artifacts are not production components.
 
 Visual design ownership is `EXTERNAL_COMMISSION`. The external designer owns visual language. Do not
 choose UI taste, tokens, layouts, or frontend architecture until returned direction is audited,
@@ -48,6 +78,7 @@ later only when a specific fact is relevant and reverified against current relea
 - Foundry is the selected primary contract-tooling recommendation. The released Nox package compiles
   under Foundry, but the official Foundry integration guide is still a placeholder; use a bounded
   Hardhat 3 harness for the real local Nox stack unless newer official support is verified.
+- Slither is explicitly not required by the user. Do not run it or treat its availability as a gate.
 
 ## Non-negotiable Design Questions
 
@@ -73,7 +104,6 @@ later only when a specific fact is relevant and reverified against current relea
 
 Broader research, product definition, stories, feature inventory, functional surface map, governance
 host comparison, architecture, and bounded local feasibility spike are complete. Other builders are
-not a product or build gate. The contract quality profile and contract-only implementation plan are
-ready for review. UI planning is paused under external design ownership. Contract or frontend
-implementation, deployments, billable infrastructure, public publishing, and submission claims are
-not yet authorized.
+not a product or build gate. Local phased contract implementation is authorized under the accepted
+plan. UI planning is paused under external design ownership. Frontend implementation, deployments,
+billable infrastructure, public publishing, and submission claims are not authorized.
