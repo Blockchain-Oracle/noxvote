@@ -21,16 +21,16 @@ research mirrors, not project source, and are excluded from every quality, size,
 
 ## Existing Commands
 
-| Purpose              | Command                               | Current state                                                                                                        |
-| -------------------- | ------------------------------------- | -------------------------------------------------------------------------------------------------------------------- |
-| Full build           | `mise exec -- pnpm build`             | PASS                                                                                                                 |
-| Forge build          | `mise exec -- pnpm build:forge`       | PASS                                                                                                                 |
-| Hardhat build        | `mise exec -- pnpm build:hardhat`     | PASS                                                                                                                 |
-| TypeScript           | `mise exec -- pnpm exec tsc --noEmit` | PASS                                                                                                                 |
-| Forge format         | `mise exec -- forge fmt --check`      | PASS                                                                                                                 |
-| Forge lint           | `mise exec -- pnpm lint:forge`        | PASS                                                                                                                 |
-| Forge tests          | `mise exec -- pnpm test:forge`        | PASS, 115/115                                                                                                        |
-| Real Nox integration | `mise exec -- pnpm test:integration`  | Latest audited Phase 2 path PASS twice; 2026-07-31 changed-graph rerun NOT RUN because Docker daemon was unavailable |
+| Purpose              | Command                               | Current state                                                                             |
+| -------------------- | ------------------------------------- | ----------------------------------------------------------------------------------------- |
+| Full build           | `mise exec -- pnpm build`             | PASS                                                                                      |
+| Forge build          | `mise exec -- pnpm build:forge`       | PASS                                                                                      |
+| Hardhat build        | `mise exec -- pnpm build:hardhat`     | PASS                                                                                      |
+| TypeScript           | `mise exec -- pnpm exec tsc --noEmit` | PASS                                                                                      |
+| Forge format         | `mise exec -- forge fmt --check`      | PASS                                                                                      |
+| Forge lint           | `mise exec -- pnpm lint:forge`        | PASS                                                                                      |
+| Forge tests          | `mise exec -- pnpm test:forge`        | PASS, 119/119                                                                             |
+| Real Nox integration | `mise exec -- pnpm test:integration`  | PASS, three consecutive changed-graph runs at 9/9 each; cleanup confirmed after every run |
 
 The repository-wide Prettier command also checks historical Markdown and currently reports formatting
 drift in eight untouched research files. Contract acceptance must not be blocked by that historical
@@ -81,6 +81,22 @@ invariant suites, bytecode-size checks, and manual contract review remain requir
   20% unless the plan/verification record explains and accepts the increase.
 - Review every external call, reentrancy boundary, action hash, proposal/chain domain, role, permanent
   ACL grant, and public-decryption path manually.
+
+### Established gas baselines
+
+`test/foundry/production/ConfidentialGovernanceGas.t.sol` records isolated Foundry call gas after
+proposal setup and fails regressions above 20% of these 2026-07-31 baselines:
+
+| Path                                      |     Baseline gas |
+| ----------------------------------------- | ---------------: |
+| Safe direct execute                       |           86,074 |
+| Safe two-call `MultiSendCallOnly` execute |          168,745 |
+| Governor single-action queue / execute    | 102,732 / 52,792 |
+| Governor two-action queue / execute       | 110,983 / 82,366 |
+
+The three released-stack repetitions additionally record full-path ballot, close, finalize, Safe
+execute, latency, Runner restart, and JetStream redelivery measurements in the production verification
+audit.
 
 ## Required CI Gates
 
@@ -136,12 +152,13 @@ core, Safe, Governor, and verification changes so each security boundary is revi
 
 ## Open Environmental Gates
 
-The latest audited Phase 2 production-core path passes twice against the Docker-backed released Nox
-stack. The Phase 5 ballot-domain fix changes the confidential tally graph, so those prior runs do not
-verify the new graph. A complete rerun was attempted on 2026-07-31, but the plugin could not connect to
-the Docker daemon; all nine cases stopped during environment setup before exercising a contract path,
-and plugin cleanup completed. Run the complete integration suite again before this slice or the
-combined contract system is called integration-complete. Do not diagnose or change Docker without a
-separate request.
+The Phase 5 ballot-domain graph passes three consecutive Docker-backed released-Nox repetitions at 9/9
+cases each. The first began without running Nox services and all three reused cached images; this proves
+clean service startup and the complete changed graph, not cold image-download time. Cleanup completed
+after every run.
+
+No local Phase 5 environmental gate remains. Live Ethereum Sepolia addresses, accounts, funding,
+deployment, external transactions, gas, and latency remain Phase 6 gates requiring current primary
+source verification and explicit user authorization.
 
 Slither is not an open environmental gate and is not required for project completion.

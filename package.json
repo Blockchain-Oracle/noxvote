@@ -11,7 +11,7 @@
     "build": "pnpm build:forge && pnpm build:hardhat",
     "build:forge": "forge build --skip test",
     "build:hardhat": "hardhat compile",
-    "lint:forge": "forge lint src/contracts --severity high med --out out/lint-src --cache-path cache/lint-src && forge lint test/foundry --skip ConfidentialBallotCasting.t.sol --skip ConfidentialBallotTally.t.sol --skip ConfidentialBallotProofNegativeMatrix.t.sol --skip TallyFixtures.sol --skip ConfidentialGovernorLifecycle.t.sol --skip ConfidentialGovernorTimelock.t.sol --skip GovernorFixtures.sol --skip SafeConfidentialVotingModuleExecution.t.sol --skip SafeConfidentialVotingModuleBatchExecution.t.sol --skip SafeExecutionFixtures.sol --skip SafeBatchExecutionFixtures.sol --skip ConfidentialGovernanceInvariants.t.sol --severity high med --out out/lint-test --cache-path cache/lint-test",
+    "lint:forge": "forge lint src/contracts --severity high med --out out/lint-src --cache-path cache/lint-src && forge lint test/foundry --skip ConfidentialBallotCasting.t.sol --skip ConfidentialBallotTally.t.sol --skip ConfidentialBallotProofNegativeMatrix.t.sol --skip TallyFixtures.sol --skip ConfidentialGovernorLifecycle.t.sol --skip ConfidentialGovernorTimelock.t.sol --skip GovernorFixtures.sol --skip SafeConfidentialVotingModuleExecution.t.sol --skip SafeConfidentialVotingModuleBatchExecution.t.sol --skip SafeExecutionFixtures.sol --skip SafeBatchExecutionFixtures.sol --skip ConfidentialGovernanceInvariants.t.sol --skip ConfidentialGovernanceGas.t.sol --severity high med --out out/lint-test --cache-path cache/lint-test",
     "test": "pnpm test:forge && pnpm test:integration",
     "test:forge": "forge test -vvv",
     "test:integration": "hardhat test nodejs",

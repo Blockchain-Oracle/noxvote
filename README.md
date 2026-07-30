@@ -56,10 +56,12 @@ cross-host isolation, foreign-chain verdict evidence, and foreign-host/foreign-c
 adversarial RED case exposed identical verdict handles when the same valid encrypted inputs were reused
 across two same-core proposals; the tally graph now injects a ballot-ID-derived encrypted zero so the
 plaintext result is unchanged while every downstream handle is ballot/host/chain separated. The full
-115/115 Forge suite and the 10,000-run invariant profile pass. The released Docker-backed Nox rerun was
-attempted on 2026-07-31 but could not start because the Docker daemon was unavailable, so that rerun is
-the next gate before this production graph change is called integration-complete. Slither is not
-required. Testnet deployment remains unauthorized.
+119/119 Forge suite and the 10,000-run invariant profile pass. The changed graph now passes three
+consecutive complete Docker-backed released-Nox runs—27/27 cases total—with production core, official
+Safe, compatible Governor/Timelock, proof-negative, Runner restart, and JetStream redelivery evidence.
+Four deterministic Safe/Governor gas tests enforce 20% regression ceilings, and the production
+verification audit passes the authorized local contract gate. Phase 5 is complete locally. Slither is
+not required. Phase 6 testnet deployment remains unauthorized.
 
 Start here:
 
@@ -74,15 +76,16 @@ Start here:
 9. `.thoughts/specs/2026-07-29-confidential-governance-module.md`
 10. `.thoughts/stories/2026-07-29-confidential-governance-module.md`
 11. `.thoughts/design/2026-07-29-product-surface-map.md`
-12. `.thoughts/verification/2026-07-30-full-shape-spike-report.md`
-13. `.thoughts/plans/2026-07-30-full-shape-feasibility-spike.md`
-14. `.thoughts/decisions/2026-07-30-fable-review-reconciliation.md`
-15. `.thoughts/research/2026-07-29-open-source-private-voting-landscape.md`
-16. `.thoughts/briefs/2026-07-29-confidential-voting-research-brief.md` (historical research seed)
-17. `.thoughts/plans/2026-07-29-confidential-voting-research-plan.md`
-18. `.thoughts/research/2026-07-29-confidential-voting-architecture-synthesis.md` (historical first pass)
-19. `.thoughts/reviews/2026-07-30-fable-5-product-review.md`
-20. `.thoughts/plans/2026-07-29-confidential-voting-decision-plan.md` (historical first-pass scope)
+12. `.thoughts/verification/2026-07-31-production-contract-verification-audit.md`
+13. `.thoughts/verification/2026-07-30-full-shape-spike-report.md`
+14. `.thoughts/plans/2026-07-30-full-shape-feasibility-spike.md`
+15. `.thoughts/decisions/2026-07-30-fable-review-reconciliation.md`
+16. `.thoughts/research/2026-07-29-open-source-private-voting-landscape.md`
+17. `.thoughts/briefs/2026-07-29-confidential-voting-research-brief.md` (historical research seed)
+18. `.thoughts/plans/2026-07-29-confidential-voting-research-plan.md`
+19. `.thoughts/research/2026-07-29-confidential-voting-architecture-synthesis.md` (historical first pass)
+20. `.thoughts/reviews/2026-07-30-fable-5-product-review.md`
+21. `.thoughts/plans/2026-07-29-confidential-voting-decision-plan.md` (historical first-pass scope)
 
 The previous NoxLimit repository was preserved intact at
 `/Users/abu/dev/hackathon/wtf-noxlimit-archive-2026-07-29`.

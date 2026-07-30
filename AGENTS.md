@@ -40,11 +40,15 @@ at 10,000 runs per property. The complete local proof-negative matrix now passes
 encoding, identical-input cross-proposal, same-handle cross-host, and cross-chain boundaries. Its RED
 case exposed same-core proposal verdict-handle aliasing when every encrypted input was deliberately
 reused; the production tally now injects a ballot-ID-derived encrypted zero, preserving the plaintext
-result while separating downstream handles by ballot, host, and chain. The full Forge suite passes
-115/115 and the high-confidence invariant profile passes again. Because this changes the real Nox
-graph, the released Docker-backed integration rerun remains required; the 2026-07-31 attempt stopped
-before execution because the Docker daemon was unavailable. Do not call this slice integration-complete
-until that rerun passes. The spike artifacts are not production components.
+result while separating downstream handles by ballot, host, and chain. The changed graph passes three
+consecutive complete released Docker-backed Nox runs—27/27 cases total—including production core,
+official Safe, compatible Governor/Timelock, proof negatives, Runner restart, and JetStream redelivery,
+with cleanup after every run. Deterministic Safe direct/batch and Governor queue/execute gas baselines
+now enforce the quality profile's 20% regression ceiling. The full Forge suite passes 119/119, the
+high-confidence invariant profile passes again at 960,000 modeled calls, and the production verification
+audit passes the authorized local contract gate. Phase 5 is complete locally. Phase 6 live Ethereum
+Sepolia work remains blocked pending explicit authorization. The spike artifacts are not production
+components.
 
 Visual design ownership is `EXTERNAL_COMMISSION`. The external designer owns visual language. Do not
 choose UI taste, tokens, layouts, or frontend architecture until returned direction is audited,

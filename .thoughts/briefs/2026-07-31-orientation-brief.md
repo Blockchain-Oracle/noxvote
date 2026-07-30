@@ -14,10 +14,11 @@ and identify what is genuinely unknown or drifted.
   Host-neutral confidential ballot core + Safe execution adapter + compatible OpenZeppelin Governor
   counting adapter.
 - **Contract implementation is authorized locally.**
-  `.thoughts/decisions/2026-07-30-contract-implementation-authorization.md` (untracked). Testnet,
+  `.thoughts/decisions/2026-07-30-contract-implementation-authorization.md` is committed. Testnet,
   frontend, funded infrastructure, publishing, and submission claims are not authorized.
-- **Phases 1–4 are complete and Phase 5 is in progress**, per CURRENT.md resolved facts 20–33.
-- **The full Forge suite is GREEN at 115/115** (`forge test`, run 2026-07-31, 20 suites, 0 failed).
+- **Phases 1–5 are complete for the authorized local contract gate**, per CURRENT.md resolved facts
+  20–35. Phase 6 remains blocked on explicit live-action authorization.
+- **The full Forge suite is GREEN at 119/119** (`forge test`, run 2026-07-31, 22 suites, 0 failed).
   CURRENT.md and the other active routing artifacts are now reconciled to that result.
 - **The cross-proposal/cross-host/cross-chain proof-negative matrix is implemented and passing.**
   `test/foundry/production/ConfidentialBallotProofNegativeMatrix.t.sol` (268 lines) holds exactly five
@@ -53,22 +54,21 @@ and identify what is genuinely unknown or drifted.
 
 ## Current Shape
 
-Phase 5 ("Security, Failure Recovery, And Release Evidence") has the combined invariant suite complete
-locally (3 properties + 1 setup assertion, `ConfidentialGovernanceInvariantTest`, 10,000 runs and
-960,000 calls under `FOUNDRY_PROFILE=invariant`) and the proof-negative matrix complete locally. The
-matrix's production graph change is not integration-complete until the released Docker stack reruns.
-Still unrun for Phase 5 are repeated cold/warm real-Nox timing, refreshed Safe direct/batch and Governor
-queue/execute gas, Runner restart, JetStream redelivery, and the Phase 5 verification audit.
-`.thoughts/verification/` contains only `2026-07-30-full-shape-spike-report.md`.
+Phase 5 ("Security, Failure Recovery, And Release Evidence") is complete for the authorized local
+contract gate. The combined invariant suite passes 10,000 runs and 960,000 calls; the complete
+proof-negative matrix passes; three changed-graph released-Nox repetitions pass 27/27 cases total with
+Runner restart, JetStream redelivery, compatible Governor/Timelock, production core, and cleanup; and
+four deterministic Safe/Governor gas baselines enforce the quality profile's 20% regression ceiling.
+`.thoughts/verification/2026-07-31-production-contract-verification-audit.md` records traceability,
+measurements, manual ACL/action review, deviations, external trust, and all unrun live/UI behavior.
 
 ## Genuine Unknowns
 
-1. **Whether the changed ballot-domain graph passes the real stack.** `pnpm test:integration` was
-   attempted, but the Nox plugin could not connect to the Docker daemon. All nine cases stopped during
-   environment setup before a contract path ran, and cleanup completed.
-2. **Which design-ownership decision is active.** Two divergent decision records exist (below).
-3. **Fresh Phase 5 timing and gas.** No refreshed gas snapshot or repeated cold/warm timing exists for
-   the ballot-domain graph yet.
+1. **Which design-ownership decision is active.** Two divergent decision records exist (below).
+2. **Live Phase 6 behavior.** Sepolia addresses, accounts, funding, deployment, transactions, gas,
+   latency, and explorer evidence remain unauthorized and NOT RUN.
+3. **Larger-electorate behavior.** The verified graph remains bounded to four eligible wallets and a
+   privacy floor of four.
 
 ## Constraints Discovered
 
@@ -87,19 +87,20 @@ queue/execute gas, Runner restart, JetStream redelivery, and the Phase 5 verific
   That audit records **Abu's taste decision as PENDING**.
 - Slither is removed from project requirements by explicit user direction; it must not be run or
   treated as a gate (AGENTS.md, quality profile line 146).
-- Solar cannot parse Nox's Solidity 0.8.35 `erc7201(...)` builtin, so twelve test/fixture files
+- Solar cannot parse Nox's Solidity 0.8.35 `erc7201(...)` builtin, so the concrete Nox test/fixture files
   including the new matrix test sit in the `lint:forge` skip list; all remain compiled and executed.
 - Node 25 is outside the declared `>=22 <25` engine range (`node -v` reports `v25.9.0`;
   `package.json:8` declares `"node": ">=22 <25"`).
 
 ## Next Authorized Action
 
-Under the accepted plan the contract track continues locally with Phase 5. The next contract action is
-the released Docker-backed rerun once Docker is made available; repository rules prohibit diagnosing or
-starting it without a separate request. The design-ownership conflict between the two branches is a real
-divergence in the canonical decision record and needs Abu's direction, not an inferred merge. Frontend
-implementation, testnet deployment, funded infrastructure, publishing, and submission claims remain
-unauthorized.
+No further contract phase is authorized automatically. Phase 6 requires Abu's explicit approval of
+accounts, funding, deployment, and external transactions plus same-day official-address verification.
+The design-ownership conflict between the two branches is a real divergence in the canonical decision
+record and needs Abu's direction, not an inferred merge. Frontend implementation, testnet deployment,
+funded infrastructure, publishing, and submission claims remain unauthorized. The quality profile's CI
+jobs remain a required merge/public-release follow-up, but do not replace the recorded local real-Nox
+passes.
 
 ## Sources
 
@@ -107,6 +108,7 @@ unauthorized.
 - `/Users/abu/dev/hackathon/wtf/AGENTS.md`
 - `/Users/abu/dev/hackathon/wtf/.thoughts/plans/2026-07-30-confidential-governance-contract-implementation-plan.md` (Phase 5, lines 795–861)
 - `/Users/abu/dev/hackathon/wtf/.thoughts/quality/2026-07-30-contract-quality-profile.md`
+- `/Users/abu/dev/hackathon/wtf/.thoughts/verification/2026-07-31-production-contract-verification-audit.md`
 - `/Users/abu/dev/hackathon/wtf/test/foundry/production/ConfidentialBallotProofNegativeMatrix.t.sol`
 - `git show design/ui:.thoughts/decisions/CURRENT.md`; `git show design/ui:.thoughts/design/2026-07-30-direction-return-audit.md`
 - Commands run across the orientation and implementation passes: `forge test`,

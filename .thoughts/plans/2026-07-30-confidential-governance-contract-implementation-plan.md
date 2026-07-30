@@ -847,22 +847,54 @@ stopped during environment setup because the plugin could not connect to the Doc
 nine integration cases exercised a contract path, and plugin cleanup completed. The previous Phase 2
 real-stack passes do not substitute for this rerun.
 
+### Implementation Progress — Released-Stack Repetition, Gas, And Audit — 2026-07-31
+
+After Docker became available, the complete changed-graph integration suite passed three consecutive
+clean-start repetitions: 9/9 each and 27/27 total. Every repetition exercised the full product-shaped
+path, below-floor withholding, Runner stop/restart, the released signer/domain/cross-proposal/encoding
+proof-negative case, explicit JetStream negative-acknowledgement redelivery, compatible
+Governor-to-Timelock execution, the production four-wallet/floor-four core, local-stack deployment,
+and a real Handle Gateway input. The
+plugin cleaned the off-chain services after every run. The first repetition began without running Nox
+services but reused cached Docker images; this is cold service-stack evidence, not a cold image-download
+benchmark.
+
+Full-path elapsed time was 14.482–15.539 seconds with 469–585 ms from close to proof. The production
+core resolved from close to proof in 448–579 ms. Runner recovery took 4.075–4.149 seconds, JetStream
+redelivery 4.997–5.927 seconds, and the compatible Governor proof-through-Timelock path 393–600 ms.
+These are below the accepted investigation thresholds. The full-path on-chain measurements remained
+810,636 gas for the first ballot, 767,760–767,784 for the other first ballots, 721,291–721,315 for
+replacements, 560,368 for close, 73,199–73,211 for finalize, and 99,445 for Safe execution.
+
+Four deterministic production-host gas tests now pin isolated call baselines and fail regressions above
+20%: Safe direct execution 86,074 gas; Safe two-call `MultiSendCallOnly` execution 168,745; Governor
+single-action queue/execute 102,732/52,792; and Governor two-action queue/execute 110,983/82,366. The
+full Forge suite passes 119/119, and the 10,000-run invariant profile remains green at 960,000 total
+modeled calls with zero handler reverts/discards. Builds, TypeScript, Forge format, production
+high/medium lint, sizes, edited-file formatting, and diff checks pass.
+
+The production contract verification audit passes the authorized local Phases 1–5 gate. It separates
+local released-stack proof from external trust and marks the explicit AC9 testnet clause, frontend,
+visual design, funded infrastructure, deployment, publishing, and submission as NOT RUN. Phase 6
+remains blocked on explicit user authorization.
+
 ### Goal
 
 Prove the combined production contracts meet the accepted claim boundary.
 
 ### Work
 
-- Run the complete cross-proposal/cross-host/cross-chain proof-negative matrix. **PASS locally; real
-  released-stack rerun pending Docker availability.**
+- Run the complete cross-proposal/cross-host/cross-chain proof-negative matrix. **PASS locally; the
+  corrected confidential graph and released signer/domain/cross-proposal/encoding negatives also pass
+  three complete released-stack repetitions.**
 - Add invariants for one effective ballot, monotonic unique participation, fixed first weight, maximum
-  two replacements, no below-floor verdict, single finalization, and execute-once.
+  two replacements, no below-floor verdict, single finalization, and execute-once. **PASS.**
 - Repeat cold/warm Nox timing, Safe direct/batch gas, Governor queue/execute gas, Runner restart, and
-  JetStream redelivery.
+  JetStream redelivery. **PASS for clean local service starts with cached images.**
 - Run Forge high/medium lint, contract sizes, fuzz/invariants, and manual ACL/action review under the
-  quality profile.
+  quality profile. **PASS.**
 - Produce a verification audit that separates real proof, inferred safety, external trust, and unrun
-  live behavior.
+  live behavior. **PASS for the authorized local contract gate.**
 
 ### Real Integration Path
 

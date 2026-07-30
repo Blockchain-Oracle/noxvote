@@ -46,12 +46,13 @@
   suite now passes the accepted ballot-accounting, disclosure/finalization, and Safe execute-once
   properties at 10,000 stateful runs each. The complete local proof-negative matrix also passes after a
   ballot-domain tally fix closed identical-input verdict-handle aliasing across proposals and hosts.
-  The next bounded action is the released Docker-backed Nox rerun for that changed graph; the 2026-07-31
-  attempt stopped before execution because the Docker daemon was unavailable. Stop before frontend
-  implementation, testnet deployment, funded/billable infrastructure, public publishing, or submission
-  claims without another explicit user authorization.
-- **Implementation progress:** Fourteen bounded RED-to-GREEN slices now pass locally. Phase 1 provides
-  production interfaces, immutable adapter-owned core construction, ballot/config commitments,
+  The changed graph now passes three consecutive complete released Docker-backed Nox runs, refreshed
+  clean-stack timing/recovery measurements, deterministic Safe/Governor gas baselines, and the final
+  local production verification audit. Phase 5 is complete for the authorized local contract gate.
+  Phase 6 is blocked: stop before frontend implementation, testnet deployment, funded/billable
+  infrastructure, public publishing, or submission claims without another explicit user authorization.
+- **Implementation progress:** Fifteen bounded RED-to-GREEN/evidence slices now pass locally. Phase 1
+  provides production interfaces, immutable adapter-owned core construction, ballot/config commitments,
   registration, derived Scheduled/Open/Closed state, pre-open cancellation, and public reads. Phase 2
   now includes production IVotes-snapshot and domain-separated weighted-Merkle eligibility plus the
   direct-wallet confidential-cast path: fixed first-cast weight, strict sequences 1/2/3, at most two
@@ -99,6 +100,8 @@
   [`../quality/2026-07-30-contract-quality-profile.md`](../quality/2026-07-30-contract-quality-profile.md)
 - **Active contract-only implementation plan:**
   [`../plans/2026-07-30-confidential-governance-contract-implementation-plan.md`](../plans/2026-07-30-confidential-governance-contract-implementation-plan.md)
+- **Production contract verification audit:**
+  [`../verification/2026-07-31-production-contract-verification-audit.md`](../verification/2026-07-31-production-contract-verification-audit.md)
 - **Active research plan:**
   [`../plans/2026-07-29-confidential-voting-research-plan.md`](../plans/2026-07-29-confidential-voting-research-plan.md)
 - **Historical first-pass architecture synthesis (technical evidence only):**
@@ -357,6 +360,25 @@
     not connect to the Docker daemon and stopped before any contract path ran; cleanup completed. The
     latest audited Phase 2 real-stack passes remain historical evidence, not proof of this graph change.
     Do not call this Phase 5 slice integration-complete until the real-stack rerun passes.
+35. The final Phase 5 evidence slice reran the complete changed graph three consecutive times after
+    Docker became available. All nine released-stack cases passed in every run—27/27 total—including
+    the full product-shaped verdict path, below-floor withholding, Runner stop/restart, the released
+    signer/domain/cross-proposal/encoding proof-negative case, explicit JetStream
+    negative-acknowledgement redelivery, compatible Governor-to-Timelock execution, the production
+    four-wallet/floor-four core, local stack deployment, and real Handle Gateway input import. Cleanup
+    completed after every run. Full-path elapsed time was 14.482–15.539
+    seconds with 469–585 ms from close to proof; the production-core close-to-proof range was 448–579
+    ms; Runner recovery was 4.075–4.149 seconds; JetStream redelivery was 4.997–5.927 seconds; and the
+    Governor proof-through-Timelock path was 393–600 ms. The first run began without running Nox
+    services but used cached Docker images, so this is cold service-stack rather than cold image-download
+    evidence. Four new Foundry tests pin 20%-regression gas baselines for Safe direct execution (86,074),
+    Safe two-call batch execution (168,745), Governor single-action queue/execute (102,732/52,792), and
+    Governor two-action queue/execute (110,983/82,366). The full Forge suite passes 119/119, the
+    high-confidence invariant profile remains green at 960,000 modeled calls, and all required local
+    build, TypeScript, lint, format, size, and diff gates pass. The production verification audit passes
+    the authorized local Phases 1–5 contract gate while marking AC9's explicit testnet clause, frontend,
+    visual design, funded infrastructure, deployment, publishing, and submission NOT RUN. Phase 5 is
+    complete locally; Phase 6 remains blocked on explicit user authorization.
 
 ## External Gates And Unclaimed Scale
 
