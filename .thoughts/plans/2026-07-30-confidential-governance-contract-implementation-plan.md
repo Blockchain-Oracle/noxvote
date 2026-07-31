@@ -825,18 +825,19 @@ handles with separate app signatures across hosts, a foreign chain domain, and f
 foreign-chain input proofs. Every negative preserves TallyPending/result/expected-handle state or an
 unrecorded public receipt, and the corresponding correct proof remains usable.
 
-The adversarial RED test deliberately reused the same four valid encrypted input handles and proofs on
-two proposals in one core. Because the original tally graph did not consume `ballotId`, both proposals
-produced the same deterministic expected verdict handle. The production tally now subtracts encrypted
-total participation from itself, multiplies that encrypted zero by the public `ballotId`, and adds it
-back before quorum evaluation. The plaintext participation and verdict remain unchanged, while every
-downstream handle now consumes the already chain/core/host/proposal/config-separated ballot domain.
-The same-handle cross-host case signs each shared input for its correct core and independently proves
-the host boundary.
+The adversarial cross-proposal test deliberately reuses the same four valid encrypted input handles and
+proofs on two proposals in one core. The production tally subtracts encrypted total participation from
+itself, multiplies that encrypted zero by the public `ballotId`, and adds it back before quorum
+evaluation. The plaintext participation and verdict remain unchanged, while every downstream handle
+consumes the already chain/core/host/proposal/config-separated ballot domain. Independent Git review
+later established that this construction was already present in the first committed production core
+(`7f18524`); the earlier draft's post-hoc RED/fix/factory-repin chronology was not supported by
+committed history. The same-handle cross-host case signs each shared input for its correct core and
+independently proves the host boundary.
 
-The factory's reviewed Safe-module and Governor creation-code hashes were repinned to the changed core
-bytecode. Five focused matrix tests and the clean full 115/115 Forge suite pass. The 10,000-run invariant
-profile also passes all three properties at 320,000 calls each with zero handler reverts or discards.
+The factory's reviewed Safe-module and Governor creation-code hashes match this core-embedding path.
+Five focused matrix tests and the clean full 115/115 Forge suite pass. The 10,000-run invariant profile
+also passes all three properties at 320,000 calls each with zero handler reverts or discards.
 Hardhat and Forge builds, TypeScript, Forge high/medium lint, formatting, production sizes, and diff
 checks pass. Runtime sizes are 12,908 bytes for `ConfidentialBallotCore`, 5,523 for
 `SafeConfidentialVotingModule`, 18,220 for `ConfidentialGovernor`, and 5,731 for the factory.
@@ -877,6 +878,28 @@ The production contract verification audit passes the authorized local Phases 1�
 local released-stack proof from external trust and marks the explicit AC9 testnet clause, frontend,
 visual design, funded infrastructure, deployment, publishing, and submission as NOT RUN. Phase 6
 remains blocked on explicit user authorization.
+
+### Independent Review And Production-Adapter Real-Stack Closure — 2026-07-31
+
+An independent Claude Opus 5 review of commit `9bcf601` found no P0/P1 Solidity defect and
+independently reproduced 119/119 Forge tests and the production size evidence. It identified two
+load-bearing preflight gaps: the nine-case Docker suite used production core but spike Safe/Governor
+choreography, and the required CI gate was absent. It also corrected the encrypted-zero chronology,
+the architecture's reversed choice-encoding prose, and stale Slither wording.
+
+The remediation adds factory-deployed production Safe direct and official `MultiSendCallOnly`
+execution, factory-deployed production Governor plus real `TimelockController` queue/delay/execution,
+and real-stack adversarial proof rejection against the production core before correct-proof
+acceptance. The expanded suite passes 11/11 in three consecutive clean repetitions—33/33 total—with
+off-chain cleanup after each run. Because the factories pin exact Foundry creation bytecode,
+`test:integration` now builds the Forge artifacts before Hardhat runs and the integration helper checks
+the pinned creation-code hashes.
+
+`.github/workflows/contracts.yml` installs five jobs for static/format checks, build/unit/fuzz/size,
+the high-confidence invariant profile, contract-boundary reports, and three released-Nox repetitions.
+The workflow is installed but not yet observed on a remote runner. This closes the local Phase 6
+preflight remediation; it does not authorize Sepolia accounts, funding, deployment, transactions,
+publishing, frontend work, or submission.
 
 ### Goal
 

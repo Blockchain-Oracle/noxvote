@@ -1,0 +1,137 @@
+name: Contract verification
+
+on:
+  push:
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: contracts-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  static:
+    name: Static and formatting
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v6
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 10.33.0
+      - uses: actions/setup-node@v7
+        with:
+          node-version: "24"
+          cache: pnpm
+      - uses: foundry-rs/foundry-toolchain@v1
+      - run: pnpm install --frozen-lockfile
+      - name: Enforce reviewed Nox protocol version
+        run: |
+          node -e "if (require('./package.json').dependencies['@iexec-nox/nox-protocol-contracts'] !== '0.2.4') process.exit(1)"
+      - run: pnpm exec tsc --noEmit
+      - run: forge fmt --check
+      - run: pnpm lint:forge
+      - run: pnpm exec prettier --check "**/*.{ts,json,md,yml,yaml}"
+
+  build-unit:
+    name: Build, unit, fuzz, and sizes
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v6
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 10.33.0
+      - uses: actions/setup-node@v7
+        with:
+          node-version: "24"
+          cache: pnpm
+      - uses: foundry-rs/foundry-toolchain@v1
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm build
+      - run: pnpm test:forge
+      - run: forge build --sizes --skip test
+
+  invariant:
+    name: High-confidence production invariants
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v6
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 10.33.0
+      - uses: actions/setup-node@v7
+        with:
+          node-version: "24"
+          cache: pnpm
+      - uses: foundry-rs/foundry-toolchain@v1
+      - run: pnpm install --frozen-lockfile
+      - name: Run 10k x 32 invariant profile with visible summary
+        run: |
+          set -o pipefail
+          pnpm test:invariant 2>&1 | tee invariant.log
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: invariant-report
+          path: invariant.log
+
+  contract-review:
+    name: Contract boundary reports
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v6
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 10.33.0
+      - uses: actions/setup-node@v7
+        with:
+          node-version: "24"
+          cache: pnpm
+      - uses: foundry-rs/foundry-toolchain@v1
+      - run: pnpm install --frozen-lockfile
+      - run: forge build --skip test --extra-output storageLayout evm.methodIdentifiers
+      - name: Reject production imports from spike evidence
+        run: |
+          if rg -n 'src/spike|/spike/' src/contracts; then
+            exit 1
+          fi
+      - name: Generate selector and storage reports
+        run: |
+          mkdir -p verification-reports
+          for contract in ConfidentialBallotCore SafeConfidentialVotingModule ConfidentialGovernor ConfidentialGovernanceFactory; do
+            forge inspect "$contract" methodIdentifiers > "verification-reports/${contract}-selectors.json"
+            forge inspect "$contract" storageLayout > "verification-reports/${contract}-storage.json"
+          done
+      - uses: actions/upload-artifact@v4
+        with:
+          name: contract-boundary-reports
+          path: verification-reports
+
+  real-nox:
+    name: Released Nox integration, three clean repetitions
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v6
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 10.33.0
+      - uses: actions/setup-node@v7
+        with:
+          node-version: "24"
+          cache: pnpm
+      - uses: foundry-rs/foundry-toolchain@v1
+      - run: pnpm install --frozen-lockfile
+      - name: Run released-stack suite three times
+        run: |
+          set -o pipefail
+          for repetition in 1 2 3; do
+            pnpm test:integration 2>&1 | tee "real-nox-${repetition}.log"
+          done
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: real-nox-repetition-logs
+          path: real-nox-*.log

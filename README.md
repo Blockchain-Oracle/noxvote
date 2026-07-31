@@ -52,16 +52,21 @@ snapshot weight, the two-replacement ceiling, below-floor withholding, finalize-
 action binding, retry, and execute-once. All three invariant properties pass 10,000 runs and 320,000
 modeled calls each. The complete production proof-negative matrix now passes five focused tests across
 signer/domain/handle/encoding mutation, identical-input cross-proposal isolation, same-handle
-cross-host isolation, foreign-chain verdict evidence, and foreign-host/foreign-chain input proofs. Its
-adversarial RED case exposed identical verdict handles when the same valid encrypted inputs were reused
-across two same-core proposals; the tally graph now injects a ballot-ID-derived encrypted zero so the
-plaintext result is unchanged while every downstream handle is ballot/host/chain separated. The full
-119/119 Forge suite and the 10,000-run invariant profile pass. The changed graph now passes three
-consecutive complete Docker-backed released-Nox runs—27/27 cases total—with production core, official
-Safe, compatible Governor/Timelock, proof-negative, Runner restart, and JetStream redelivery evidence.
-Four deterministic Safe/Governor gas tests enforce 20% regression ceilings, and the production
-verification audit passes the authorized local contract gate. Phase 5 is complete locally. Slither is
-not required. Phase 6 testnet deployment remains unauthorized.
+cross-host isolation, foreign-chain verdict evidence, and foreign-host/foreign-chain input proofs. The
+ballot-ID-derived encrypted-zero construction, present since the first committed production core,
+preserves the plaintext result while separating downstream handles by ballot, host, and chain. The
+full 119/119 Forge suite and the 10,000-run invariant profile pass. An independent Claude Opus 5 review
+found no P0/P1 Solidity defect, reproduced the Forge and size evidence, and identified a real-stack
+coverage gap for the production adapters plus missing CI. The remediated suite now passes three
+consecutive complete 11-case Docker-backed released-Nox runs—33/33 cases total—including the
+factory-deployed production Safe direct/batch paths, the factory-deployed production Governor with a
+real TimelockController, production-core adversarial proof rejection, Runner restart, and JetStream
+redelivery. A five-job contract workflow now covers static checks, unit/fuzz/size checks,
+high-confidence invariants, boundary reports, and three real-Nox repetitions; it is installed but has
+not yet run on a remote GitHub runner. Four deterministic Safe/Governor gas tests enforce 20%
+regression ceilings, and the reconciled production verification audit passes the authorized local
+contract gate. Phase 5 and local Phase 6 preflight remediation are complete. Slither is not required.
+Live Phase 6 testnet deployment remains unauthorized.
 
 Start here:
 
@@ -77,15 +82,16 @@ Start here:
 10. `.thoughts/stories/2026-07-29-confidential-governance-module.md`
 11. `.thoughts/design/2026-07-29-product-surface-map.md`
 12. `.thoughts/verification/2026-07-31-production-contract-verification-audit.md`
-13. `.thoughts/verification/2026-07-30-full-shape-spike-report.md`
-14. `.thoughts/plans/2026-07-30-full-shape-feasibility-spike.md`
-15. `.thoughts/decisions/2026-07-30-fable-review-reconciliation.md`
-16. `.thoughts/research/2026-07-29-open-source-private-voting-landscape.md`
-17. `.thoughts/briefs/2026-07-29-confidential-voting-research-brief.md` (historical research seed)
-18. `.thoughts/plans/2026-07-29-confidential-voting-research-plan.md`
-19. `.thoughts/research/2026-07-29-confidential-voting-architecture-synthesis.md` (historical first pass)
-20. `.thoughts/reviews/2026-07-30-fable-5-product-review.md`
-21. `.thoughts/plans/2026-07-29-confidential-voting-decision-plan.md` (historical first-pass scope)
+13. `.thoughts/reviews/2026-07-31-opus-5-predeployment-review.md`
+14. `.thoughts/verification/2026-07-30-full-shape-spike-report.md`
+15. `.thoughts/plans/2026-07-30-full-shape-feasibility-spike.md`
+16. `.thoughts/decisions/2026-07-30-fable-review-reconciliation.md`
+17. `.thoughts/research/2026-07-29-open-source-private-voting-landscape.md`
+18. `.thoughts/briefs/2026-07-29-confidential-voting-research-brief.md` (historical research seed)
+19. `.thoughts/plans/2026-07-29-confidential-voting-research-plan.md`
+20. `.thoughts/research/2026-07-29-confidential-voting-architecture-synthesis.md` (historical first pass)
+21. `.thoughts/reviews/2026-07-30-fable-5-product-review.md`
+22. `.thoughts/plans/2026-07-29-confidential-voting-decision-plan.md` (historical first-pass scope)
 
 The previous NoxLimit repository was preserved intact at
 `/Users/abu/dev/hackathon/wtf-noxlimit-archive-2026-07-29`.

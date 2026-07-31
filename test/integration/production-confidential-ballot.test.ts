@@ -14,6 +14,7 @@ import {
   type Hex,
   type WalletClient,
 } from "viem";
+import { privateKeyToAccount } from "viem/accounts";
 
 const noxAclAbi = parseAbi([
   "function isAllowed(bytes32 handle, address account) view returns (bool)",
@@ -25,6 +26,9 @@ const eligibilityLeafTypehash = keccak256(
     "ConfidentialVotingEligibility(uint256 chainId,address host,bytes32 snapshotId,address voter,uint256 weight)",
   ),
 );
+// Public development-only fixture key shipped in the official local Nox stack.
+const localNoxGatewayKey =
+  "0x7d9d57f334cbf385b4a5ec1be108f25fc1668b0eae639249bb51aaae85e61022";
 
 describe("production confidential ballot core", () => {
   it(
@@ -199,6 +203,76 @@ describe("production confidential ballot core", () => {
       const closeToProofMs = Math.round(performance.now() - proofStartedAt);
       assert.equal(publicResult.solidityType, "bool");
       assert.equal(publicResult.value, true);
+
+      await assert.rejects(
+        core.write.finalize([ballotId, "0x"]),
+        /Proof too short|InvalidProof|revert/i,
+      );
+      await assert.rejects(
+        core.write.finalize([
+          ballotId,
+          tamperLastByte(publicResult.decryptionProof),
+        ]),
+        /Invalid signature|InvalidProof|revert/i,
+      );
+      const wrongSignerProof = await signLocalDecryptionProof({
+        chainId: Number(chainId),
+        noxComputeAddress,
+        handle: verdictHandle,
+        decryptedResult: "0x01",
+        privateKey: `0x${"11".repeat(32)}`,
+      });
+      await assert.rejects(
+        core.write.finalize([ballotId, wrongSignerProof]),
+        /Invalid signature|InvalidProof|revert/i,
+      );
+      const wrongDomainProof = await signLocalDecryptionProof({
+        chainId: Number(chainId),
+        noxComputeAddress,
+        handle: verdictHandle,
+        decryptedResult: "0x01",
+        privateKey: localNoxGatewayKey,
+        domainVersion: "2",
+      });
+      await assert.rejects(
+        core.write.finalize([ballotId, wrongDomainProof]),
+        /Invalid signature|InvalidProof|revert/i,
+      );
+      const wrongHandleProof = await signLocalDecryptionProof({
+        chainId: Number(chainId),
+        noxComputeAddress,
+        handle: keccak256(stringToHex("wrong-production-verdict-handle")),
+        decryptedResult: "0x01",
+        privateKey: localNoxGatewayKey,
+      });
+      await assert.rejects(
+        core.write.finalize([ballotId, wrongHandleProof]),
+        /Invalid signature|InvalidProof|revert/i,
+      );
+      const wrongLengthProof = await signLocalDecryptionProof({
+        chainId: Number(chainId),
+        noxComputeAddress,
+        handle: verdictHandle,
+        decryptedResult: "0x0001",
+        privateKey: localNoxGatewayKey,
+      });
+      await assert.rejects(
+        core.write.finalize([ballotId, wrongLengthProof]),
+        /MalformedDecryptedData|revert/i,
+      );
+      const invalidBooleanProof = await signLocalDecryptionProof({
+        chainId: Number(chainId),
+        noxComputeAddress,
+        handle: verdictHandle,
+        decryptedResult: "0x02",
+        privateKey: localNoxGatewayKey,
+      });
+      await assert.rejects(
+        core.write.finalize([ballotId, invalidBooleanProof]),
+        /MalformedDecryptedData|revert/i,
+      );
+      assert.equal(await core.read.result([ballotId]), 0);
+      assert.equal(await core.read.detailedState([ballotId]), 4);
 
       await writeAndWait(
         core.write.finalize([ballotId, publicResult.decryptionProof]),
@@ -379,4 +453,44 @@ async function writeAndWait(
 ) {
   const hash = await hashPromise;
   return publicClient.waitForTransactionReceipt({ hash });
+}
+
+function tamperLastByte(value: Hex): Hex {
+  const lastByte = value.slice(-2) === "00" ? "01" : "00";
+  return `${value.slice(0, -2)}${lastByte}` as Hex;
+}
+
+async function signLocalDecryptionProof({
+  chainId,
+  noxComputeAddress,
+  handle,
+  decryptedResult,
+  privateKey,
+  domainVersion = "1",
+}: {
+  chainId: number;
+  noxComputeAddress: Address;
+  handle: Hex;
+  decryptedResult: Hex;
+  privateKey: Hex;
+  domainVersion?: string;
+}): Promise<Hex> {
+  const signer = privateKeyToAccount(privateKey);
+  const signature = await signer.signTypedData({
+    domain: {
+      name: "NoxCompute",
+      version: domainVersion,
+      chainId,
+      verifyingContract: noxComputeAddress,
+    },
+    types: {
+      DecryptionProof: [
+        { name: "handle", type: "bytes32" },
+        { name: "decryptedResult", type: "bytes" },
+      ],
+    },
+    primaryType: "DecryptionProof",
+    message: { handle, decryptedResult },
+  });
+  return concatHex([signature, decryptedResult]);
 }

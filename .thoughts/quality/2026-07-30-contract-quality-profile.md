@@ -21,21 +21,21 @@ research mirrors, not project source, and are excluded from every quality, size,
 
 ## Existing Commands
 
-| Purpose              | Command                               | Current state                                                                             |
-| -------------------- | ------------------------------------- | ----------------------------------------------------------------------------------------- |
-| Full build           | `mise exec -- pnpm build`             | PASS                                                                                      |
-| Forge build          | `mise exec -- pnpm build:forge`       | PASS                                                                                      |
-| Hardhat build        | `mise exec -- pnpm build:hardhat`     | PASS                                                                                      |
-| TypeScript           | `mise exec -- pnpm exec tsc --noEmit` | PASS                                                                                      |
-| Forge format         | `mise exec -- forge fmt --check`      | PASS                                                                                      |
-| Forge lint           | `mise exec -- pnpm lint:forge`        | PASS                                                                                      |
-| Forge tests          | `mise exec -- pnpm test:forge`        | PASS, 119/119                                                                             |
-| Real Nox integration | `mise exec -- pnpm test:integration`  | PASS, three consecutive changed-graph runs at 9/9 each; cleanup confirmed after every run |
+| Purpose              | Command                               | Current state                                                                                |
+| -------------------- | ------------------------------------- | -------------------------------------------------------------------------------------------- |
+| Full build           | `mise exec -- pnpm build`             | PASS                                                                                         |
+| Forge build          | `mise exec -- pnpm build:forge`       | PASS                                                                                         |
+| Hardhat build        | `mise exec -- pnpm build:hardhat`     | PASS                                                                                         |
+| TypeScript           | `mise exec -- pnpm exec tsc --noEmit` | PASS                                                                                         |
+| Forge format         | `mise exec -- forge fmt --check`      | PASS                                                                                         |
+| Forge lint           | `mise exec -- pnpm lint:forge`        | PASS                                                                                         |
+| Forge tests          | `mise exec -- pnpm test:forge`        | PASS, 119/119                                                                                |
+| Real Nox integration | `mise exec -- pnpm test:integration`  | PASS, three consecutive expanded-graph runs at 11/11 each; cleanup confirmed after every run |
 
 The repository-wide Prettier command also checks historical Markdown and currently reports formatting
-drift in eight untouched research files. Contract acceptance must not be blocked by that historical
-documentation baseline. New or edited planning documents are checked explicitly until a separate
-documentation-format cleanup is authorized.
+drift in eight untouched research files. Those exact historical files are recorded in
+`.prettierignore`; current source, configuration, and active documentation remain repository-wide CI
+checks without rewriting the preserved research baseline.
 
 ## Required Local Checks
 
@@ -100,18 +100,23 @@ audit.
 
 ## Required CI Gates
 
-CI is absent today. Future contract implementation must add four required jobs:
+`.github/workflows/contracts.yml` now installs the required contract gate as five jobs, separating the
+high-confidence invariant profile from the ordinary build/unit job:
 
-1. **Static:** Forge format, high/medium lint, TypeScript check, and edited-file Prettier check.
-2. **Build/unit:** Forge and Hardhat builds, contract-size report, unit tests, fuzz, and invariants.
-3. **Contract review:** Selector/interface and storage-layout reports plus manual role, ACL,
+1. **Static:** exact Nox 0.2.4 pin, Forge format, high/medium lint, TypeScript check, and current-file
+   Prettier check.
+2. **Build/unit:** Forge and Hardhat builds, contract-size report, unit tests, and fuzz.
+3. **Invariant:** the 10,000-run by 32-depth production handler profile with an uploaded summary.
+4. **Contract review:** Selector/interface and storage-layout reports plus manual role, ACL,
    external-call, and action-commitment review.
-4. **Real Nox integration:** Docker-backed released Nox stack, official Safe proxy/module path,
-   compatible Governor/timelock path, proof-negative matrix, Runner restart, and JetStream redelivery.
+5. **Real Nox integration:** three Docker-backed released-Nox repetitions, including factory-deployed
+   production Safe direct/batch, production Governor/real-Timelock, production proof rejection, Runner
+   restart, and JetStream redelivery.
 
 The real-Nox job is required before merging an integration phase or making a product claim. It may be
 manually dispatched if CI infrastructure cannot reliably run nested Docker, but a passing recorded run
-is still mandatory.
+is still mandatory. The workflow definition is locally checked; it has not yet been observed on a
+remote GitHub runner.
 
 ## Suggested Hooks
 
@@ -138,9 +143,10 @@ Hooks are recommendations until implementation is authorized. CI remains the fin
 
 ## Commit Policy
 
-The repository has no commits yet and no established commit convention. Do not introduce a commit-msg
-hook. When the user authorizes commits, use concise imperative subjects and separate context-only,
-core, Safe, Governor, and verification changes so each security boundary is reviewable.
+The branch has an established phased commit history and no commit-msg hook. Use concise imperative
+subjects and keep security boundaries reviewable. The user explicitly authorized committing the
+complete independent-review remediation slice together because its tests, CI, and evidence
+reconciliation form one gate.
 
 ## AGENTS.md Notes
 
@@ -152,10 +158,12 @@ core, Safe, Governor, and verification changes so each security boundary is revi
 
 ## Open Environmental Gates
 
-The Phase 5 ballot-domain graph passes three consecutive Docker-backed released-Nox repetitions at 9/9
-cases each. The first began without running Nox services and all three reused cached images; this proves
-clean service startup and the complete changed graph, not cold image-download time. Cleanup completed
-after every run.
+The expanded Phase 5/preflight graph passes three consecutive Docker-backed released-Nox repetitions at
+11/11 cases each—33/33 total. It includes factory-deployed production Safe direct/batch,
+factory-deployed production Governor/real-Timelock, and production-core adversarial proof rejection.
+The earlier nine-case measurement began without running Nox services and all repetitions reused cached
+images; this proves clean service startup and the complete graph, not cold image-download time. Cleanup
+completed after every run.
 
 No local Phase 5 environmental gate remains. Live Ethereum Sepolia addresses, accounts, funding,
 deployment, external transactions, gas, and latency remain Phase 6 gates requiring current primary

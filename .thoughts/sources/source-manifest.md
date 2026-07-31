@@ -124,5 +124,6 @@ consumer with an explicit negative acknowledgement.
   were read from pinned package source.
 - Context7 library ID: `/iexec-nox/documentation`; released input-proof, ACL, public-decryption,
   Hardhat, and supported-network behavior was refreshed on 2026-07-30.
-- Slither official repository: https://github.com/crytic/slither, release `0.11.5` current on
-  2026-07-30; selected for the future contract CI security gate.
+- Slither official repository: https://github.com/crytic/slither, release `0.11.5` was checked on
+  2026-07-30 during quality-profile research. The user subsequently removed Slither from project
+  requirements; it must not be run or treated as a gate.

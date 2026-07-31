@@ -44,13 +44,18 @@
   boundaries, both accepted clock modes, and versioned factory deployment of the complete immutable
   Governor/timelock/core stack with creation/runtime evidence. Phase 5's combined production invariant
   suite now passes the accepted ballot-accounting, disclosure/finalization, and Safe execute-once
-  properties at 10,000 stateful runs each. The complete local proof-negative matrix also passes after a
-  ballot-domain tally fix closed identical-input verdict-handle aliasing across proposals and hosts.
-  The changed graph now passes three consecutive complete released Docker-backed Nox runs, refreshed
-  clean-stack timing/recovery measurements, deterministic Safe/Governor gas baselines, and the final
-  local production verification audit. Phase 5 is complete for the authorized local contract gate.
-  Phase 6 is blocked: stop before frontend implementation, testnet deployment, funded/billable
-  infrastructure, public publishing, or submission claims without another explicit user authorization.
+  properties at 10,000 stateful runs each. The complete local proof-negative matrix also passes and
+  verifies identical-input verdict-handle separation across proposals and hosts through the
+  ballot-domain construction present since the first committed production core.
+  The expanded graph now passes three consecutive 11-case released Docker-backed Nox runs, including
+  factory-deployed production Safe direct/batch execution and production Governor/real-Timelock
+  execution driven by real Nox verdicts. The production core also rejects the real-stack adversarial
+  proof matrix before accepting the correct proof. The contract CI workflow, deterministic
+  Safe/Governor gas baselines, and the reconciled local production verification audit are installed;
+  the workflow has not yet been observed on a remote runner. Phase 5 and the local Phase 6 preflight
+  remediation are complete. Phase 6 is blocked: stop before frontend implementation, testnet
+  deployment, funded/billable infrastructure, public publishing, or submission claims without another
+  explicit user authorization.
 - **Implementation progress:** Fifteen bounded RED-to-GREEN/evidence slices now pass locally. Phase 1
   provides production interfaces, immutable adapter-owned core construction, ballot/config commitments,
   registration, derived Scheduled/Open/Closed state, pre-open cancellation, and public reads. Phase 2
@@ -345,12 +350,14 @@
     verdict evidence; unchanged TallyPending state after every rejection; identical-input
     cross-proposal isolation; same-handle, separately app-signed cross-host isolation; foreign-chain
     verdict evidence; and foreign-host/foreign-chain input proofs without public receipt mutation. The
-    initial adversarial RED case proved that reusing every valid encrypted input across two same-core
-    proposals could produce the same deterministic expected verdict handle. `ConfidentialTallyNox`
-    now derives an encrypted zero from total participation, multiplies it by the public `ballotId`, and
-    adds it back before quorum comparison. This preserves the plaintext tally while binding all
-    downstream handles to the already chain/core/host/proposal/config-separated ballot ID. Factory Safe
-    and Governor creation-code pins were updated to the resulting reviewed bytecode. Five focused tests,
+    committed test demonstrates that reusing every valid encrypted input across two same-core proposals
+    still produces separate deterministic expected verdict handles. `ConfidentialTallyNox` derives an
+    encrypted zero from total participation, multiplies it by the public `ballotId`, and adds it back
+    before quorum comparison. This preserves the plaintext tally while binding all downstream handles
+    to the already chain/core/host/proposal/config-separated ballot ID. Independent Git review later
+    established that this construction was already present in the first committed production core
+    (`7f18524`); the earlier post-hoc RED/fix/factory-repin chronology was not supported by committed
+    history. Five focused tests,
     the clean 115/115 Forge suite, Hardhat and Forge builds, TypeScript, high/medium Forge lint,
     formatting, production size checks, and diff checks pass. The high-confidence invariant profile
     also passes again at 10,000 runs and 320,000 calls per property with zero handler reverts or
@@ -360,8 +367,9 @@
     not connect to the Docker daemon and stopped before any contract path ran; cleanup completed. The
     latest audited Phase 2 real-stack passes remain historical evidence, not proof of this graph change.
     Do not call this Phase 5 slice integration-complete until the real-stack rerun passes.
-35. The final Phase 5 evidence slice reran the complete changed graph three consecutive times after
-    Docker became available. All nine released-stack cases passed in every run—27/27 total—including
+35. The original closing Phase 5 evidence slice reran the complete changed graph three consecutive
+    times after Docker became available. All nine released-stack cases passed in every run—27/27
+    total—including
     the full product-shaped verdict path, below-floor withholding, Runner stop/restart, the released
     signer/domain/cross-proposal/encoding proof-negative case, explicit JetStream
     negative-acknowledgement redelivery, compatible Governor-to-Timelock execution, the production
@@ -379,6 +387,19 @@
     the authorized local Phases 1–5 contract gate while marking AC9's explicit testnet clause, frontend,
     visual design, funded infrastructure, deployment, publishing, and submission NOT RUN. Phase 5 is
     complete locally; Phase 6 remains blocked on explicit user authorization.
+36. An independent Claude Opus 5 pre-deployment review of `9bcf601` found no P0/P1 Solidity defect and
+    independently reproduced 119/119 Forge tests and the recorded production sizes. It correctly
+    identified that the original nine-case Docker suite used production core but spike Safe/Governor
+    choreography, so top-line released-stack adapter claims exceeded the evidence. The local preflight
+    remediation adds factory-deployed production Safe direct and official `MultiSendCallOnly` paths,
+    factory-deployed production Governor plus real `TimelockController`, and short/mutated/
+    wrong-signer/wrong-domain/wrong-handle/malformed-length/noncanonical-boolean proof rejection against
+    the production core before its real proof is accepted. The expanded suite passes 11/11 in three
+    consecutive clean repetitions—33/33 total—under Node 24.18.0 with cleanup after each run. A required
+    GitHub Actions workflow now defines static/format, build/unit/fuzz/size, high-confidence invariant,
+    selector/storage-boundary, and three-repetition released-Nox jobs. The workflow is installed but has
+    not yet been observed on a remote runner. Choice encoding and Slither documentation are reconciled.
+    Live Ethereum Sepolia work remains separately blocked.
 
 ## External Gates And Unclaimed Scale
 

@@ -32,35 +32,39 @@ and identify what is genuinely unknown or drifted.
   verdict handle, or an unrecorded receipt with `recordedVoters == 0`) and then proves the correct proof
   still finalizes. The proposal and host cases deliberately reuse identical encrypted handles rather
   than relying on Gateway randomness.
-- **The matrix found and closed a production binding defect.** Reusing the same valid wallet/core input
-  proofs across two same-core proposals originally produced the same deterministic verdict handle. The
-  tally graph now adds a ballot-ID-derived encrypted zero before quorum comparison, preserving plaintext
-  semantics while binding every downstream handle to the ballot's chain/core/host/proposal/config
-  domain. Safe and Governor factory creation-code pins were updated accordingly.
+- **The matrix proves production ballot-domain handle separation.** Reusing the same valid wallet/core
+  input proofs across two same-core proposals still produces distinct deterministic verdict handles.
+  The tally graph adds a ballot-ID-derived encrypted zero before quorum comparison, preserving
+  plaintext semantics while binding every downstream handle to the ballot's
+  chain/core/host/proposal/config domain. Independent Git review established that this construction
+  was already present in the first committed production core; the earlier post-hoc RED/fix/repin
+  chronology was unsupported.
 - **Static and build gates pass now**: `pnpm lint:forge` exit 0, `npx tsc --noEmit` exit 0,
-  `forge fmt --check` clean. `prettier --check` fails on exactly the eight historical 2026-07-29
-  Markdown files already recorded as known-red in CURRENT.md fact 29 — no new formatting debt.
+  `forge fmt --check` clean. The eight historical 2026-07-29 Markdown files recorded as known-red in
+  CURRENT.md fact 29 are now explicit `.prettierignore` baseline entries, so current work remains
+  repository-wide checkable without rewriting preserved research.
 - **Production bytecode changed only along the core-embedding path.** Current sizes are
   `ConfidentialBallotCore` 12,908 runtime / 13,515 initcode, `SafeConfidentialVotingModule` 5,523 /
   19,685, `ConfidentialGovernor` 18,220 / 34,823, and `ConfidentialGovernanceFactory` 5,731 / 9,424.
   Every deployable remains below the active size targets.
 - **Production source imports no spike code.** `grep -rn "spike" src/contracts/` returns nothing,
   satisfying that verification-checkpoint item.
-- **The pass began with the full production implementation uncommitted.** `HEAD` was `59b87e6` ("Add
-  bounded local feasibility spike workspace"), and the user explicitly asked for all accumulated work
-  to be committed. The delivery is therefore split into separately reviewable toolchain, core, Safe,
-  Governor, factory, verification, and context boundaries under the quality profile's commit policy;
-  the toolchain ships with the core boundary.
+- **The orientation pass began with the full production implementation uncommitted.** That work was
+  subsequently delivered as the separately reviewable toolchain, core, Safe, Governor, factory,
+  verification, and context commits now preceding review baseline `9bcf601`.
 
 ## Current Shape
 
 Phase 5 ("Security, Failure Recovery, And Release Evidence") is complete for the authorized local
 contract gate. The combined invariant suite passes 10,000 runs and 960,000 calls; the complete
-proof-negative matrix passes; three changed-graph released-Nox repetitions pass 27/27 cases total with
-Runner restart, JetStream redelivery, compatible Governor/Timelock, production core, and cleanup; and
+proof-negative matrix passes; three expanded released-Nox repetitions pass 33/33 cases total with
+factory-deployed production Safe direct/batch, factory-deployed production Governor/real-Timelock,
+production-core adversarial proof rejection, Runner restart, JetStream redelivery, and cleanup; and
 four deterministic Safe/Governor gas baselines enforce the quality profile's 20% regression ceiling.
 `.thoughts/verification/2026-07-31-production-contract-verification-audit.md` records traceability,
 measurements, manual ACL/action review, deviations, external trust, and all unrun live/UI behavior.
+An independent Claude Opus 5 review found no P0/P1 Solidity defect, and the resulting five-job contract
+workflow is installed but has not yet run on a remote GitHub runner.
 
 ## Genuine Unknowns
 
@@ -98,9 +102,9 @@ No further contract phase is authorized automatically. Phase 6 requires Abu's ex
 accounts, funding, deployment, and external transactions plus same-day official-address verification.
 The design-ownership conflict between the two branches is a real divergence in the canonical decision
 record and needs Abu's direction, not an inferred merge. Frontend implementation, testnet deployment,
-funded infrastructure, publishing, and submission claims remain unauthorized. The quality profile's CI
-jobs remain a required merge/public-release follow-up, but do not replace the recorded local real-Nox
-passes.
+funded infrastructure, publishing, and submission claims remain unauthorized. The installed contract
+workflow still needs a remote-run observation before CI can be called green; it does not replace the
+recorded local real-Nox passes.
 
 ## Sources
 

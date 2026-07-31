@@ -5,7 +5,9 @@
 **PASS for the authorized local contract gate (Phases 1–5).** The production core, Safe adapter,
 compatible Governor/Timelock path, factories, proof boundaries, invariants, recovery behavior, gas
 baselines, and released local Nox integration align with the accepted contract plan. Three consecutive
-changed-graph runs pass all nine Docker-backed integration cases and clean the off-chain stack.
+expanded-graph runs pass all 11 Docker-backed integration cases and clean the off-chain stack. The
+factory-deployed production Safe direct/batch paths and production Governor/real-Timelock path now
+consume real released-Nox verdicts.
 
 This is not a product-completion or deployment verdict. Ethereum Sepolia, funded accounts, external
 transactions, frontend behavior, visual design, publishing, and submission remain **NOT RUN** or
@@ -20,6 +22,7 @@ blocked Phase 6 gate.
 - `.thoughts/design/2026-07-30-confidential-governance-technical-architecture.md`
 - `.thoughts/plans/2026-07-30-confidential-governance-contract-implementation-plan.md`
 - `.thoughts/quality/2026-07-30-contract-quality-profile.md`
+- `.thoughts/reviews/2026-07-31-opus-5-predeployment-review.md`
 - `src/contracts/**`
 - `test/foundry/production/**`
 - `test/integration/**`
@@ -29,7 +32,7 @@ blocked Phase 6 gate.
 
 | Requirement                        | Contract-gate status                                    | Evidence                                                                                                                                                                                                                                |
 | ---------------------------------- | ------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| R1 host adapters                   | PASS (local)                                            | Official Safe 1.5.0 proxy/module registration and execution; compatible OpenZeppelin Governor 5.6.1 with real TimelockController roles, delay, queue, and execution; immutable factory deployments.                                     |
+| R1 host adapters                   | PASS (local released stack)                             | Factory-deployed production Safe module with official Safe 1.5.0 direct/batch execution; factory-deployed production OpenZeppelin Governor 5.6.1 with real TimelockController roles, delay, queue, and execution.                       |
 | R2 immutable proposal commitment   | PASS (contract scope)                                   | Core ballot/config hash tests; Safe action-domain/order/value/data tests; Governor exact normal proposal hash; factory configuration and code-hash events. Title/discussion-link UI is outside the contract gate.                       |
 | R3 eligibility and fixed weight    | PASS (local)                                            | IVotes snapshot and host/chain-bound weighted-Merkle strategies; casting tests and invariants prove first-cast weight remains fixed and one effective contribution survives replacements.                                               |
 | R4 confidential ballot preparation | PASS (local released stack)                             | Real Handle Gateway inputs reach released Nox without plaintext choice calldata; proof owner/application/type binding passes; ACL tests prove core-only persistence. The Gateway remains inside the disclosed plaintext trust boundary. |
@@ -37,8 +40,8 @@ blocked Phase 6 gate.
 | R6 no running choice result        | PASS (contract scope)                                   | Public reads expose participation/receipts but no option totals; only opaque handles and the final verdict are exposed. No UI was built.                                                                                                |
 | R7 privacy floor                   | PASS (local)                                            | Organization hard minimum, proposal floor, unique Recorded-wallet accounting, Abstain inclusion, replacement non-increment, and below-floor terminal withholding all pass.                                                              |
 | R8 asynchronous close and tally    | PASS (contract scope), PARTIAL (product)                | Closed, TallyPending, Withheld, Passed, Rejected, and finalize-once paths pass; Governor keeps unresolved proposals Pending and unqueueable. Product timeout/retry presentation is not implemented.                                     |
-| R9 verdict-only disclosure         | PASS (local released stack)                             | Only the stored boolean verdict receives public-decryption permission; signer/domain/handle/length/encoding/proposal/replay negatives pass locally and the changed graph resolves on released Nox.                                      |
-| R10 exact execution                | PASS (local)                                            | Safe direct and call-only batch execution are exact, atomic, retry-safe, reentrancy-safe, disabled-module-safe, and execute-once. Governor preserves its TimelockController boundary.                                                   |
+| R9 verdict-only disclosure         | PASS (local released stack)                             | Only the stored boolean verdict receives public-decryption permission; signer/domain/handle/length/encoding/proposal/replay negatives pass locally and against production core before its real proof is accepted.                       |
+| R10 exact execution                | PASS (local released stack)                             | Factory-deployed production Safe direct/call-only batch execution consumes real verdicts; Governor preserves and crosses its real TimelockController boundary only after a real Passed verdict.                                         |
 | R11 verification center            | PASS (contract evidence), NOT RUN (UI)                  | Events/getters expose commitments, receipts, expected verdict, result, execution, versions, and code hashes. The user-facing verification surface is not implemented.                                                                   |
 | R12 trust disclosure               | PASS (corpus), NOT RUN (UI)                             | Accepted artifacts state Gateway plaintext visibility, single-KMS trust, public participation, and no receipt-freeness. No screen exists.                                                                                               |
 | R13 failure and recovery           | PASS (local infrastructure/contract), PARTIAL (product) | Failed/stale operations do not mutate receipts; same-result Runner restart, explicit JetStream NAK redelivery, Safe failure rollback/retry, and no plaintext fallback pass. Product timeout/retry UX is not implemented.                |
@@ -46,20 +49,20 @@ blocked Phase 6 gate.
 
 ## Acceptance Criteria Coverage
 
-| Criterion                                    | Status                      | Evidence                                                                                                                                                                            |
-| -------------------------------------------- | --------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| AC1 no plaintext public choice               | PASS (local)                | Released Handle Gateway test imports opaque `uint16` evidence; calldata/events contain no plaintext choice field.                                                                   |
-| AC2 no non-core ballot ACL                   | PASS (local)                | Casting and tally ACL tests plus manual `Nox.allow*` review: ballot/intermediate handles use `allowThis`; only verdict uses `allowPublicDecryption`.                                |
-| AC3 newest replacement only                  | PASS (local)                | Two replacements and encrypted subtract/add path pass deterministic tests and 10,000-run stateful invariants.                                                                       |
-| AC4 noncanonical is Abstain; stale immutable | PASS (local released stack) | Full-shape real-Nox graph resolves with noncanonical input normalized to Abstain; stale/out-of-order calls do not mutate public accounting.                                         |
-| AC5 no running public tally                  | PASS (contract scope)       | No option-total getter or public-decryption ACL exists. UI is not run.                                                                                                              |
-| AC6 below-floor withholding                  | PASS (local released stack) | Below-floor request terminates as Withheld without constructing or publishing a verdict.                                                                                            |
-| AC7 exact verdict proof                      | PASS (local released stack) | Complete local signer/domain/handle/type/length/state/replay/cross-host/cross-chain matrix plus three released-stack signer/domain/cross-proposal/encoding repetitions pass.        |
-| AC8 exact Passed-only action                 | PASS (local released stack) | Official Safe direct/batch and Governor/Timelock paths execute only the committed Passed action; every non-Passed state rejects.                                                    |
-| AC9 real Nox and host transition             | PARTIAL                     | Released local Nox, official Safe, and compatible Governor/Timelock state transitions pass without mocks. The criterion's explicit testnet clause is NOT RUN under blocked Phase 6. |
-| AC10–AC14 UI and verification UX             | NOT RUN                     | Frontend and visual design are unauthorized in this contract gate.                                                                                                                  |
-| AC15 Safe compatibility                      | PASS (local released stack) | Normal owner threshold enables the module; exact Passed action executes once; changed action, replay, disabled module, failure, and reentrancy reject safely.                       |
-| AC16 Governor compatibility                  | PASS (local released stack) | All public/internal plaintext cast seams reject; real Nox verdict reaches normal Governor queue and TimelockController execution.                                                   |
+| Criterion                                    | Status                      | Evidence                                                                                                                                                                             |
+| -------------------------------------------- | --------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| AC1 no plaintext public choice               | PASS (local)                | Released Handle Gateway test imports opaque `uint16` evidence; calldata/events contain no plaintext choice field.                                                                    |
+| AC2 no non-core ballot ACL                   | PASS (local)                | Casting and tally ACL tests plus manual `Nox.allow*` review: ballot/intermediate handles use `allowThis`; only verdict uses `allowPublicDecryption`.                                 |
+| AC3 newest replacement only                  | PASS (local)                | Two replacements and encrypted subtract/add path pass deterministic tests and 10,000-run stateful invariants.                                                                        |
+| AC4 noncanonical is Abstain; stale immutable | PASS (local released stack) | Full-shape real-Nox graph resolves with noncanonical input normalized to Abstain; stale/out-of-order calls do not mutate public accounting.                                          |
+| AC5 no running public tally                  | PASS (contract scope)       | No option-total getter or public-decryption ACL exists. UI is not run.                                                                                                               |
+| AC6 below-floor withholding                  | PASS (local released stack) | Below-floor request terminates as Withheld without constructing or publishing a verdict.                                                                                             |
+| AC7 exact verdict proof                      | PASS (local released stack) | Complete local matrix plus production-core released-stack rejection of short, mutated, wrong-signer/domain/handle, malformed-length, and noncanonical-boolean evidence.              |
+| AC8 exact Passed-only action                 | PASS (local released stack) | Factory-deployed production Safe direct/batch and production Governor/real-Timelock paths execute only the committed action after a real Passed verdict.                             |
+| AC9 real Nox and host transition             | PARTIAL                     | Released local Nox and production Safe/Governor host transitions pass without mocks. The criterion's explicit testnet clause is NOT RUN under blocked Phase 6.                       |
+| AC10–AC14 UI and verification UX             | NOT RUN                     | Frontend and visual design are unauthorized in this contract gate.                                                                                                                   |
+| AC15 Safe compatibility                      | PASS (local released stack) | Factory-deployed module consumes a real verdict for official Safe direct/batch execution; Foundry proves changed action, replay, disabled module, failure, and reentrancy rejection. |
+| AC16 Governor compatibility                  | PASS (local released stack) | Factory-deployed production Governor consumes a real verdict, queues through the real TimelockController, observes delay, and executes.                                              |
 
 ## Quality Gates
 
@@ -67,13 +70,14 @@ blocked Phase 6 gate.
 | --------------------------------- | --------------------------------------------------------------------------------------------------------------- |
 | Forge tests                       | PASS, 119/119 after four gas-baseline tests                                                                     |
 | Stateful invariants               | PASS, 10,000 runs × 32 depth for each of three properties; 960,000 modeled calls; zero handler reverts/discards |
-| Released Nox integration          | PASS, 9/9 in each of three consecutive clean-stack runs; 27/27 total; cleanup confirmed after every run         |
+| Released Nox integration          | PASS, 11/11 in each of three consecutive clean-stack runs; 33/33 total; cleanup confirmed after every run       |
 | Hardhat and Forge builds          | PASS                                                                                                            |
 | TypeScript                        | PASS                                                                                                            |
 | Forge format and high/medium lint | PASS                                                                                                            |
 | Production sizes                  | PASS; all deployables remain below the 22 KiB target and EIP-170 limit                                          |
 | Production-source spike imports   | PASS; none found                                                                                                |
 | Diff and edited-file formatting   | PASS                                                                                                            |
+| Contract CI definition            | INSTALLED; five jobs defined, remote-run observation still pending                                              |
 
 The first changed-graph run began from no running Nox services with cached Docker images; two further
 clean-start repetitions followed. This is a cold service-stack measurement, not a cold image-download
@@ -108,10 +112,13 @@ future regressions above 20% of these pinned baselines:
 
 ## Deviations From Plan
 
-- The production proof-negative RED case exposed identical expected verdict handles when identical
-  valid encrypted inputs were reused across same-core proposals. The production graph now consumes a
-  ballot-ID-derived encrypted zero; plaintext semantics are unchanged and three released-stack runs
-  verify the corrected graph.
+- Independent Git review established that the ballot-ID-derived encrypted-zero construction was
+  already present in the first committed production core (`7f18524`). The earlier post-hoc
+  RED-to-GREEN and factory-repin chronology was not supported by committed history. The mechanism is
+  covered by the local cross-domain matrix and released-stack regression suite.
+- The original nine-case released-stack suite used the production core but spike Safe/Governor
+  choreography. The expanded 11-case suite closes that evidence gap with factory-deployed production
+  adapters.
 - The cold-stack run reused cached Docker images. It proves clean service startup and graph execution,
   not network image-download latency.
 - Solar still cannot parse the released Nox Solidity 0.8.35 `erc7201(...)` builtin. Concrete Nox test
@@ -128,8 +135,8 @@ future regressions above 20% of these pinned baselines:
 - Confidential choice does not make participation anonymous and re-voting is not receipt-freeness.
 - Frontend status, verification, and trust-disclosure criteria AC10–AC14 remain NOT RUN under the
   separate design/frontend gate.
-- CI jobs described by the quality profile are not yet installed; local evidence is complete, but a
-  recorded real-Nox CI/manual gate remains mandatory before merge or public claims.
+- The contract CI workflow is installed but has not yet been observed on a remote GitHub runner. The
+  recorded local three-repetition real-Nox pass remains the current executable evidence.
 
 ## Follow-ups
 
@@ -138,12 +145,14 @@ future regressions above 20% of these pinned baselines:
 2. Reverify official Sepolia Nox, Gateway, Safe, and explorer addresses immediately before any live
    action.
 3. Resolve visual-design authority separately; do not infer UI authorization from this contract pass.
-4. Add the required CI jobs before a merge/public-release gate.
+4. Observe the installed contract workflow on a remote runner before treating CI as independently
+   green.
 
 ## Evidence Log
 
-- `mise exec -- pnpm test:integration`: three consecutive runs, each 9/9, with released Gateway, KMS,
-  ingestor, JetStream, Runner, NoxCompute, official Safe, and compatible Governor/Timelock paths.
+- `mise exec -- pnpm test:integration`: three consecutive runs, each 11/11, with released Gateway,
+  KMS, ingestor, JetStream, Runner, NoxCompute, factory-deployed production Safe direct/batch, and
+  factory-deployed production Governor/real-Timelock paths.
 - `mise exec -- forge test --match-path test/foundry/production/ConfidentialGovernanceGas.t.sol -vv`:
   four gas baselines pass twice with identical isolated measurements.
 - `FOUNDRY_PROFILE=invariant forge test --match-contract ConfidentialGovernanceInvariantTest -vv`:

@@ -14,9 +14,10 @@
     "lint:forge": "forge lint src/contracts --severity high med --out out/lint-src --cache-path cache/lint-src && forge lint test/foundry --skip ConfidentialBallotCasting.t.sol --skip ConfidentialBallotTally.t.sol --skip ConfidentialBallotProofNegativeMatrix.t.sol --skip TallyFixtures.sol --skip ConfidentialGovernorLifecycle.t.sol --skip ConfidentialGovernorTimelock.t.sol --skip GovernorFixtures.sol --skip SafeConfidentialVotingModuleExecution.t.sol --skip SafeConfidentialVotingModuleBatchExecution.t.sol --skip SafeExecutionFixtures.sol --skip SafeBatchExecutionFixtures.sol --skip ConfidentialGovernanceInvariants.t.sol --skip ConfidentialGovernanceGas.t.sol --severity high med --out out/lint-test --cache-path cache/lint-test",
     "test": "pnpm test:forge && pnpm test:integration",
     "test:forge": "forge test -vvv",
-    "test:integration": "hardhat test nodejs",
-    "format": "forge fmt && prettier --write \"**/*.{ts,json,md}\"",
-    "format:check": "forge fmt --check && prettier --check \"**/*.{ts,json,md}\"",
+    "test:invariant": "FOUNDRY_PROFILE=invariant forge test --match-contract ConfidentialGovernanceInvariantTest --summary -vv",
+    "test:integration": "pnpm build:forge && hardhat test nodejs",
+    "format": "forge fmt && prettier --write \"**/*.{ts,json,md,yml,yaml}\"",
+    "format:check": "forge fmt --check && prettier --check \"**/*.{ts,json,md,yml,yaml}\"",
     "clean": "forge clean && hardhat clean"
   },
   "dependencies": {

@@ -281,7 +281,7 @@ Inside the core:
 1. verify the proposal is open and the wallet is eligible;
 2. fix or reuse the snapshot weight;
 3. accept the external encrypted integer handle/proof owned by the voter for this core;
-4. map `0 → For`, `1 → Against`, and every other representable value to `Abstain`;
+4. map `0 → Against`, `1 → For`, and every other representable value to `Abstain`;
 5. create encrypted weighted For/Against/Abstain contributions;
 6. if replacing, subtract the previous encrypted contributions;
 7. add the new encrypted contributions;
