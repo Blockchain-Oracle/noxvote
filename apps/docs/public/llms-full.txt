@@ -1,33 +1,49 @@
 # Deployed addresses
 URL: https://docs.noxvote.xyz/docs/addresses
-Where the Sepolia addresses will land, and the local development profile.
+The live NoxVote contracts on Ethereum Sepolia, plus the Nox dependencies and the local development profile.
 
 ## Ethereum Sepolia (chain 11155111)
 
-**Deployment authorized, not yet broadcast.** The dedicated deployment track holds a passing
-read-only preflight against every live dependency; the NoxVote contract addresses land here —
-each linked to [Sepolia Etherscan](https://sepolia.etherscan.io) — the moment the public
-deployment checkpoint is published. Until then, no NoxVote contract should be assumed live,
-and nothing elsewhere in these docs claims otherwise.
+**Live.** The full NoxVote graph completed its public Sepolia checkpoint on **2026-08-01**:
+37 / 37 deployment and execution transactions succeeded, and both the Safe and Governor paths each
+consumed a real released-Nox `Passed` verdict. Every address below links to Sepolia Etherscan.
 
-### NoxVote contracts (pending the deployment checkpoint)
+### NoxVote contracts
 
 | Contract | Address |
 | --- | --- |
-| `ConfidentialGovernanceFactory` (v1) | pending |
-| `IVotesSnapshotStrategy` | pending |
-| `MerkleWeightedAllowlistStrategy` | pending |
-| Demo Safe + `SafeConfidentialVotingModule` + core | pending |
+| `ConfidentialGovernanceFactory` (v1) | [`0x3d1c…1675`](https://sepolia.etherscan.io/address/0x3d1c0ff97a603ca5edadc7737c0bb6d4d4fd1675) |
+| Production Safe | [`0xF15f…a31f`](https://sepolia.etherscan.io/address/0xF15f852D0669cac06c3e00E7b5E701A5Dd93a31f) |
+| `SafeConfidentialVotingModule` | [`0x2EEf…C162`](https://sepolia.etherscan.io/address/0x2EEf405eBe209eA4261Bc77e665e535C29feC162) |
+| Safe confidential core | [`0xB4B7…4b33`](https://sepolia.etherscan.io/address/0xB4B732bc35687322727ff9fba261fe5eE15f4b33) |
+| `IVotesSnapshotStrategy` | [`0x1663…3398`](https://sepolia.etherscan.io/address/0x1663283ffdf37656ADF7576B57561444c4Dc3398) |
+| `MerkleWeightedAllowlistStrategy` | [`0x4dAA…25c6`](https://sepolia.etherscan.io/address/0x4dAA040D91fCCe1b7105dFb500210621BC7425c6) |
+| NOX votes token | [`0xbeb6…a5a5`](https://sepolia.etherscan.io/address/0xbeb6c66d19e329daf4f82cb71156867d054da5a5) |
+| Compatible Governor | [`0x061C…c12d`](https://sepolia.etherscan.io/address/0x061C799DC284b0Cd0501b442b8a4e262c31Ac12d) |
+| `TimelockController` | [`0x66F0…Dc3b`](https://sepolia.etherscan.io/address/0x66F0a59bA4d5f6C1E3ee4251E77D41Ce97A9Dc3b) |
+| Governor confidential core | [`0x2Be7…147d`](https://sepolia.etherscan.io/address/0x2Be76a5ab935DB855aa8E1386847d9182064147d) |
+| Safe execution target (demo) | [`0xff4e…b158`](https://sepolia.etherscan.io/address/0xff4e5ce5610bbbd1982c0f0a44bd16fcb257b158) |
+| Governor execution target (demo) | [`0x84bf…06f8`](https://sepolia.etherscan.io/address/0x84bf42da8517994923b05a084b85ff4b99fb06f8) |
 
-### Official pre-existing deployments (verified by the preflight)
+The full machine-readable record — every transaction hash, verdict handle, and executed value — is in
+[`deployments/sepolia/phase6-live.json`](https://github.com/Blockchain-Oracle/noxvote/blob/main/deployments/sepolia/phase6-live.json).
+See [Verify a result](/docs/verification) to follow it end to end.
 
-These are not deployed by NoxVote — they are the official live contracts the stack binds to,
-byte-verified against their expected code hashes:
+### Nox dependencies (official, verified by the preflight)
 
-| Contract | Address |
+These are not deployed by NoxVote — they are the official live contracts and services the stack binds
+to, byte-verified against their expected code hashes before every run:
+
+| Dependency | Value |
 | --- | --- |
-| `NoxCompute` proxy (official, v0.2.4) | [`0x24ef36ec5b626d7dcd09a98f3083c2758f0f77bf`](https://sepolia.etherscan.io/address/0x24ef36ec5b626d7dcd09a98f3083c2758f0f77bf) |
-| Official `MultiSendCallOnly` (Safe 1.5.0) | [`0xA83c336B20401Af773B6219BA5027174338D1836`](https://sepolia.etherscan.io/address/0xA83c336B20401Af773B6219BA5027174338D1836) |
+| `NoxCompute` proxy (official, v0.2.4) | [`0x24Ef…77bF`](https://sepolia.etherscan.io/address/0x24Ef36Ec5b626D7DCD09a98F3083c2758F0F77bF) |
+| Nox Handle Gateway | `https://gateway-testnets.noxprotocol.dev` |
+| Nox subgraph | [The Graph endpoint](https://thegraph.ethereum-sepolia-testnet.noxprotocol.io/api/subgraphs/id/9CsccKwvgYFo72zZeU4k4wj2NEBLdWhVE3EUandgmzgo) |
+| Gateway signer | [`0xE131…552F`](https://sepolia.etherscan.io/address/0xE13191F53671957C8a48A7A3Ff15E16450a1552F) |
+| Official `MultiSendCallOnly` (Safe 1.5.0) | [`0xA83c…1836`](https://sepolia.etherscan.io/address/0xA83c336B20401Af773B6219BA5027174338D1836) |
+| Safe singleton (1.5.0) | [`0xFf51…a44b`](https://sepolia.etherscan.io/address/0xFf51A5898e281Db6DfC7855790607438dF2ca44b) |
+| Safe proxy factory | [`0x14F2…5e7b`](https://sepolia.etherscan.io/address/0x14F2982D601c9458F93bd70B218933A6f8165e7b) |
+| Compatibility fallback handler | [`0x3EfC…77f4`](https://sepolia.etherscan.io/address/0x3EfCBb83A4A7AfcB4F68D501E2c2203a38be77f4) |
 
 ## Local development profile
 
@@ -259,9 +275,8 @@ complete configuration hash plus creation- and runtime-code evidence.
 ## After deployment
 
 Compare the emitted code hashes against your own build of the reviewed source, then record
-the addresses. The Ethereum Sepolia deployment addresses will be listed — with explorer
-links — on the [Deployed addresses](/docs/addresses) page once the deployment checkpoint is
-published.
+the addresses. The live Ethereum Sepolia deployment — every contract, with explorer links — is
+on the [Deployed addresses](/docs/addresses) page.
 
 ---
 

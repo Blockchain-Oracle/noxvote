@@ -7,8 +7,6 @@ export function Nav() {
         <Mark />
         <div className="nav__links">
           <a href="#orbit">How it works</a>
-          <a href="#rules">Committed rules</a>
-          <a href="#trust">Trust boundary</a>
           <a href={DOCS_URL}>Docs</a>
         </div>
         <Pill className="nav__cta" href={APP_URL}>

@@ -42,6 +42,21 @@
   opacity: 1;
 }
 
+/* The flowing ember signal. Its opacity is driven by SMIL; CSS only reveals it
+ * once the arcs have drawn and gives it a soft glow. */
+.orbit__pulse {
+  visibility: hidden;
+  filter: drop-shadow(0 0 7px var(--ember));
+}
+.orbit__arcs.is-drawn .orbit__pulse {
+  visibility: visible;
+}
+@media (prefers-reduced-motion: reduce) {
+  .orbit__pulse {
+    display: none;
+  }
+}
+
 .stg {
   position: absolute;
   left: calc(var(--x) * 100% / 1200);

@@ -133,6 +133,23 @@ export function OrbitConstellation() {
         {DOTS.map((dot) => (
           <circle key={dot.cx} cx={dot.cx} cy={dot.cy} r="4.5" />
         ))}
+        {/* A single ember signal flows through the whole lifecycle and loops,
+         * fading at the seam so the wrap is never seen. Hidden under reduced
+         * motion (orbit.css). */}
+        <circle className="orbit__pulse" r="6" fill="var(--ember)">
+          <animateMotion
+            dur="6s"
+            repeatCount="indefinite"
+            path="M 108 138 Q 240 42 378 90 Q 502 190 622 156 Q 748 34 866 88 Q 986 214 1100 142"
+          />
+          <animate
+            attributeName="opacity"
+            dur="6s"
+            repeatCount="indefinite"
+            values="0;1;1;0"
+            keyTimes="0;0.08;0.9;1"
+          />
+        </circle>
       </svg>
 
       {ORBIT_STAGES.map((stage, i) => (

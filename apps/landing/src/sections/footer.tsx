@@ -6,7 +6,6 @@ const COLUMNS = [
     links: [
       { label: 'Launch the app', href: APP_URL },
       { label: 'How it works', href: '#orbit' },
-      { label: 'Committed rules', href: '#rules' },
     ],
   },
   {
@@ -54,11 +53,10 @@ export function Footer() {
           ))}
         </div>
         <p className="foot__legal">
-          Wallets, weights, and timing are public; individual choices and exact totals are not
-          disclosed. Only a pass or reject verdict is published, and only above the privacy
-          floor. What is trusted &mdash; and what is not promised &mdash; is stated in full in
-          the trust boundary above and in the documentation. The proposal shown on this page is
-          fixture data, not a live ballot.
+          Wallets, weights, and timing are public; individual choices and exact totals are not.
+          Only a Passed or Rejected verdict is published, and only above the privacy floor. The
+          full trust boundary and stated limits live in the{' '}
+          <a href={`${DOCS_URL}/docs/limits`}>documentation</a>.
         </p>
       </div>
     </footer>

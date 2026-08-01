@@ -4,7 +4,7 @@ export function Cta() {
   return (
     <section className="cta">
       <div className="cta__panel on-ink">
-        <h2 className="d-lg">Read the mechanism before you believe the claim.</h2>
+        <h2 className="d-lg">Bring confidential voting to your DAO.</h2>
         <div className="cta__actions">
           <Pill variant="on-ink" href={APP_URL} arrow>
             Launch the app

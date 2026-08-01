@@ -1,0 +1,91 @@
+/* FAQ — a quiet accordion. Native <details> for accessibility; the marker is a
+ * plus that becomes a minus, and the answer fades in on open. */
+
+.faq__list {
+  max-width: 840px;
+  margin: 0 auto;
+  border-top: 1px solid var(--dust);
+}
+
+.faq__item {
+  border-bottom: 1px solid var(--dust);
+}
+
+.faq__q {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 24px;
+  padding: 26px 4px;
+  cursor: pointer;
+  list-style: none;
+  color: var(--ink);
+  font-size: clamp(18px, 1.6vw, 21px);
+  font-weight: 500;
+  letter-spacing: -0.02em;
+  transition: opacity var(--fast) var(--ease);
+}
+.faq__q::-webkit-details-marker {
+  display: none;
+}
+.faq__q:hover {
+  opacity: 0.62;
+}
+
+.faq__icon {
+  position: relative;
+  flex: none;
+  width: 18px;
+  height: 18px;
+  margin-top: 2px;
+}
+.faq__icon::before,
+.faq__icon::after {
+  content: '';
+  position: absolute;
+  background: var(--ember);
+  transition:
+    transform var(--fast) var(--ease),
+    opacity var(--fast) var(--ease);
+}
+.faq__icon::before {
+  top: 8px;
+  left: 0;
+  width: 18px;
+  height: 2px;
+}
+.faq__icon::after {
+  top: 0;
+  left: 8px;
+  width: 2px;
+  height: 18px;
+}
+.faq__item[open] .faq__icon::after {
+  transform: scaleY(0);
+  opacity: 0;
+}
+
+.faq__a {
+  padding: 0 4px 28px;
+  max-width: 64ch;
+  color: var(--slate);
+  line-height: 1.55;
+  animation: faqReveal var(--base) var(--ease);
+}
+.faq__a a {
+  color: var(--ink);
+  text-decoration: underline;
+  text-underline-offset: 3px;
+  white-space: nowrap;
+}
+
+@keyframes faqReveal {
+  from {
+    opacity: 0;
+    transform: translateY(-4px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}

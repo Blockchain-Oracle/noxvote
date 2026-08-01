@@ -4,7 +4,7 @@
 
 ## Docs
 
-- [Deployed addresses](https://docs.noxvote.xyz/docs/addresses): Where the Sepolia addresses will land, and the local development profile.
+- [Deployed addresses](https://docs.noxvote.xyz/docs/addresses): The live NoxVote contracts on Ethereum Sepolia, plus the Nox dependencies and the local development profile.
 - [Architecture](https://docs.noxvote.xyz/docs/architecture): The immutable contract stack — ballot core, eligibility strategies, Safe module, compatible Governor, and the versioned factory that deploys them.
 - [How it works](https://docs.noxvote.xyz/docs/how-it-works): Five lifecycle stages, what becomes public at each, and why only one value ever reaches the public record.
 - [Overview](https://docs.noxvote.xyz/docs): What NoxVote is, what stays private, what stays public, and what is deliberately not promised.

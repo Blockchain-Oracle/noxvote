@@ -1,4 +1,4 @@
-import { APP_URL, Eyebrow, Pill } from '@noxvote/ui'
+import { APP_URL, DOCS_URL, Eyebrow, Pill } from '@noxvote/ui'
 
 /* The orbit motif from the launch identity: concentric rings bleeding off the
  * top-right corner with a single ember satellite tracing the inner ring. The
@@ -52,16 +52,14 @@ export function Hero() {
           <Eyebrow className="stage__eyebrow">The privacy destination</Eyebrow>
           <h1 className="stage__title">Where private DAO lives.</h1>
           <p className="lead stage__lead">
-            Confidential governance for existing Safe and OpenZeppelin Governor stacks. Individual
-            choices and exact totals never become public &mdash; only the verdict is, and only when
-            enough wallets took part.
+            Confidential voting for the Safe or Governor DAO you already run.
           </p>
           <div className="stage__cta">
             <Pill variant="on-ink" href={APP_URL} arrow>
               Launch the app
             </Pill>
-            <Pill variant="on-ink-ghost" href="#orbit">
-              See how a ballot closes
+            <Pill variant="on-ink-ghost" href={DOCS_URL}>
+              Read the docs
             </Pill>
           </div>
           <p className="stage__evidence">Safe + Governor · Outcome-only verdicts · Live on Sepolia</p>
