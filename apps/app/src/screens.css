@@ -1,0 +1,220 @@
+/* B1 screens — list, proposal detail, tally. Contract: DESIGN.md. */
+
+/* ---- Shared card ---- */
+
+.card {
+  padding: 24px;
+  border: 1px solid var(--dust);
+  border-radius: var(--r-card);
+  background: var(--lifted);
+}
+.card__title {
+  margin: 0 0 16px;
+  font-size: 14px;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--slate);
+}
+.card__body {
+  margin: 0;
+  color: var(--charcoal);
+}
+.card__note {
+  margin: 18px 0 0;
+  padding-top: 14px;
+  border-top: 1px solid var(--ghost);
+  color: var(--slate);
+  font-size: 14px;
+}
+
+.rules {
+  margin: 0;
+  display: grid;
+  gap: 0;
+}
+.rules__row {
+  display: grid;
+  grid-template-columns: 0.7fr 1.3fr;
+  gap: 16px;
+  padding: 9px 0;
+  border-bottom: 1px solid var(--ghost);
+}
+.rules__row:last-child {
+  border-bottom: 0;
+}
+.rules__row dt {
+  color: var(--slate);
+}
+.rules__row dd {
+  margin: 0;
+  overflow-wrap: anywhere;
+}
+
+/* ---- Neutral lifecycle chip (triad stays in packages/ui Chip) ---- */
+
+.chip--plain {
+  color: var(--slate);
+}
+
+/* ---- Proposal list ---- */
+
+.list__title {
+  margin: 14px 0 10px;
+}
+.list__lead {
+  margin: 0 0 40px;
+  max-width: 56ch;
+}
+.list__rows {
+  display: grid;
+  gap: 14px;
+}
+.prop-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 20px;
+  padding: 20px 24px;
+  border: 1px solid var(--dust);
+  border-radius: var(--r-card);
+  background: var(--lifted);
+  color: inherit;
+  text-decoration: none;
+  transition: transform var(--fast) var(--ease), box-shadow var(--fast) var(--ease);
+}
+.prop-row:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--halo);
+}
+.prop-row__main {
+  display: grid;
+  gap: 6px;
+  min-width: 0;
+}
+.prop-row__title {
+  font-size: 18px;
+  font-weight: 500;
+  letter-spacing: -0.02em;
+}
+.prop-row__meta {
+  color: var(--slate);
+}
+.prop-row__side {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  flex: none;
+}
+.prop-row__floor {
+  color: var(--slate);
+}
+
+/* ---- Proposal detail ---- */
+
+.detail__back {
+  margin: 0 0 26px;
+}
+.detail__back a {
+  color: var(--slate);
+  text-decoration: none;
+}
+.detail__back a:hover {
+  color: var(--ink);
+}
+.detail__head {
+  margin-bottom: 36px;
+}
+.detail__head h1 {
+  margin: 14px 0 10px;
+  max-width: 26ch;
+}
+.detail__meta {
+  margin: 0 0 16px;
+  color: var(--slate);
+}
+.detail__status {
+  margin: 0;
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+/* Chips in the canvas-backed header get a lifted backing so the withheld
+ * pairing stays above AA (4.69:1 on lifted vs 4.27:1 on canvas). */
+.detail__status .chip {
+  background: var(--lifted);
+}
+.detail__grid {
+  display: grid;
+  grid-template-columns: 1.05fr 0.95fr;
+  gap: 20px;
+  margin-bottom: 20px;
+}
+.detail__col {
+  display: grid;
+  gap: 20px;
+  align-content: start;
+}
+.participation__floor {
+  margin: 18px 0;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  color: var(--slate);
+  font-size: 14px;
+}
+.voter__action {
+  margin-top: 16px;
+}
+.voter__recorded {
+  margin-bottom: 14px;
+}
+
+/* ---- Tally outcomes: the only rims that may borrow the triad ---- */
+
+.outcome {
+  padding: 24px;
+  border: 1.5px solid var(--dust);
+  border-radius: var(--r-pill);
+}
+.outcome--passed {
+  border-color: var(--passed);
+}
+.outcome--passed .outcome__verdict {
+  color: var(--passed);
+}
+.outcome--withheld {
+  border-color: var(--withheld);
+}
+.outcome--withheld .outcome__verdict {
+  color: var(--withheld);
+}
+.outcome__verdict {
+  margin: 0 0 8px;
+  font-size: 21px;
+  font-weight: 500;
+  letter-spacing: -0.02em;
+}
+.outcome__body {
+  margin: 0;
+  color: var(--charcoal);
+}
+.tally__handle {
+  margin: 14px 0 0;
+  color: var(--slate);
+}
+
+@media (max-width: 900px) {
+  .detail__grid {
+    grid-template-columns: 1fr;
+  }
+  .prop-row {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+}
+@media (max-width: 767px) {
+  .outcome {
+    border-radius: var(--r-frame);
+  }
+}
