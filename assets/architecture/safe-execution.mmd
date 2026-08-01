@@ -1,0 +1,39 @@
+%%{init: {"theme":"base","fontFamily":"Arial, sans-serif","themeVariables":{"background":"#F4EFE6","primaryColor":"#FBF7EF","primaryTextColor":"#1E1D1A","primaryBorderColor":"#1E1D1A","lineColor":"#686157","secondaryColor":"#E9E1D4","tertiaryColor":"#F1D7CA","fontFamily":"Sofia Sans, Arial, sans-serif","fontSize":"18px"},"flowchart":{"curve":"basis","nodeSpacing":42,"rankSpacing":58,"htmlLabels":true}}}%%
+flowchart TB
+  subgraph SETUP["SAFE OWNER PATH"]
+    direction LR
+    OWNERS["Safe owners<br/>normal threshold"]
+    SAFE["Existing Safe"]
+    MODULE["Reviewed NoxVote module"]
+    OWNERS -->|"enable module"| SAFE
+    SAFE -->|"register exact proposal"| MODULE
+  end
+
+  subgraph VOTE["CONFIDENTIAL VOTE"]
+    direction LR
+    CORE["Ballot core<br/>host + proposal + action binding"]
+    VERDICT["PASSED<br/>verdict-only finalization"]
+    CORE --> VERDICT
+  end
+
+  subgraph EXECUTE["REPLAY-SAFE EXECUTION"]
+    direction LR
+    CHECK["Recompute exact binding<br/>and module status"]
+    CALL["Existing Safe module execution<br/>Call or MultiSendCallOnly"]
+    TARGET["Exact committed target(s)"]
+    DONE["EXECUTED ONCE"]
+    CHECK --> CALL --> TARGET --> DONE
+  end
+
+  SETUP -->|"registered binding"| VOTE
+  VOTE -->|"Passed · anyone may trigger"| EXECUTE
+  TARGET -. "failure: retry only<br/>the same exact transaction" .-> CHECK
+  DONE -. "second success rejected" .-> CHECK
+
+  classDef public fill:#FBF7EF,stroke:#1E1D1A,color:#1E1D1A,stroke-width:2px;
+  classDef verdict fill:#1E1D1A,stroke:#1E1D1A,color:#FBF7EF,stroke-width:2px;
+  classDef action fill:#E9E1D4,stroke:#B94C28,color:#1E1D1A,stroke-width:3px;
+  class OWNERS,SAFE,MODULE,CORE,CHECK,CALL,TARGET public;
+  class VERDICT verdict;
+  class DONE action;
+  linkStyle default stroke:#686157,stroke-width:2px;

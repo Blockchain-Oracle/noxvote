@@ -1,103 +1,205 @@
-# Confidential Voting on Nox
+<p align="center">
+  <img src="https://raw.githubusercontent.com/Blockchain-Oracle/noxlimit/main/assets/brand/noxvote-mark.png" width="112" alt="NoxVote orbit mark" />
+</p>
 
-This repository is the fresh research and decision corpus for an iExec WTF Hackathon pivot: a
-confidential governance module that never publishes individual choices or exact totals and publicly
-decrypts only the final pass/reject outcome.
+<h1 align="center">NoxVote</h1>
 
-Current status: the user accepted the complete product definition, user flow, trust boundaries,
-normal-DAO execution semantics, and production technical architecture on 2026-07-30. The bounded local technical gate passes across real
-Nox-to-Safe execution, Runner recovery, explicit JetStream redelivery, the full named proof-negative
-matrix, and real Nox-to-compatible-Governor-to-Timelock execution. The research supports permanent
-public-chain choice confidentiality and verdict-only disclosure, but not client-side encryption or a
-MACI-equivalent receipt-free claim on released Nox. A contract quality profile and contract-only
-implementation plan are accepted and local phased contract implementation is underway. The user has
-accepted the ORBIT visual direction and separately authorized a dedicated frontend track for the
-landing, app, and docs surfaces. The first production core-boundary slice passes local
-build and unit/fuzz gates, and production IVotes/Merkle eligibility strategies now pass the expanded
-suite. The direct-wallet confidential-cast slice now fixes first-cast weight, enforces one initial
-ballot plus two sequenced replacements, rejects invalid public conditions before Nox, and persists only
-core ACL access. Permissionless close now withholds below the privacy floor without touching Nox; above
-the floor it constructs a host-quorum-aware encrypted verdict, exposes only that boolean handle for
-public decryption, and finalizes configured-Gateway evidence exactly once. A forced full Forge run
-passes 49/49. The production core also passes two consecutive Docker-backed runs through the released
-Handle Gateway, KMS, ingestor, JetStream, and Runner using the judged four-wallet/floor-four graph,
-six encrypted operations, two replacements, one public verdict, and real proof finalization. Phase 2
-is complete. The first production Safe-adapter slice now binds one immutable Safe/core/batch setup and
-permits exact proposal registration only through an enabled, normal Safe threshold transaction. Seven
-focused official-Safe registration tests pass. Direct and official `MultiSendCallOnly` execution are
-now permissionless but Passed-only, exact-commitment, reentrancy-safe, retryable after Safe failure,
-and execute-once. The batch path packs only inner Calls, revalidates the immutable batch runtime code
-hash, and rolls every inner effect back when one action fails. Eleven focused execution tests, one
-byte-level packing test, and the full 68/68 Forge suite pass against the official Safe 1.5.0 proxy and
-batch path. The versioned factory now publishes both reviewed eligibility strategies, accepts only the
-reviewed Safe-module creation bytecode, revalidates dependency runtime hashes, and emits complete
-Safe/module/core/strategy/batch deployment evidence. Seven focused factory tests and the full 75/75
-Forge suite pass. Phase 3 is complete. The production compatible Governor now constructs an immutable
-OpenZeppelin 5.6.1 Governor/settings/votes/quorum/timelock composition with its own bound core.
-`proposeConfidential` preserves OpenZeppelin proposer guards and atomically binds normal multi-action
-proposal hashes to token-snapshot core ballots, while standard proposal creation and every public or
-internal plaintext vote seam reject. Its detailed lifecycle now distinguishes Closed/TallyPending from
-terminal outcomes while the standard Governor state keeps unresolved proposals Pending and unqueueable.
-Withheld/Rejected map to Defeated, Passed maps to Succeeded, and proposer-only Scheduled cancellation
-atomically cancels Governor and core. Its real TimelockController now gives only the Governor
-proposer/canceller authority, renounces the setup admin, permits public execution, enforces the delay on
-Passed single and multi-action batches, rejects direct interference, and permits delay changes only
-through governance. Block-number and timestamp ERC-6372 modes both pass the complete lifecycle. The
-versioned factory pins the exact reviewed Governor and TimelockController creation code, atomically
-deploys the complete Governor/timelock/core stack, verifies Governor-only proposer/canceller authority
-and permissionless execution, renounces its temporary admin, and emits complete configuration and
-code-hash evidence. The 23 standalone Governor tests, 8 focused Governor-factory tests, all 15 factory
-tests, and 31 production Governor-plus-factory tests pass. Phase 4 is complete. The first Phase 5
-stateful suite now checks one-effective-ballot accounting, monotonic unique participation, fixed
-snapshot weight, the two-replacement ceiling, below-floor withholding, finalize-once, immutable Safe
-action binding, retry, and execute-once. All three invariant properties pass 10,000 runs and 320,000
-modeled calls each. The complete production proof-negative matrix now passes five focused tests across
-signer/domain/handle/encoding mutation, identical-input cross-proposal isolation, same-handle
-cross-host isolation, foreign-chain verdict evidence, and foreign-host/foreign-chain input proofs. The
-ballot-ID-derived encrypted-zero construction, present since the first committed production core,
-preserves the plaintext result while separating downstream handles by ballot, host, and chain. The
-full 119/119 Forge suite and the 10,000-run invariant profile pass. An independent Claude Opus 5 review
-found no P0/P1 Solidity defect, reproduced the Forge and size evidence, and identified a real-stack
-coverage gap for the production adapters plus missing CI. The remediated suite now passes three
-consecutive complete 11-case Docker-backed released-Nox runs—33/33 cases total—including the
-factory-deployed production Safe direct/batch paths, the factory-deployed production Governor with a
-real TimelockController, production-core adversarial proof rejection, Runner restart, and JetStream
-redelivery. A five-job contract workflow now covers static checks, unit/fuzz/size checks,
-high-confidence invariants, boundary reports, and three real-Nox repetitions; it is installed but has
-not yet run on a remote GitHub runner. Four deterministic Safe/Governor gas tests enforce 20%
-regression ceilings, and the reconciled production verification audit passes the authorized local
-contract gate. Phase 5 and local Phase 6 preflight remediation are complete. Slither is not required.
-Phase 6 now passes live on Ethereum Sepolia: `37/37` transactions deployed the production Safe and
-Governor/real-Timelock graphs, consumed real released-Nox Passed verdicts, and executed both exact
-targets once.
+<p align="center"><strong>Where private DAO lives.</strong></p>
 
-Start here:
+<p align="center">
+  Confidential governance for existing Safe and Governor stacks, powered by iExec Nox.
+</p>
 
-1. `.thoughts/decisions/CURRENT.md`
-2. `.thoughts/decisions/2026-07-30-product-definition-acceptance.md`
-3. `.thoughts/decisions/2026-07-30-contract-planning-authorization.md`
-4. `.thoughts/decisions/2026-07-30-contract-implementation-authorization.md`
-5. `.thoughts/design/2026-07-30-confidential-governance-technical-architecture.md`
-6. `.thoughts/quality/2026-07-30-contract-quality-profile.md`
-7. `.thoughts/plans/2026-07-30-confidential-governance-contract-implementation-plan.md`
-8. `.thoughts/briefs/2026-07-29-plain-english-product-definition.md`
-9. `.thoughts/specs/2026-07-29-confidential-governance-module.md`
-10. `.thoughts/stories/2026-07-29-confidential-governance-module.md`
-11. `.thoughts/design/2026-07-29-product-surface-map.md`
-12. `.thoughts/verification/2026-07-31-production-contract-verification-audit.md`
-13. `.thoughts/reviews/2026-07-31-opus-5-predeployment-review.md`
-14. `.thoughts/decisions/2026-08-01-phase6-live-authorization.md`
-15. `.thoughts/decisions/2026-08-01-frontend-milestone-authorization.md`
-16. `.thoughts/design/2026-08-01-orbit-direction.md`
-17. `.thoughts/verification/2026-07-30-full-shape-spike-report.md`
-18. `.thoughts/plans/2026-07-30-full-shape-feasibility-spike.md`
-19. `.thoughts/decisions/2026-07-30-fable-review-reconciliation.md`
-20. `.thoughts/research/2026-07-29-open-source-private-voting-landscape.md`
-21. `.thoughts/briefs/2026-07-29-confidential-voting-research-brief.md` (historical research seed)
-22. `.thoughts/plans/2026-07-29-confidential-voting-research-plan.md`
-23. `.thoughts/research/2026-07-29-confidential-voting-architecture-synthesis.md` (historical first pass)
-24. `.thoughts/reviews/2026-07-30-fable-5-product-review.md`
-25. `.thoughts/plans/2026-07-29-confidential-voting-decision-plan.md` (historical first-pass scope)
+<p align="center">
+  <a href="#demo-video">Demo video</a> ·
+  <a href="#how-it-works">How it works</a> ·
+  <a href="#live-proof">Live proof</a> ·
+  <a href="#run-locally">Run locally</a>
+</p>
 
-The previous NoxLimit repository was preserved intact at
-`/Users/abu/dev/hackathon/wtf-noxlimit-archive-2026-07-29`.
+<p align="center">
+  <img src="https://raw.githubusercontent.com/Blockchain-Oracle/noxlimit/main/assets/launch/readme-hero.png" width="960" alt="NoxVote — Where private DAO lives" />
+</p>
+
+## The privacy destination for DAO decisions
+
+Every DAO operates in public. Not every decision should.
+
+NoxVote gives sensitive governance decisions somewhere private to happen without asking the DAO to
+move. Safe keeps its treasury. Governor keeps its rules and Timelock. Proposals, voting power,
+participation, the final verdict, and execution remain public. Individual choices and exact totals do
+not.
+
+[iExec Nox](https://github.com/iExec-Nox/documentation) is confidential infrastructure built on
+Trusted Execution Environments. NoxVote turns that confidential compute into a complete governance
+path: encrypted ballot operations go in, one outcome-only verdict comes back, and only the exact
+action committed before voting opened can execute.
+
+> **The positioning:** Nox is the privacy destination. NoxVote is where private DAO lives.
+
+## Demo video
+
+<p align="center">
+  <a href="https://vimeo.com/1214870008">
+    <img src="https://raw.githubusercontent.com/Blockchain-Oracle/noxlimit/main/assets/launch/demo-thumbnail.jpg" width="720" alt="Watch the NoxVote 60-second demo" />
+  </a>
+</p>
+
+<p align="center">
+  <a href="https://vimeo.com/1214870008"><b>▶ Watch the 60-second demo</b></a>
+</p>
+
+The film uses the real NoxVote product surfaces and the completed Sepolia proof — the same live
+checkpoint documented under [Live proof](#live-proof).
+
+## What NoxVote changes
+
+Traditional on-chain voting can expose a running leader and permanently attach a wallet to a choice.
+That is the wrong social environment for a sensitive treasury, contributor, security, or strategy
+decision.
+
+NoxVote separates public accountability from public choice disclosure:
+
+| Public and verifiable                           | Confidential or deliberately withheld        |
+| ----------------------------------------------- | -------------------------------------------- |
+| Proposal, rules, choices, and action commitment | Each member's choice                         |
+| Wallet eligibility and voting-power snapshot    | The running leader                           |
+| Wallet participation and replacement sequence   | Exact `For / Against / Abstain` totals       |
+| Privacy-floor progress                          | Any result below the privacy floor           |
+| Final `Passed` or `Rejected` verdict            | Encrypted tally intermediates                |
+| Safe or Governor execution                      | Anything beyond the verdict governance needs |
+
+Participation is public; voters are not anonymous. The released iExec SDK sends the encoded choice to
+the attested Handle Gateway for encryption, so the Gateway is an explicit trust boundary. NoxVote does
+not claim browser-only encryption, zero knowledge, FHE, or MACI-equivalent receipt-freeness.
+
+## How it works
+
+1. **Commit the decision.** A Safe or compatible Governor registers the proposal, ballot rules,
+   voting-power strategy, privacy floor, and exact action commitment before voting opens.
+2. **Prepare a confidential ballot.** The released Nox flow sends the member's encoded choice to the
+   attested Handle Gateway and returns an encrypted handle plus proof.
+3. **Record public participation.** The wallet submits the opaque ballot operation on-chain. Its
+   participation and sequence are visible; its choice is not intentionally published.
+4. **Replace safely before close.** A member may record up to two replacements. Only the latest
+   accepted operation counts, and replacement does not inflate the unique-participant total.
+5. **Enforce the privacy floor.** Below the configured minimum turnout, no aggregate outcome is
+   disclosed. Abstain counts toward participation; stale, rejected, and reverted operations do not.
+6. **Derive one verdict in Nox.** After close, Nox tallies the encrypted handles and releases only
+   `Passed` or `Rejected`—never individual choices or exact totals.
+7. **Execute the committed action once.** A Passed verdict can authorize only the pre-committed Safe
+   call or the standard Governor → Timelock path.
+
+![NoxVote product topology](https://raw.githubusercontent.com/Blockchain-Oracle/noxlimit/main/assets/architecture/product-topology.png)
+
+![NoxVote ballot lifecycle](https://raw.githubusercontent.com/Blockchain-Oracle/noxlimit/main/assets/architecture/ballot-lifecycle.png)
+
+## Two governance paths, one confidentiality model
+
+### Safe
+
+The factory deploys a Safe, its confidential-voting core, and the reviewed Safe module as one
+immutable pair. A Passed verdict authorizes either one exact direct call or an official
+`MultiSendCallOnly` batch. The module revalidates the committed bundle and runtime code hash, rejects
+delegate calls, preserves atomic retry on failure, and executes once.
+
+[View the Safe execution diagram](https://raw.githubusercontent.com/Blockchain-Oracle/noxlimit/main/assets/architecture/safe-execution.png)
+
+### Governor + Timelock
+
+The compatible Governor preserves normal OpenZeppelin-style governance semantics: proposal binding,
+queueing, delay, permissionless execution, and governance-controlled Timelock changes. It blocks every
+plaintext vote path. An unresolved or non-Passed confidential outcome cannot queue, and the exact
+committed proposal can execute only after the Timelock delay.
+
+[View the Governor and Timelock diagram](https://raw.githubusercontent.com/Blockchain-Oracle/noxlimit/main/assets/architecture/governor-timelock.png)
+
+## Live proof
+
+NoxVote's production graph completed its public Ethereum Sepolia checkpoint on **2026-08-01**:
+
+- **37 / 37** deployment and execution transactions succeeded;
+- the Safe and Governor paths each consumed a real released-Nox `Passed` verdict;
+- both exact committed targets executed once;
+- the full Forge suite passed **119 / 119** tests after the live run;
+- three consecutive released-stack integration runs passed **33 / 33** cases in total.
+
+| Public contract         | Sepolia                                                                                          |
+| ----------------------- | ------------------------------------------------------------------------------------------------ |
+| Versioned factory       | [`0x3d1c…1675`](https://sepolia.etherscan.io/address/0x3d1c0ff97a603ca5edadc7737c0bb6d4d4fd1675) |
+| Production Safe         | [`0xF15f…a31f`](https://sepolia.etherscan.io/address/0xF15f852D0669cac06c3e00E7b5E701A5Dd93a31f) |
+| Safe module             | [`0x2EEf…C162`](https://sepolia.etherscan.io/address/0x2EEf405eBe209eA4261Bc77e665e535C29feC162) |
+| Compatible Governor     | [`0x061C…c12d`](https://sepolia.etherscan.io/address/0x061C799DC284b0Cd0501b442b8a4e262c31Ac12d) |
+| Real TimelockController | [`0x66F0…Dc3b`](https://sepolia.etherscan.io/address/0x66F0a59bA4d5f6C1E3ee4251E77D41Ce97A9Dc3b) |
+
+Read the [live verification report](.thoughts/verification/2026-08-01-phase6-sepolia-live-verification.md)
+or inspect the [machine-readable checkpoint](deployments/sepolia/phase6-live.json).
+
+![NoxVote trust and evidence boundary](https://raw.githubusercontent.com/Blockchain-Oracle/noxlimit/main/assets/architecture/trust-evidence-boundary.png)
+
+## Run locally
+
+### Requirements
+
+- Node.js `24.x`
+- pnpm `10.33.0`
+- Foundry
+- Docker, for the released Nox integration stack
+
+### Install and open the product
+
+```bash
+pnpm install
+pnpm apps:dev
+```
+
+The landing page opens on `http://localhost:5178`. In separate terminals:
+
+```bash
+pnpm app:dev
+pnpm docs:dev
+```
+
+### Verify the implementation
+
+```bash
+pnpm apps:build
+pnpm test:forge
+pnpm test:integration
+```
+
+`test:integration` boots the released Gateway, KMS, JetStream, and Runner stack in Docker. It is the
+real local Nox path—not a mock supporting the product claim.
+
+## Repository map
+
+| Path                                         | Purpose                                                                        |
+| -------------------------------------------- | ------------------------------------------------------------------------------ |
+| [`apps/landing`](apps/landing)               | Public ORBIT launch page                                                       |
+| [`apps/app`](apps/app)                       | Proposal, ballot, receipt, tally, execution, and verification product          |
+| [`apps/docs`](apps/docs)                     | Product and trust-boundary documentation                                       |
+| [`src/contracts`](src/contracts)             | Production confidential core, Safe module, Governor, strategies, and factories |
+| [`test/foundry`](test/foundry)               | Unit, negative-proof, integration-model, gas, and invariant suites             |
+| [`test/integration`](test/integration)       | Released Nox Docker-stack integration harness                                  |
+| [`assets/architecture`](assets/architecture) | Editable Mermaid sources and rendered architecture diagrams                    |
+| [`assets/brand`](assets/brand)               | ORBIT identity source and review board                                         |
+| [`assets/launch`](assets/launch)             | README hero, demo thumbnail, social card, and their deterministic HTML sources |
+
+## Privacy and security boundaries
+
+- **Confidentiality, not anonymity.** Wallet address and participation remain public.
+- **TEE compute, not ZK or FHE.** Nox performs confidential computation inside its released TEE
+  stack.
+- **Gateway trust is explicit.** The attested Handle Gateway receives the plaintext encoded choice
+  during encryption.
+- **Replacement is recovery, not receipt-freeness.** It offers a public chance to change a vote; it
+  does not recreate MACI's coercion resistance.
+- **The privacy floor matters.** Low-turnout results remain withheld because a small aggregate can
+  reveal individual choices.
+- **Handle access is durable.** Revoking an ACL does not erase knowledge already granted.
+- **Key custody is not threshold custody.** The current single-node Nox KMS is not presented as having
+  threshold-Keyper compromise resistance.
+
+NoxVote is a focused answer to one question: **where should a DAO's private decisions live?**
+
+**On Nox—while the DAO itself stays exactly where it is.**

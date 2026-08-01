@@ -1,0 +1,213 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>NoxVote demo thumbnail</title>
+    <style>
+      @font-face {
+        font-family: "Sofia Sans";
+        src: url("../../packages/ui/src/fonts/sofia-sans-variable.woff2")
+          format("woff2");
+      }
+
+      @font-face {
+        font-family: "JetBrains Mono";
+        src: url("../../packages/ui/src/fonts/jetbrains-mono-variable.woff2")
+          format("woff2");
+      }
+
+      :root {
+        --paper: #f3f0ee;
+        --ink: #141413;
+        --ember: #c04a1e;
+        --dust: #d1cdc7;
+      }
+
+      * {
+        box-sizing: border-box;
+      }
+
+      html,
+      body {
+        width: 1440px;
+        height: 730px;
+        margin: 0;
+        overflow: hidden;
+        background: var(--ink);
+      }
+
+      body {
+        font-family: "Sofia Sans", sans-serif;
+      }
+
+      main {
+        position: relative;
+        width: 100%;
+        height: 100%;
+        overflow: hidden;
+        border: 14px solid var(--ink);
+      }
+
+      .proof {
+        position: absolute;
+        inset: 0;
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        object-position: 50% 12%;
+        filter: saturate(0.72) contrast(1.02);
+        transform: scale(1.045);
+      }
+
+      .veil {
+        position: absolute;
+        inset: 0;
+        background:
+          linear-gradient(
+            90deg,
+            rgba(20, 20, 19, 0.9) 0%,
+            rgba(20, 20, 19, 0.66) 43%,
+            rgba(20, 20, 19, 0.36) 100%
+          ),
+          linear-gradient(0deg, rgba(20, 20, 19, 0.75) 0%, transparent 52%);
+      }
+
+      .brand {
+        position: absolute;
+        top: 48px;
+        left: 52px;
+        display: flex;
+        min-width: 350px;
+        align-items: center;
+        gap: 20px;
+        padding: 16px 24px 16px 18px;
+        border-radius: 999px;
+        background: var(--paper);
+        color: var(--ink);
+        box-shadow: 0 18px 42px rgba(0, 0, 0, 0.22);
+      }
+
+      .brand img {
+        width: 72px;
+        height: 72px;
+      }
+
+      .brand-name {
+        font-size: 32px;
+        font-weight: 690;
+        letter-spacing: -0.03em;
+      }
+
+      .brand-line {
+        margin-top: 3px;
+        color: #696969;
+        font:
+          560 11px/1 "JetBrains Mono",
+          monospace;
+        letter-spacing: 0.09em;
+        text-transform: uppercase;
+      }
+
+      .headline {
+        position: absolute;
+        top: 230px;
+        left: 60px;
+        max-width: 560px;
+        color: var(--paper);
+        font-size: 72px;
+        font-weight: 720;
+        letter-spacing: -0.055em;
+        line-height: 0.9;
+        text-transform: uppercase;
+      }
+
+      .play {
+        position: absolute;
+        top: 50%;
+        left: 73%;
+        display: grid;
+        width: 144px;
+        height: 144px;
+        transform: translate(-50%, -50%);
+        place-items: center;
+        border: 3px solid var(--paper);
+        border-radius: 50%;
+        background: var(--ember);
+        box-shadow: 0 18px 52px rgba(0, 0, 0, 0.35);
+      }
+
+      .play::after {
+        width: 0;
+        height: 0;
+        margin-left: 10px;
+        border-top: 25px solid transparent;
+        border-bottom: 25px solid transparent;
+        border-left: 39px solid var(--paper);
+        content: "";
+      }
+
+      .watch {
+        position: absolute;
+        bottom: 42px;
+        left: 52px;
+        display: flex;
+        align-items: center;
+        gap: 14px;
+        padding: 16px 24px;
+        border: 1px solid rgba(243, 240, 238, 0.55);
+        border-radius: 999px;
+        background: rgba(20, 20, 19, 0.72);
+        color: var(--paper);
+        font:
+          650 19px/1 "JetBrains Mono",
+          monospace;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+        backdrop-filter: blur(12px);
+      }
+
+      .watch-dot {
+        width: 12px;
+        height: 12px;
+        border-radius: 50%;
+        background: var(--ember);
+      }
+
+      .proof-note {
+        position: absolute;
+        right: 52px;
+        bottom: 58px;
+        color: var(--paper);
+        font:
+          560 12px/1 "JetBrains Mono",
+          monospace;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+      }
+    </style>
+  </head>
+  <body>
+    <main>
+      <img
+        class="proof"
+        src="app-proof-governor.png"
+        alt="NoxVote proof screen"
+      />
+      <div class="veil"></div>
+      <div class="brand">
+        <img src="../brand/noxvote-mark.svg" alt="" />
+        <div>
+          <div class="brand-name">NoxVote</div>
+          <div class="brand-line">Confidential DAO governance</div>
+        </div>
+      </div>
+      <div class="headline">Where private DAO lives.</div>
+      <div class="play"></div>
+      <div class="watch">
+        <span class="watch-dot"></span>Watch the demo · 1:00
+      </div>
+      <div class="proof-note">Real Nox · Safe + Governor · Sepolia</div>
+    </main>
+  </body>
+</html>

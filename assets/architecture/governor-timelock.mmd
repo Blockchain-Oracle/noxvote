@@ -1,0 +1,40 @@
+%%{init: {"theme":"base","fontFamily":"Arial, sans-serif","themeVariables":{"background":"#F4EFE6","primaryColor":"#FBF7EF","primaryTextColor":"#1E1D1A","primaryBorderColor":"#1E1D1A","lineColor":"#686157","secondaryColor":"#E9E1D4","tertiaryColor":"#F1D7CA","fontFamily":"Sofia Sans, Arial, sans-serif","fontSize":"18px"},"flowchart":{"curve":"basis","nodeSpacing":42,"rankSpacing":58,"htmlLabels":true}}}%%
+flowchart TB
+  subgraph VOTE["PROPOSAL + CONFIDENTIAL VOTE"]
+    direction LR
+    PROPOSE["NORMAL GOVERNOR PROPOSAL<br/>actions and proposal hash fixed"]
+    CORE["Governor-owned ballot core<br/>confidential voting period"]
+    PENDING["TALLY PENDING<br/>Nox resolves encrypted graph"]
+    PROPOSE --> CORE --> PENDING
+  end
+
+  subgraph GATE["VERDICT GATE"]
+    direction LR
+    VERDICT{"accepted verdict"}
+    STOP["REJECTED / WITHHELD<br/>cannot queue"]
+    SUCCESS["SUCCEEDED"]
+    VERDICT -->|"Rejected or no disclosure"| STOP
+    VERDICT -->|"Passed"| SUCCESS
+  end
+
+  subgraph HOST["NORMAL GOVERNOR EXECUTION"]
+    direction LR
+    QUEUE["QUEUE<br/>through TimelockController"]
+    DELAY["NORMAL TIMELOCK DELAY<br/>core cannot bypass"]
+    EXECUTE["EXECUTE<br/>original proposal actions<br/>verdict is proposal-bound"]
+    TARGET["Exact committed target(s)"]
+    QUEUE --> DELAY --> EXECUTE --> TARGET
+  end
+
+  VOTE -->|"accepted evidence"| GATE
+  GATE -->|"Passed"| HOST
+
+  classDef public fill:#FBF7EF,stroke:#1E1D1A,color:#1E1D1A,stroke-width:2px;
+  classDef verdict fill:#F1D7CA,stroke:#B94C28,color:#1E1D1A,stroke-width:2px;
+  classDef stop fill:#E9E1D4,stroke:#1E1D1A,color:#1E1D1A,stroke-width:2px,stroke-dasharray:6 4;
+  classDef action fill:#1E1D1A,stroke:#1E1D1A,color:#FBF7EF,stroke-width:2px;
+  class PROPOSE,CORE,PENDING,SUCCESS,QUEUE,DELAY,EXECUTE public;
+  class VERDICT verdict;
+  class STOP stop;
+  class TARGET action;
+  linkStyle default stroke:#686157,stroke-width:2px;

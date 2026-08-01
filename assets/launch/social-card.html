@@ -1,0 +1,158 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>NoxVote social card</title>
+    <style>
+      @font-face {
+        font-family: "Sofia Sans";
+        src: url("../../packages/ui/src/fonts/sofia-sans-variable.woff2")
+          format("woff2");
+      }
+
+      @font-face {
+        font-family: "JetBrains Mono";
+        src: url("../../packages/ui/src/fonts/jetbrains-mono-variable.woff2")
+          format("woff2");
+      }
+
+      * {
+        box-sizing: border-box;
+      }
+
+      html,
+      body {
+        width: 1280px;
+        height: 640px;
+        margin: 0;
+        overflow: hidden;
+        background: #141413;
+        color: #f2efe7;
+      }
+
+      body {
+        font-family: "Sofia Sans", sans-serif;
+      }
+
+      main {
+        position: relative;
+        width: 100%;
+        height: 100%;
+        padding: 54px 58px;
+      }
+
+      .brand {
+        display: flex;
+        align-items: center;
+        gap: 14px;
+        font-size: 22px;
+        font-weight: 720;
+      }
+
+      .mark {
+        position: relative;
+        width: 42px;
+        height: 42px;
+      }
+
+      .ring {
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        width: 34px;
+        height: 34px;
+        border: 3px solid #f2efe7;
+        border-radius: 50%;
+      }
+
+      .dot {
+        position: absolute;
+        top: 0;
+        right: 0;
+        width: 13px;
+        height: 13px;
+        border-radius: 50%;
+        background: #c04a1e;
+      }
+
+      .kicker {
+        margin-top: 84px;
+        color: #db6740;
+        font:
+          650 14px/1 "JetBrains Mono",
+          monospace;
+        letter-spacing: 0.13em;
+        text-transform: uppercase;
+      }
+
+      h1 {
+        width: 910px;
+        margin: 20px 0 0;
+        font-size: 88px;
+        font-weight: 745;
+        letter-spacing: -0.062em;
+        line-height: 0.9;
+        text-transform: uppercase;
+      }
+
+      .footer {
+        position: absolute;
+        right: 58px;
+        bottom: 48px;
+        left: 58px;
+        display: flex;
+        justify-content: space-between;
+        padding-top: 16px;
+        border-top: 1px solid #494844;
+        font:
+          570 13px/1 "JetBrains Mono",
+          monospace;
+        letter-spacing: 0.06em;
+        text-transform: uppercase;
+      }
+
+      .footer span:last-child {
+        color: #db6740;
+      }
+
+      .orbit {
+        position: absolute;
+        top: -175px;
+        right: -215px;
+        width: 680px;
+        height: 680px;
+        border: 3px solid #f2efe7;
+        border-radius: 50%;
+      }
+
+      .satellite {
+        position: absolute;
+        top: 78px;
+        right: 96px;
+        width: 90px;
+        height: 90px;
+        border-radius: 50%;
+        background: #c04a1e;
+      }
+    </style>
+  </head>
+  <body>
+    <main>
+      <div class="brand">
+        <div class="mark">
+          <span class="ring"></span><span class="dot"></span>
+        </div>
+        <span>NoxVote</span>
+      </div>
+      <div class="kicker">Confidential governance on iExec Nox</div>
+      <h1>Where private DAO lives.</h1>
+      <div class="footer">
+        <span>Existing Safe or Governor · one public verdict</span>
+        <span>Live on Sepolia · 37/37</span>
+      </div>
+      <div class="orbit"></div>
+      <div class="satellite"></div>
+    </main>
+  </body>
+</html>

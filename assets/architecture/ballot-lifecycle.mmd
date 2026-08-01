@@ -1,0 +1,37 @@
+%%{init: {"theme":"base","fontFamily":"Arial, sans-serif","themeVariables":{"background":"#F4EFE6","primaryColor":"#FBF7EF","primaryTextColor":"#1E1D1A","primaryBorderColor":"#1E1D1A","lineColor":"#686157","secondaryColor":"#E9E1D4","tertiaryColor":"#F1D7CA","fontFamily":"Sofia Sans, Arial, sans-serif","fontSize":"18px"},"flowchart":{"curve":"basis","nodeSpacing":36,"rankSpacing":52,"htmlLabels":true}}}%%
+flowchart TB
+  subgraph RECORD["PUBLIC BALLOT RECORD"]
+    direction LR
+    SCHEDULED["SCHEDULED<br/>action committed"] --> OPEN["OPEN<br/>eligible records accepted"]
+    OPEN --> SUBMITTED["SUBMITTED<br/>wallet transaction pending"]
+    SUBMITTED -->|"accepted on-chain"| RECORDED["RECORDED<br/>effective encrypted ballot"]
+    RECORDED -. "replace before close<br/>same participant" .-> SUBMITTED
+    OPEN -->|"deadline"| CLOSED["CLOSED<br/>no new records"]
+    RECORDED -->|"deadline"| CLOSED
+  end
+
+  subgraph RESOLVE["PRIVACY FLOOR + CONFIDENTIAL RESOLUTION"]
+    direction LR
+    FLOOR{"privacy floor met?"}
+    WITHHELD["WITHHELD<br/>no proof request<br/>no verdict"]
+    PENDING["TALLY PENDING<br/>expected verdict handle fixed"]
+    READY["PROOF READY<br/>candidate evidence available"]
+    FINAL["PASSED / REJECTED<br/>only verdict public"]
+    FLOOR -->|"no"| WITHHELD
+    FLOOR -->|"yes"| PENDING --> READY --> FINAL
+  end
+
+  RECORD -->|"deadline"| RESOLVE
+  RESOLVE -->|"Passed only"| HOST["HOST EXECUTION<br/>exact action path"]
+
+  classDef state fill:#FBF7EF,stroke:#1E1D1A,color:#1E1D1A,stroke-width:2px;
+  classDef decision fill:#F1D7CA,stroke:#B94C28,color:#1E1D1A,stroke-width:2px;
+  classDef stop fill:#E9E1D4,stroke:#1E1D1A,color:#1E1D1A,stroke-width:2px,stroke-dasharray:6 4;
+  classDef verdict fill:#1E1D1A,stroke:#1E1D1A,color:#FBF7EF,stroke-width:2px;
+  classDef action fill:#FBF7EF,stroke:#B94C28,color:#1E1D1A,stroke-width:3px;
+  class SCHEDULED,OPEN,SUBMITTED,RECORDED,CLOSED,PENDING,READY state;
+  class FLOOR decision;
+  class WITHHELD stop;
+  class FINAL verdict;
+  class HOST action;
+  linkStyle default stroke:#686157,stroke-width:2px;

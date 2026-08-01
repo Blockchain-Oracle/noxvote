@@ -1,0 +1,63 @@
+%%{init: {"theme":"base","fontFamily":"Arial, sans-serif","themeVariables":{"background":"#F4EFE6","primaryColor":"#FBF7EF","primaryTextColor":"#1E1D1A","primaryBorderColor":"#1E1D1A","lineColor":"#686157","secondaryColor":"#E9E1D4","tertiaryColor":"#F1D7CA","fontFamily":"Sofia Sans, Arial, sans-serif","fontSize":"18px"},"flowchart":{"curve":"basis","nodeSpacing":50,"rankSpacing":62,"htmlLabels":true}}}%%
+flowchart TB
+  PRODUCT["NOXVOTE CLAIM BOUNDARY"]
+
+  subgraph PUBLIC["PUBLIC"]
+    direction LR
+    P1["wallet + eligibility"]
+    P2["participation + sequence"]
+    P3["opaque handles + proofs"]
+    P4["Passed / Rejected"]
+    P5["exact action + receipt"]
+  end
+
+  subgraph TRUST["TRUSTED SYSTEMS"]
+    direction LR
+    T1["Handle Gateway<br/>encoded plaintext input"]
+    T2["Current Nox KMS<br/>single-node key authority"]
+    T3["Runner / JetStream<br/>encrypted graph + delivery"]
+  end
+
+  subgraph PRIVATE["CONFIDENTIAL OUTPUTS"]
+    direction LR
+    C1["individual choices"]
+    C2["exact totals"]
+    C3["running leader"]
+  end
+
+  subgraph NOTCLAIMED["NOT CLAIMED"]
+    direction LR
+    N1["voter anonymity"]
+    N2["browser-only encryption"]
+    N3["MACI receipt-freeness"]
+    N4["FHE or zero knowledge"]
+    N5["threshold key custody"]
+  end
+
+  subgraph EVIDENCE["LIVE EVIDENCE"]
+    direction LR
+    E1["Sepolia<br/>37 / 37 successful"]
+    E2["Safe path<br/>exact target once"]
+    E3["Governor + Timelock<br/>exact target once"]
+    E4["Forge<br/>119 / 119"]
+  end
+
+  PRODUCT --> PUBLIC
+  PRODUCT --> TRUST
+  PRODUCT --> PRIVATE
+  PRODUCT --> NOTCLAIMED
+  PRODUCT --> EVIDENCE
+
+  classDef root fill:#1E1D1A,stroke:#1E1D1A,color:#FBF7EF,stroke-width:2px;
+  classDef public fill:#FBF7EF,stroke:#1E1D1A,color:#1E1D1A,stroke-width:2px;
+  classDef trusted fill:#F1D7CA,stroke:#B94C28,color:#1E1D1A,stroke-width:2px;
+  classDef private fill:#E9E1D4,stroke:#1E1D1A,color:#1E1D1A,stroke-width:2px;
+  classDef warning fill:#F4EFE6,stroke:#B94C28,color:#1E1D1A,stroke-width:2px,stroke-dasharray:6 4;
+  classDef evidence fill:#FBF7EF,stroke:#B94C28,color:#1E1D1A,stroke-width:3px;
+  class PRODUCT root;
+  class P1,P2,P3,P4,P5 public;
+  class T1,T2,T3 trusted;
+  class C1,C2,C3 private;
+  class N1,N2,N3,N4,N5 warning;
+  class E1,E2,E3,E4 evidence;
+  linkStyle default stroke:#686157,stroke-width:2px;

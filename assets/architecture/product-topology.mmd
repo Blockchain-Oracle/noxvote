@@ -1,0 +1,48 @@
+%%{init: {"theme":"base","fontFamily":"Arial, sans-serif","themeVariables":{"background":"#F4EFE6","primaryColor":"#FBF7EF","primaryTextColor":"#1E1D1A","primaryBorderColor":"#1E1D1A","lineColor":"#686157","secondaryColor":"#E9E1D4","tertiaryColor":"#F1D7CA","clusterBkg":"#F9F4EB","clusterBorder":"#A49B8E","fontFamily":"Sofia Sans, Arial, sans-serif","fontSize":"18px"},"flowchart":{"curve":"basis","nodeSpacing":42,"rankSpacing":58,"htmlLabels":true}}}%%
+flowchart LR
+  subgraph CLIENT["PUBLIC UI"]
+    direction TB
+    V["Voter wallet"]
+    UI["NoxVote UI<br/>and verification center"]
+  end
+
+  subgraph TRUST["INPUT TRUST"]
+    direction TB
+    HG["Attested Handle Gateway<br/>sees encoded choice"]
+  end
+
+  subgraph CHAIN["PUBLIC CHAIN"]
+    direction TB
+    CORE["Confidential ballot core<br/>rules · participation · bindings"]
+    OBS["Any observer / finalizer"]
+    ADAPTER["Safe module<br/>or compatible Governor"]
+    ACTION["Exact committed action"]
+  end
+
+  subgraph NOX["NOX COMPUTE"]
+    direction LR
+    ING["Ingestor"] --> JS["JetStream"] --> RUN["Nox Runner"]
+    KMS["Current Nox KMS<br/>single-node key authority"] --> RUN
+  end
+
+  V -->|"choice via released SDK"| HG
+  HG -->|"encrypted handle + input proof"| V
+  V -->|"opaque handle / proof transaction"| CORE
+  CORE -->|"Nox operation events"| ING
+  RUN -->|"resolve encrypted graph"| HG
+  OBS -->|"fetch exact verdict evidence"| HG
+  OBS -->|"finalize expected handle"| CORE
+  CORE -->|"Passed or Rejected only"| ADAPTER
+  ADAPTER -->|"authorized once"| ACTION
+  UI -->|"read public state"| CORE
+  UI -->|"show host execution"| ADAPTER
+
+  classDef public fill:#FBF7EF,stroke:#1E1D1A,color:#1E1D1A,stroke-width:2px;
+  classDef trusted fill:#F1D7CA,stroke:#B94C28,color:#1E1D1A,stroke-width:2px;
+  classDef private fill:#1E1D1A,stroke:#1E1D1A,color:#FBF7EF,stroke-width:2px;
+  classDef action fill:#E9E1D4,stroke:#B94C28,color:#1E1D1A,stroke-width:3px;
+  class V,UI,CORE,OBS,ADAPTER public;
+  class HG trusted;
+  class ING,JS,RUN,KMS private;
+  class ACTION action;
+  linkStyle default stroke:#686157,stroke-width:2px;
