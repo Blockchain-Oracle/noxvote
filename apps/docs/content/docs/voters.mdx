@@ -1,0 +1,58 @@
+---
+title: Voter guide
+description: What you see, what you sign, what becomes public, and how vote replacement works.
+---
+
+## Eligibility and weight
+
+Eligibility and voting weight are public, resolved by the ballot's committed strategy: either
+token voting power at the committed snapshot (IVotes) or a weighted allowlist whose Merkle
+leaves bind chain, host, snapshot, your wallet, and your weight. Your weight is **fixed at
+your first cast** — later token movements do not change it.
+
+## Casting
+
+You choose For, Against, or Abstain. The SDK sends the encoded choice to the attested Handle
+Gateway, which encrypts it and returns the handle and proof your wallet transaction carries:
+
+```ts
+const { handle, handleProof } = await handleClient.encryptInput(choice, 'uint16', core)
+await core.castVote(ballotId, sequence, handle, handleProof, eligibilityProof)
+```
+
+The public transaction contains the opaque handle — never your choice. Your operation then
+moves **Submitted → Computing → Recorded**, and the receipt you get back confirms *status*,
+not your plaintext choice. No progress percentage is ever shown, because none is knowable.
+
+Every representable input is a defined choice: any value other than the canonical
+For/Against/Abstain encodings is deterministically normalized to **Abstain**. There is no
+hidden "invalid ballot" class that could leak information later.
+
+## Replacing your vote
+
+<Mermaid
+  chart={`
+stateDiagram-v2
+    direction LR
+    s1: Cast (sequence 1)
+    s2: Replacement (sequence 2)
+    s3: Replacement (sequence 3)
+    [*] --> s1
+    s1 --> s2: before close
+    s2 --> s3: before close
+    s3 --> [*]: newest Recorded counts
+`}
+/>
+
+Before close you may replace your vote up to **two times**, in strict sequence. The newest
+accepted operation is the one that counts; the encrypted accounting removes your previous
+contribution and adds the new one without either becoming public. Replacement is a
+coercion-recovery window — the fact and timing of your replacement are public, its content is
+not.
+
+## What counts toward the privacy floor
+
+Unique eligible wallets whose **newest effective operation is Recorded**. Abstain counts.
+Replacements do not add a second participant. Pending, failed, rejected, and stale operations
+do not count. You always see participation progress against the floor — never a running
+tally, never a projected winner.

@@ -1,0 +1,43 @@
+---
+title: Deployed addresses
+description: Where the Sepolia addresses will land, and the local development profile.
+---
+
+## Ethereum Sepolia (chain 11155111)
+
+**Deployment authorized, not yet broadcast.** The dedicated deployment track holds a passing
+read-only preflight against every live dependency; the NoxVote contract addresses land here —
+each linked to [Sepolia Etherscan](https://sepolia.etherscan.io) — the moment the public
+deployment checkpoint is published. Until then, no NoxVote contract should be assumed live,
+and nothing elsewhere in these docs claims otherwise.
+
+### NoxVote contracts (pending the deployment checkpoint)
+
+| Contract | Address |
+| --- | --- |
+| `ConfidentialGovernanceFactory` (v1) | pending |
+| `IVotesSnapshotStrategy` | pending |
+| `MerkleWeightedAllowlistStrategy` | pending |
+| Demo Safe + `SafeConfidentialVotingModule` + core | pending |
+
+### Official pre-existing deployments (verified by the preflight)
+
+These are not deployed by NoxVote — they are the official live contracts the stack binds to,
+byte-verified against their expected code hashes:
+
+| Contract | Address |
+| --- | --- |
+| `NoxCompute` proxy (official, v0.2.4) | [`0x24ef36ec5b626d7dcd09a98f3083c2758f0f77bf`](https://sepolia.etherscan.io/address/0x24ef36ec5b626d7dcd09a98f3083c2758f0f77bf) |
+| Official `MultiSendCallOnly` (Safe 1.5.0) | [`0xA83c336B20401Af773B6219BA5027174338D1836`](https://sepolia.etherscan.io/address/0xA83c336B20401Af773B6219BA5027174338D1836) |
+
+## Local development profile
+
+The complete stack runs locally against the released Nox Docker images — this is the same
+environment the [quick start](/docs/quickstart) uses and the judged demo's fallback:
+
+```bash
+pnpm test:integration   # boots Handle Gateway, KMS, ingestor, JetStream, Runner
+```
+
+The Hardhat Nox plugin manages the containers; contracts deploy fresh each run, so the local
+profile needs no address table.

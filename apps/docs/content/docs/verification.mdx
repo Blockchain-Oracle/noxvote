@@ -1,0 +1,47 @@
+---
+title: Verify a result
+description: What the decryption proof actually checks, what module state binds, and what you can independently inspect on-chain.
+---
+
+A confidentiality claim is only as good as what you can check. Here is exactly what the
+evidence proves — and what it does not.
+
+## What the proof checks
+
+Finalization accepts one piece of evidence: the configured Gateway signer's EIP-712 signature
+over the **exact verdict handle stored for that proposal** and its decrypted boolean result
+(domain: `NoxCompute`, the chain ID, the NoxCompute contract). The core validates:
+
+- the signature recovers to the configured Gateway signer;
+- the handle is the one expected verdict handle stored at tally request — no other handle is
+  accepted;
+- the decrypted payload is a canonical boolean (`0x00`/`0x01`, exactly one byte);
+- the chain domain matches — foreign-chain and foreign-host evidence rejects;
+- finalization happens exactly once.
+
+Short, mutated, wrong-signer, wrong-domain, wrong-handle, malformed-length, and
+non-canonical-boolean evidence each reject independently, leaving the state unchanged.
+
+## What module state binds
+
+The proposal's committed action hash, dates, snapshot, quorum, privacy floor, and replacement
+rule are immutable from registration. The verdict handle is derived from the ballot's
+domain-separated ID, so identical encrypted inputs on two proposals still produce different
+expected verdict handles — cross-proposal and cross-host replay cannot work.
+
+## What you can inspect on-chain
+
+- **ACL evidence**: every submitted ballot handle remains non-public
+  (`isPubliclyDecryptable == false`), no viewer grant is ever emitted, and exactly one handle
+  — the verdict — is marked publicly decryptable, by the core, after close.
+- **Participation**: recorded unique wallets and weight, against the committed floor and
+  quorum.
+- **Execution match**: the executed Safe/Governor action recomputes to the registered action
+  hash. Anything altered rejects.
+
+## What the proof is not
+
+It is a Gateway signature over a decryption, **not** a SNARK over the tally arithmetic or the
+full private operation history. Proposal binding, expected type, and execute-once behavior
+come from module state; trust in the computation itself rests on the parties named in the
+trust boundary. Read [Honest limits](/docs/limits) — that page is part of this one.

@@ -1,0 +1,587 @@
+# Deployed addresses
+URL: https://docs.noxvote.xyz/docs/addresses
+Where the Sepolia addresses will land, and the local development profile.
+
+## Ethereum Sepolia (chain 11155111)
+
+**Deployment authorized, not yet broadcast.** The dedicated deployment track holds a passing
+read-only preflight against every live dependency; the NoxVote contract addresses land here —
+each linked to [Sepolia Etherscan](https://sepolia.etherscan.io) — the moment the public
+deployment checkpoint is published. Until then, no NoxVote contract should be assumed live,
+and nothing elsewhere in these docs claims otherwise.
+
+### NoxVote contracts (pending the deployment checkpoint)
+
+| Contract | Address |
+| --- | --- |
+| `ConfidentialGovernanceFactory` (v1) | pending |
+| `IVotesSnapshotStrategy` | pending |
+| `MerkleWeightedAllowlistStrategy` | pending |
+| Demo Safe + `SafeConfidentialVotingModule` + core | pending |
+
+### Official pre-existing deployments (verified by the preflight)
+
+These are not deployed by NoxVote — they are the official live contracts the stack binds to,
+byte-verified against their expected code hashes:
+
+| Contract | Address |
+| --- | --- |
+| `NoxCompute` proxy (official, v0.2.4) | [`0x24ef36ec5b626d7dcd09a98f3083c2758f0f77bf`](https://sepolia.etherscan.io/address/0x24ef36ec5b626d7dcd09a98f3083c2758f0f77bf) |
+| Official `MultiSendCallOnly` (Safe 1.5.0) | [`0xA83c336B20401Af773B6219BA5027174338D1836`](https://sepolia.etherscan.io/address/0xA83c336B20401Af773B6219BA5027174338D1836) |
+
+## Local development profile
+
+The complete stack runs locally against the released Nox Docker images — this is the same
+environment the [quick start](/docs/quickstart) uses and the judged demo's fallback:
+
+```bash
+pnpm test:integration   # boots Handle Gateway, KMS, ingestor, JetStream, Runner
+```
+
+The Hardhat Nox plugin manages the containers; contracts deploy fresh each run, so the local
+profile needs no address table.
+
+---
+
+# Architecture
+URL: https://docs.noxvote.xyz/docs/architecture
+The immutable contract stack — ballot core, eligibility strategies, Safe module, compatible Governor, and the versioned factory that deploys them.
+
+Every production contract is immutable: no owner, no proxy, no upgrade path. A versioned
+factory deploys complete stacks and emits full code-hash evidence, so what you verified is
+what runs.
+
+<Mermaid
+  chart={`
+flowchart TB
+    F["ConfidentialGovernanceFactory<br/>version 1 - pinned creation-code hashes"]
+
+    subgraph SAFE["Safe path"]
+        S["Official Safe 1.5.0"] -- enableModule --> M["SafeConfidentialVotingModule"]
+        M -- constructs --> C1["ConfidentialBallotCore"]
+        M -- "batch actions via delegatecall" --> MS["Official MultiSendCallOnly"]
+    end
+
+    subgraph GOV["Governor path"]
+        G["ConfidentialGovernor<br/>OpenZeppelin 5.6.1"] -- constructs --> C2["ConfidentialBallotCore"]
+        G -- "queue / execute" --> T["TimelockController"]
+    end
+
+    F -- deploySafeModule --> M
+    F -- deployGovernor --> G
+    F -- "deploys once, shared" --> E["IVotesSnapshotStrategy<br/>MerkleWeightedAllowlistStrategy"]
+    C1 -- "encrypted operations" --> N["NoxCompute<br/>confidential compute + ACL"]
+    C2 -- "encrypted operations" --> N
+    E -.-> C1
+    E -.-> C2
+`}
+/>
+
+## The pieces
+
+- **ConfidentialBallotCore** — adapter-owned; each host constructs its own. Holds the
+  committed ballot rules, enforces eligibility and sequence/replacement law, runs the
+  encrypted accounting, requests the tally, and finalizes the verdict from Gateway evidence.
+  Every persistent Nox ACL grant targets the core itself — never a viewer.
+- **Eligibility strategies** — public eligibility and first-cast weight only:
+  `IVotesSnapshotStrategy` (token voting power at a snapshot) and
+  `MerkleWeightedAllowlistStrategy` (a domain-separated weighted allowlist; each leaf binds
+  chain, host, snapshot, voter, and weight).
+- **SafeConfidentialVotingModule** — immutably bound to one Safe, one core, and the official
+  `MultiSendCallOnly`. Registration is Safe-only; execution is permissionless, exact,
+  and execute-once with rollback-safe retry.
+- **ConfidentialGovernor** — composes OpenZeppelin `Governor` with every plaintext cast route
+  disabled. Truthful detailed states (`TallyPending`, `Withheld`, …) alongside the standard
+  enum; Passed proposals queue through a real `TimelockController`.
+- **Factory** — publishes contract/rules version 1, pins the reviewed creation-code hashes,
+  revalidates every shared dependency's runtime hash before CREATE, and emits complete
+  address + code-hash evidence per deployment.
+
+## Verified behavior
+
+The local gate behind these docs: **119 Forge tests**, a stateful invariant profile of
+**960,000 modeled calls** (one effective weight per voter, floor monotonicity, finalize-once,
+execute-once, exact action binding), a released-stack proof-negative matrix (wrong signer,
+domain, handle, encoding, replay — all reject independently), and **33/33** consecutive
+released Docker-stack cases including Runner restart and JetStream redelivery recovery.
+
+---
+
+# How it works
+URL: https://docs.noxvote.xyz/docs/how-it-works
+Five lifecycle stages, what becomes public at each, and why only one value ever reaches the public record.
+
+Every ballot operation moves through five stages. What becomes public at each step: your
+wallet, your voting weight, and the time you acted. Your choice is not among them, at any
+stage.
+
+<Mermaid
+  chart={`
+sequenceDiagram
+    participant V as Voter wallet
+    participant G as Handle Gateway (attested)
+    participant C as Ballot core (on-chain)
+    participant N as Nox confidential compute
+
+    V->>G: Encoded choice (For / Against / Abstain)
+    G-->>V: Encrypted handle + input proof
+    V->>C: castVote(ballotId, sequence, handle, proof, eligibility)
+    Note over C: Public record - wallet, weight, time.<br/>Never the choice.
+    C->>N: Fold operation into sealed totals
+    N-->>C: Recorded (status only)
+    Note over C,N: After close, above the privacy floor
+    C->>N: requestTally - permissionless
+    N-->>C: One encrypted boolean verdict
+    N-->>C: Gateway-signed decryption proof
+    C->>C: finalize() - Passed or Rejected, once
+`}
+/>
+
+## The five stages
+
+1. **Preparing encrypted handle** — the SDK sends your encoded choice to the attested Handle
+   Gateway, which encrypts it and returns a handle and proof. The Gateway sees the input; this
+   is inside the declared trust boundary, and we say so plainly.
+2. **Ready for wallet** — the transaction is assembled, waiting for your signature.
+3. **Submitting** — the transaction goes on-chain. It contains the opaque handle, not your
+   choice. Your wallet and the time are now public.
+4. **Confidential computation** — Nox folds the operation into the sealed totals. No progress
+   figure is shown, because none is knowable.
+5. **Recorded** — a receipt confirms the operation status. Only an eligible wallet's newest
+   effective Recorded operation counts.
+
+## Replacement, floor, and the reveal
+
+Before close you may replace your vote up to two times (`sequence` 1 → 2 → 3). The newest
+accepted operation counts; a replacement never increases the unique-wallet count. Abstain is a
+real participation choice, and any non-canonical encrypted value is deterministically
+normalized to Abstain — there is no hidden validity class.
+
+At close, anyone may request the tally. Two rules then apply, in order:
+
+- Below the **privacy floor** (unique Recorded wallets), the result is **withheld** —
+  terminally, with no Nox call and no verdict handle at all.
+- At or above it, the core derives exactly one encrypted boolean — governance quorum met and
+  For weight above Against weight — and grants public decryption to that handle **only**.
+
+The contract accepts the configured Gateway's signed evidence for the exact stored verdict
+handle, validates encoding, domain, and replay, and finalizes **Passed** or **Rejected** once.
+Exact totals are not disclosed. Ever.
+
+---
+
+# Overview
+URL: https://docs.noxvote.xyz/docs
+What NoxVote is, what stays private, what stays public, and what is deliberately not promised.
+
+NoxVote turns on confidential voting for sensitive governance. Members' wallets and
+participation stay public, their For/Against/Abstain choices never appear on-chain or become
+public, and only the final Passed/Rejected verdict is revealed — after enough eligible wallets
+recorded operations. A Passed verdict can execute the exact Safe or Governor action everyone
+reviewed before voting.
+
+It is not a standalone DAO app. It is a **host-neutral confidential ballot core** with two
+production adapters: a Safe module (retrofit an existing Safe with a normal owner-threshold
+transaction) and a compatible OpenZeppelin Governor (native governance-framework integration
+with a real TimelockController).
+
+## Public and private, exactly
+
+| Always public | Never public |
+| --- | --- |
+| Your wallet address | Your choice |
+| Your voting weight | Anyone else's choice |
+| That you participated, and when | Exact option totals |
+| Operation status (Submitted / Computing / Recorded) | Intermediate encrypted values |
+| The committed action, rules, and dates | — |
+| The final verdict (above the privacy floor) | — |
+
+Two rules are committed before voting opens and never merged:
+
+- The **privacy floor** decides whether *any* result may be disclosed at all. Below it, the
+  outcome is **Result withheld** — no verdict, no totals, no manual release, nothing executes.
+  That is a designed outcome, not a failure.
+- The **governance quorum** decides whether the proposal passes, following the host's rule.
+
+## Where to go
+
+- [Quick start](/docs/quickstart) — run the full flow on the released local Nox stack.
+- [How it works](/docs/how-it-works) — the five lifecycle stages and the verdict-only reveal.
+- [Architecture](/docs/architecture) — the immutable contract stack.
+- [Integrate](/docs/integrate/deploy) — deploy through the versioned factory.
+- [Honest limits](/docs/limits) — what this does **not** promise. Read it before you rely on
+  any claim above.
+
+---
+
+# Deploy the contracts
+URL: https://docs.noxvote.xyz/docs/integrate/deploy
+Deploy a complete confidential voting stack through the versioned factory, with pinned creation-code hashes and full on-chain evidence.
+
+All production deployment goes through **`ConfidentialGovernanceFactory`** (contract/rules
+version 1). The factory owns one reviewed instance of each eligibility strategy, pins the
+exact reviewed creation-code hashes for everything it deploys, and revalidates every shared
+dependency's runtime code hash before any CREATE. If anything drifted, deployment reverts
+before a single contract exists.
+
+## Safe stack
+
+```solidity
+function deploySafeModule(
+    address safe,
+    uint32 organizationMinimumPrivacyFloor,
+    bytes calldata safeModuleCreationCode
+) external returns (SafeConfidentialVotingModule module, ConfidentialBallotCore core);
+```
+
+You supply the module creation bytecode; the factory accepts it only if it hashes to the
+pinned `SAFE_MODULE_CREATION_CODE_HASH`. One call creates a distinct immutable module whose
+constructor creates its own Safe-bound core, then emits `SafeModuleDeployed` with the
+version, every address (Safe, module, core, both strategies, `MultiSendCallOnly`), the
+organization privacy floor, and every code hash.
+
+## Governor stack
+
+```solidity
+function deployGovernor(
+    GovernorDeploymentConfig calldata config, // token, settings, quorum, floor, timelock delay
+    bytes calldata governorCreationCode,
+    bytes calldata timelockCreationCode
+) external returns (ConfidentialGovernor governor, TimelockController timelock, ConfidentialBallotCore core);
+```
+
+One atomic call deploys the `TimelockController`, the immutable Governor, and the
+Governor-owned core; grants **only the Governor** proposer/canceller authority; opens
+execution through the zero-address executor role; verifies timelock self-administration; and
+renounces (and verifies removal of) the factory's temporary admin. Deployment events bind the
+complete configuration hash plus creation- and runtime-code evidence.
+
+## After deployment
+
+Compare the emitted code hashes against your own build of the reviewed source, then record
+the addresses. The Ethereum Sepolia deployment addresses will be listed — with explorer
+links — on the [Deployed addresses](/docs/addresses) page once the deployment checkpoint is
+published.
+
+---
+
+# Governor path
+URL: https://docs.noxvote.xyz/docs/integrate/governor
+A compatible OpenZeppelin Governor whose only voting route is confidential, with truthful async states and a real TimelockController.
+
+`ConfidentialGovernor` composes OpenZeppelin 5.6.1 `Governor`, `GovernorSettings`,
+`GovernorVotes`, `GovernorVotesQuorumFraction`, and `GovernorTimelockControl` around an
+adapter-owned ballot core. It is deployed complete and immutable by the
+[factory](/docs/integrate/deploy), which wires the timelock roles and renounces admin.
+
+## Propose
+
+```solidity
+function proposeConfidential(
+    address[] memory targets,
+    uint256[] memory values,
+    bytes[] memory calldatas,
+    string memory description,
+    uint32 privacyFloor
+) public returns (uint256 proposalId, bytes32 ballotId);
+```
+
+`proposeConfidential` reproduces OpenZeppelin's proposer checks, creates a normal one- or
+multi-action proposal, then **atomically** registers its token snapshot, schedule, and action
+commitment in the core. If core registration fails, the Governor proposal rolls back.
+
+## What is deliberately disabled
+
+- Standard `propose` — every proposal must be confidential.
+- All five public plaintext cast routes, both internal cast overloads, and `_countVote` —
+  there is no plaintext ballot path to fall back to. Signature-based rejections do not
+  consume nonces.
+- Standard `cancel` — replaced by `cancelConfidential`, which allows the proposer to cancel
+  only while the ballot is still Scheduled and cancels Governor and core atomically.
+
+## Truthful states
+
+The detailed getter reports the real lifecycle: `Scheduled`, `Open`, `Closed`,
+`TallyPending`, `Withheld`, `Rejected`, `Passed`, `Queued`, `Executed`, `Canceled`. Standard
+Governor clients see the closest honest standard value — a closed-but-unresolved proposal
+reads `Pending` (never a premature `Succeeded`), `Withheld`/`Rejected` map to `Defeated`,
+`Passed` maps to `Succeeded`. Third-party Governor UIs may misread the compatibility
+`Pending` state; the detailed state is the truth.
+
+## Execution
+
+A finalized Passed proposal queues through the real `TimelockController` with the configured
+delay, exposes its exact ETA, and executes permissionlessly at the ETA — standard OpenZeppelin
+governance semantics, driven by a confidential verdict instead of a public tally.
+
+---
+
+# Safe path
+URL: https://docs.noxvote.xyz/docs/integrate/safe
+Retrofit an existing Safe with confidential voting - enable the module, register a committed proposal, and let anyone execute the Passed verdict exactly once.
+
+The Safe path is a retrofit: an official Safe 1.5.0 enables the deployed module through a
+normal owner-threshold transaction. No migration, no new wallet, no change to your owners.
+
+<Steps>
+<Step>
+
+### Enable the module
+
+From the Safe, execute `enableModule(module)`. The module's `isInstalled()` flips true. The
+module is immutably bound to this one Safe at construction — it cannot be pointed elsewhere.
+
+</Step>
+<Step>
+
+### Register a proposal (Safe-only)
+
+```solidity
+function registerProposal(
+    SafeAction[] calldata actions,          // exact ordered (to, value, data) bundle
+    SafeBallotConfig calldata ballotConfig  // eligibility, dates, quorum, floor, replacements
+) external onlySafe returns (bytes32 safeProposalId, bytes32 ballotId);
+```
+
+Registration is a Safe transaction, so it carries your normal owner threshold. The module
+derives a nonce-separated proposal ID, commits the hash of the exact ordered action bundle in
+both the module and the core, and stores the absolute governance quorum. Everything is fixed
+when the record opens — action, dates, snapshot, quorum, passage rule, privacy floor,
+replacement limit — and unchangeable afterwards.
+
+</Step>
+<Step>
+
+### Execute the verdict (anyone)
+
+```solidity
+function execute(bytes32 safeProposalId, SafeAction[] calldata actions) external;
+```
+
+Execution requires the core's final **Passed** result and a recomputed action hash identical
+to registration — altered target, value, data, or order rejects before any call. A single
+action executes as a direct Call; multiple actions pack through the official
+`MultiSendCallOnly` (runtime code hash revalidated at execution time), where one failing
+inner action rolls back the whole bundle. The proposal is consumed before the external call —
+reentrancy and replay are blocked — and a failed Safe execution rolls the flag back for an
+exact retry. The Safe owner nonce is never consumed.
+
+</Step>
+</Steps>
+
+Withheld, Rejected, and unresolved proposals cannot execute anything, and there is no
+plaintext fallback or administrator override anywhere in the path.
+
+---
+
+# Honest limits
+URL: https://docs.noxvote.xyz/docs/limits
+What NoxVote deliberately does not promise, and who you are trusting, named in full.
+
+Several of these are achievable, and some are ahead of us. None of them are what the module
+does today, so none of them are claimed today.
+
+## Not promised
+
+- **Client-side encryption.** The released SDK sends your encoded choice to iExec's attested
+  Handle Gateway, which encrypts it and returns the handle. The Gateway sees the input during
+  preparation. Nothing is encrypted in your browser, and we do not say it is.
+- **Anonymity.** Your wallet, your weight, your participation, and your replacement timing
+  are all on-chain and linkable. Only the choice is withheld.
+- **Receipt-freeness.** Nothing here stops you from proving to someone else how you voted, if
+  you decide to. MACI prevents convincing receipts through a hidden authenticated key/command
+  state; released Nox does not supply that mechanism.
+- **Bribe resistance.** Replacement voting raises the cost of buying a vote — the last
+  accepted operation counts — but a coercer can still supervise the final action.
+- **A full tally proof.** The accepted evidence is a Gateway signature over a decryption, not
+  a proof of the computation or the complete private operation history.
+- **Threshold key custody.** The released Nox stack uses **one KMS node holding the full
+  private key**. That is weaker than a threshold committee, where no single operator can
+  decrypt alone. It belongs here, not in a footnote.
+
+## Trusted today, named
+
+1. The Handle Gateway, which sees the input before it is sealed.
+2. The Nox TEE stack that performs the confidential computation.
+3. The single-node KMS holding the decryption key.
+4. The Gateway signer whose signature the evidence rests on.
+5. The deployed module code, which binds proposal, type, and replay.
+
+## What still holds
+
+Within that boundary, the load-bearing property survives: individual choices and exact totals
+never appear on-chain, are never published afterwards, and are never opened per-ballot at the
+end — unlike shielded-voting designs that reveal every ballot after close. Disclosure is one
+boolean, gated by a privacy floor, bound to one committed action.
+
+---
+
+# Quick start
+URL: https://docs.noxvote.xyz/docs/quickstart
+Run the complete confidential ballot — four wallets, one replacement, a sealed tally, one public verdict — on the released local Nox stack.
+
+The judged demo story runs end to end on your machine against the **released** Nox Docker
+stack: Handle Gateway, KMS, ingestor, JetStream, and Runner. Nothing is mocked.
+
+## Prerequisites
+
+- Node.js 22–24 and pnpm
+- Docker (running)
+- [Foundry](https://getfoundry.sh) (`forge` on your PATH)
+
+## Run it
+
+<Steps>
+<Step>
+
+### Install and verify the contracts
+
+```bash
+pnpm install
+forge test        # 119 tests, full suite green
+```
+
+</Step>
+<Step>
+
+### Run the full confidential flow
+
+```bash
+pnpm test:integration
+```
+
+The Hardhat Nox plugin boots the released Docker stack, then proves the whole story: four
+weighted Merkle-eligible wallets encrypt choices through the Handle Gateway and cast them,
+one voter replaces a vote twice (Against → Abstain → For), the ballot closes at privacy floor
+four, anyone requests the tally, and the core finalizes **Passed** from the Gateway's signed
+decryption proof — while every submitted ballot handle stays non-public.
+
+</Step>
+<Step>
+
+### Read the record
+
+The test asserts what the demo claims: recorded participation is public (4 wallets, weight
+10), no submitted handle is ever publicly decryptable, no viewer grant is emitted, and exactly
+one handle — the verdict — is marked publicly decryptable. Warm close-to-proof time is under
+0.6 seconds; the full path takes about 15 seconds.
+
+</Step>
+</Steps>
+
+## What just happened
+
+Choices were encrypted **before** the wallet transaction, so the public chain carries only
+opaque handles. The tally runs inside Nox's confidential compute; only one encrypted boolean —
+"did For outweigh Against?" — was ever allowed to become public. See
+[How it works](/docs/how-it-works) for each stage, and
+[Verify a result](/docs/verification) for exactly what the proof checks.
+
+---
+
+# Verify a result
+URL: https://docs.noxvote.xyz/docs/verification
+What the decryption proof actually checks, what module state binds, and what you can independently inspect on-chain.
+
+A confidentiality claim is only as good as what you can check. Here is exactly what the
+evidence proves — and what it does not.
+
+## What the proof checks
+
+Finalization accepts one piece of evidence: the configured Gateway signer's EIP-712 signature
+over the **exact verdict handle stored for that proposal** and its decrypted boolean result
+(domain: `NoxCompute`, the chain ID, the NoxCompute contract). The core validates:
+
+- the signature recovers to the configured Gateway signer;
+- the handle is the one expected verdict handle stored at tally request — no other handle is
+  accepted;
+- the decrypted payload is a canonical boolean (`0x00`/`0x01`, exactly one byte);
+- the chain domain matches — foreign-chain and foreign-host evidence rejects;
+- finalization happens exactly once.
+
+Short, mutated, wrong-signer, wrong-domain, wrong-handle, malformed-length, and
+non-canonical-boolean evidence each reject independently, leaving the state unchanged.
+
+## What module state binds
+
+The proposal's committed action hash, dates, snapshot, quorum, privacy floor, and replacement
+rule are immutable from registration. The verdict handle is derived from the ballot's
+domain-separated ID, so identical encrypted inputs on two proposals still produce different
+expected verdict handles — cross-proposal and cross-host replay cannot work.
+
+## What you can inspect on-chain
+
+- **ACL evidence**: every submitted ballot handle remains non-public
+  (`isPubliclyDecryptable == false`), no viewer grant is ever emitted, and exactly one handle
+  — the verdict — is marked publicly decryptable, by the core, after close.
+- **Participation**: recorded unique wallets and weight, against the committed floor and
+  quorum.
+- **Execution match**: the executed Safe/Governor action recomputes to the registered action
+  hash. Anything altered rejects.
+
+## What the proof is not
+
+It is a Gateway signature over a decryption, **not** a SNARK over the tally arithmetic or the
+full private operation history. Proposal binding, expected type, and execute-once behavior
+come from module state; trust in the computation itself rests on the parties named in the
+trust boundary. Read [Honest limits](/docs/limits) — that page is part of this one.
+
+---
+
+# Voter guide
+URL: https://docs.noxvote.xyz/docs/voters
+What you see, what you sign, what becomes public, and how vote replacement works.
+
+## Eligibility and weight
+
+Eligibility and voting weight are public, resolved by the ballot's committed strategy: either
+token voting power at the committed snapshot (IVotes) or a weighted allowlist whose Merkle
+leaves bind chain, host, snapshot, your wallet, and your weight. Your weight is **fixed at
+your first cast** — later token movements do not change it.
+
+## Casting
+
+You choose For, Against, or Abstain. The SDK sends the encoded choice to the attested Handle
+Gateway, which encrypts it and returns the handle and proof your wallet transaction carries:
+
+```ts
+const { handle, handleProof } = await handleClient.encryptInput(choice, 'uint16', core)
+await core.castVote(ballotId, sequence, handle, handleProof, eligibilityProof)
+```
+
+The public transaction contains the opaque handle — never your choice. Your operation then
+moves **Submitted → Computing → Recorded**, and the receipt you get back confirms *status*,
+not your plaintext choice. No progress percentage is ever shown, because none is knowable.
+
+Every representable input is a defined choice: any value other than the canonical
+For/Against/Abstain encodings is deterministically normalized to **Abstain**. There is no
+hidden "invalid ballot" class that could leak information later.
+
+## Replacing your vote
+
+<Mermaid
+  chart={`
+stateDiagram-v2
+    direction LR
+    s1: Cast (sequence 1)
+    s2: Replacement (sequence 2)
+    s3: Replacement (sequence 3)
+    [*] --> s1
+    s1 --> s2: before close
+    s2 --> s3: before close
+    s3 --> [*]: newest Recorded counts
+`}
+/>
+
+Before close you may replace your vote up to **two times**, in strict sequence. The newest
+accepted operation is the one that counts; the encrypted accounting removes your previous
+contribution and adds the new one without either becoming public. Replacement is a
+coercion-recovery window — the fact and timing of your replacement are public, its content is
+not.
+
+## What counts toward the privacy floor
+
+Unique eligible wallets whose **newest effective operation is Recorded**. Abstain counts.
+Replacements do not add a second participant. Pending, failed, rejected, and stale operations
+do not count. You always see participation progress against the floor — never a running
+tally, never a projected winner.

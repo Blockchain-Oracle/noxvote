@@ -1,0 +1,56 @@
+---
+title: Safe path
+description: Retrofit an existing Safe with confidential voting - enable the module, register a committed proposal, and let anyone execute the Passed verdict exactly once.
+---
+
+The Safe path is a retrofit: an official Safe 1.5.0 enables the deployed module through a
+normal owner-threshold transaction. No migration, no new wallet, no change to your owners.
+
+<Steps>
+<Step>
+
+### Enable the module
+
+From the Safe, execute `enableModule(module)`. The module's `isInstalled()` flips true. The
+module is immutably bound to this one Safe at construction — it cannot be pointed elsewhere.
+
+</Step>
+<Step>
+
+### Register a proposal (Safe-only)
+
+```solidity
+function registerProposal(
+    SafeAction[] calldata actions,          // exact ordered (to, value, data) bundle
+    SafeBallotConfig calldata ballotConfig  // eligibility, dates, quorum, floor, replacements
+) external onlySafe returns (bytes32 safeProposalId, bytes32 ballotId);
+```
+
+Registration is a Safe transaction, so it carries your normal owner threshold. The module
+derives a nonce-separated proposal ID, commits the hash of the exact ordered action bundle in
+both the module and the core, and stores the absolute governance quorum. Everything is fixed
+when the record opens — action, dates, snapshot, quorum, passage rule, privacy floor,
+replacement limit — and unchangeable afterwards.
+
+</Step>
+<Step>
+
+### Execute the verdict (anyone)
+
+```solidity
+function execute(bytes32 safeProposalId, SafeAction[] calldata actions) external;
+```
+
+Execution requires the core's final **Passed** result and a recomputed action hash identical
+to registration — altered target, value, data, or order rejects before any call. A single
+action executes as a direct Call; multiple actions pack through the official
+`MultiSendCallOnly` (runtime code hash revalidated at execution time), where one failing
+inner action rolls back the whole bundle. The proposal is consumed before the external call —
+reentrancy and replay are blocked — and a failed Safe execution rolls the flag back for an
+exact retry. The Safe owner nonce is never consumed.
+
+</Step>
+</Steps>
+
+Withheld, Rejected, and unresolved proposals cannot execute anything, and there is no
+plaintext fallback or administrator override anywhere in the path.

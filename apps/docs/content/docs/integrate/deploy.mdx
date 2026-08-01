@@ -1,0 +1,49 @@
+---
+title: Deploy the contracts
+description: Deploy a complete confidential voting stack through the versioned factory, with pinned creation-code hashes and full on-chain evidence.
+---
+
+All production deployment goes through **`ConfidentialGovernanceFactory`** (contract/rules
+version 1). The factory owns one reviewed instance of each eligibility strategy, pins the
+exact reviewed creation-code hashes for everything it deploys, and revalidates every shared
+dependency's runtime code hash before any CREATE. If anything drifted, deployment reverts
+before a single contract exists.
+
+## Safe stack
+
+```solidity
+function deploySafeModule(
+    address safe,
+    uint32 organizationMinimumPrivacyFloor,
+    bytes calldata safeModuleCreationCode
+) external returns (SafeConfidentialVotingModule module, ConfidentialBallotCore core);
+```
+
+You supply the module creation bytecode; the factory accepts it only if it hashes to the
+pinned `SAFE_MODULE_CREATION_CODE_HASH`. One call creates a distinct immutable module whose
+constructor creates its own Safe-bound core, then emits `SafeModuleDeployed` with the
+version, every address (Safe, module, core, both strategies, `MultiSendCallOnly`), the
+organization privacy floor, and every code hash.
+
+## Governor stack
+
+```solidity
+function deployGovernor(
+    GovernorDeploymentConfig calldata config, // token, settings, quorum, floor, timelock delay
+    bytes calldata governorCreationCode,
+    bytes calldata timelockCreationCode
+) external returns (ConfidentialGovernor governor, TimelockController timelock, ConfidentialBallotCore core);
+```
+
+One atomic call deploys the `TimelockController`, the immutable Governor, and the
+Governor-owned core; grants **only the Governor** proposer/canceller authority; opens
+execution through the zero-address executor role; verifies timelock self-administration; and
+renounces (and verifies removal of) the factory's temporary admin. Deployment events bind the
+complete configuration hash plus creation- and runtime-code evidence.
+
+## After deployment
+
+Compare the emitted code hashes against your own build of the reviewed source, then record
+the addresses. The Ethereum Sepolia deployment addresses will be listed — with explorer
+links — on the [Deployed addresses](/docs/addresses) page once the deployment checkpoint is
+published.

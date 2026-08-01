@@ -1,0 +1,69 @@
+@import 'tailwindcss';
+@import '@noxvote/ui/tokens.css';
+@import '@noxvote/ui/fonts.css';
+@import 'fumadocs-ui/css/neutral.css';
+@import 'fumadocs-ui/css/preset.css';
+
+/* NoxVote docs — ORBIT, light-only. Contract: DESIGN.md at the repo root.
+ * Warm putty canvas, ink primary, dust hairlines; ember stays graphical. */
+:root {
+  --color-fd-background: var(--canvas);
+  --color-fd-foreground: var(--ink);
+  --color-fd-card: var(--lifted);
+  --color-fd-card-foreground: var(--ink);
+  --color-fd-popover: var(--lifted);
+  --color-fd-popover-foreground: var(--ink);
+  --color-fd-muted: var(--ghost);
+  --color-fd-muted-foreground: var(--slate);
+  --color-fd-border: var(--dust);
+  --color-fd-primary: var(--ink);
+  --color-fd-primary-foreground: var(--canvas);
+  --color-fd-secondary: var(--ghost);
+  --color-fd-secondary-foreground: var(--ink);
+  --color-fd-accent: var(--ghost);
+  --color-fd-accent-foreground: var(--ink);
+  --color-fd-ring: var(--ink);
+}
+
+body {
+  font-family: var(--sans);
+  font-weight: 450;
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+}
+
+h1,
+h2,
+h3,
+h4 {
+  font-weight: 500;
+  letter-spacing: -0.02em;
+}
+
+code,
+pre,
+kbd {
+  font-family: var(--mono);
+  font-variant-ligatures: none;
+}
+
+html {
+  scrollbar-gutter: stable;
+}
+
+html > body[data-scroll-locked] {
+  margin-right: 0px !important;
+  --removed-body-scroll-bar-size: 0px !important;
+}
+
+/* Mermaid diagrams sit on lifted cards with dust hairlines. */
+.nox-mermaid {
+  display: flex;
+  justify-content: center;
+  border: 1px solid var(--dust);
+  border-radius: var(--r-card);
+  background: var(--lifted);
+  padding: 20px;
+  margin: 16px 0;
+  overflow-x: auto;
+}

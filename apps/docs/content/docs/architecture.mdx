@@ -1,0 +1,62 @@
+---
+title: Architecture
+description: The immutable contract stack — ballot core, eligibility strategies, Safe module, compatible Governor, and the versioned factory that deploys them.
+---
+
+Every production contract is immutable: no owner, no proxy, no upgrade path. A versioned
+factory deploys complete stacks and emits full code-hash evidence, so what you verified is
+what runs.
+
+<Mermaid
+  chart={`
+flowchart TB
+    F["ConfidentialGovernanceFactory<br/>version 1 - pinned creation-code hashes"]
+
+    subgraph SAFE["Safe path"]
+        S["Official Safe 1.5.0"] -- enableModule --> M["SafeConfidentialVotingModule"]
+        M -- constructs --> C1["ConfidentialBallotCore"]
+        M -- "batch actions via delegatecall" --> MS["Official MultiSendCallOnly"]
+    end
+
+    subgraph GOV["Governor path"]
+        G["ConfidentialGovernor<br/>OpenZeppelin 5.6.1"] -- constructs --> C2["ConfidentialBallotCore"]
+        G -- "queue / execute" --> T["TimelockController"]
+    end
+
+    F -- deploySafeModule --> M
+    F -- deployGovernor --> G
+    F -- "deploys once, shared" --> E["IVotesSnapshotStrategy<br/>MerkleWeightedAllowlistStrategy"]
+    C1 -- "encrypted operations" --> N["NoxCompute<br/>confidential compute + ACL"]
+    C2 -- "encrypted operations" --> N
+    E -.-> C1
+    E -.-> C2
+`}
+/>
+
+## The pieces
+
+- **ConfidentialBallotCore** — adapter-owned; each host constructs its own. Holds the
+  committed ballot rules, enforces eligibility and sequence/replacement law, runs the
+  encrypted accounting, requests the tally, and finalizes the verdict from Gateway evidence.
+  Every persistent Nox ACL grant targets the core itself — never a viewer.
+- **Eligibility strategies** — public eligibility and first-cast weight only:
+  `IVotesSnapshotStrategy` (token voting power at a snapshot) and
+  `MerkleWeightedAllowlistStrategy` (a domain-separated weighted allowlist; each leaf binds
+  chain, host, snapshot, voter, and weight).
+- **SafeConfidentialVotingModule** — immutably bound to one Safe, one core, and the official
+  `MultiSendCallOnly`. Registration is Safe-only; execution is permissionless, exact,
+  and execute-once with rollback-safe retry.
+- **ConfidentialGovernor** — composes OpenZeppelin `Governor` with every plaintext cast route
+  disabled. Truthful detailed states (`TallyPending`, `Withheld`, …) alongside the standard
+  enum; Passed proposals queue through a real `TimelockController`.
+- **Factory** — publishes contract/rules version 1, pins the reviewed creation-code hashes,
+  revalidates every shared dependency's runtime hash before CREATE, and emits complete
+  address + code-hash evidence per deployment.
+
+## Verified behavior
+
+The local gate behind these docs: **119 Forge tests**, a stateful invariant profile of
+**960,000 modeled calls** (one effective weight per voter, floor monotonicity, finalize-once,
+execute-once, exact action binding), a released-stack proof-negative matrix (wrong signer,
+domain, handle, encoding, replay — all reject independently), and **33/33** consecutive
+released Docker-stack cases including Runner restart and JetStream redelivery recovery.

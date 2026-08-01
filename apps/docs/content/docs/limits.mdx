@@ -1,0 +1,40 @@
+---
+title: Honest limits
+description: What NoxVote deliberately does not promise, and who you are trusting, named in full.
+---
+
+Several of these are achievable, and some are ahead of us. None of them are what the module
+does today, so none of them are claimed today.
+
+## Not promised
+
+- **Client-side encryption.** The released SDK sends your encoded choice to iExec's attested
+  Handle Gateway, which encrypts it and returns the handle. The Gateway sees the input during
+  preparation. Nothing is encrypted in your browser, and we do not say it is.
+- **Anonymity.** Your wallet, your weight, your participation, and your replacement timing
+  are all on-chain and linkable. Only the choice is withheld.
+- **Receipt-freeness.** Nothing here stops you from proving to someone else how you voted, if
+  you decide to. MACI prevents convincing receipts through a hidden authenticated key/command
+  state; released Nox does not supply that mechanism.
+- **Bribe resistance.** Replacement voting raises the cost of buying a vote — the last
+  accepted operation counts — but a coercer can still supervise the final action.
+- **A full tally proof.** The accepted evidence is a Gateway signature over a decryption, not
+  a proof of the computation or the complete private operation history.
+- **Threshold key custody.** The released Nox stack uses **one KMS node holding the full
+  private key**. That is weaker than a threshold committee, where no single operator can
+  decrypt alone. It belongs here, not in a footnote.
+
+## Trusted today, named
+
+1. The Handle Gateway, which sees the input before it is sealed.
+2. The Nox TEE stack that performs the confidential computation.
+3. The single-node KMS holding the decryption key.
+4. The Gateway signer whose signature the evidence rests on.
+5. The deployed module code, which binds proposal, type, and replay.
+
+## What still holds
+
+Within that boundary, the load-bearing property survives: individual choices and exact totals
+never appear on-chain, are never published afterwards, and are never opened per-ballot at the
+end — unlike shielded-voting designs that reveal every ballot after close. Disclosure is one
+boolean, gated by a privacy floor, bound to one committed action.

@@ -1,0 +1,15 @@
+{
+  "pages": [
+    "index",
+    "quickstart",
+    "how-it-works",
+    "architecture",
+    "integrate",
+    "---Use and verify---",
+    "voters",
+    "verification",
+    "---The record---",
+    "limits",
+    "addresses"
+  ]
+}

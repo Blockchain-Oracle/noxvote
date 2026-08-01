@@ -1,0 +1,42 @@
+---
+title: Overview
+description: What NoxVote is, what stays private, what stays public, and what is deliberately not promised.
+---
+
+NoxVote turns on confidential voting for sensitive governance. Members' wallets and
+participation stay public, their For/Against/Abstain choices never appear on-chain or become
+public, and only the final Passed/Rejected verdict is revealed — after enough eligible wallets
+recorded operations. A Passed verdict can execute the exact Safe or Governor action everyone
+reviewed before voting.
+
+It is not a standalone DAO app. It is a **host-neutral confidential ballot core** with two
+production adapters: a Safe module (retrofit an existing Safe with a normal owner-threshold
+transaction) and a compatible OpenZeppelin Governor (native governance-framework integration
+with a real TimelockController).
+
+## Public and private, exactly
+
+| Always public | Never public |
+| --- | --- |
+| Your wallet address | Your choice |
+| Your voting weight | Anyone else's choice |
+| That you participated, and when | Exact option totals |
+| Operation status (Submitted / Computing / Recorded) | Intermediate encrypted values |
+| The committed action, rules, and dates | — |
+| The final verdict (above the privacy floor) | — |
+
+Two rules are committed before voting opens and never merged:
+
+- The **privacy floor** decides whether *any* result may be disclosed at all. Below it, the
+  outcome is **Result withheld** — no verdict, no totals, no manual release, nothing executes.
+  That is a designed outcome, not a failure.
+- The **governance quorum** decides whether the proposal passes, following the host's rule.
+
+## Where to go
+
+- [Quick start](/docs/quickstart) — run the full flow on the released local Nox stack.
+- [How it works](/docs/how-it-works) — the five lifecycle stages and the verdict-only reveal.
+- [Architecture](/docs/architecture) — the immutable contract stack.
+- [Integrate](/docs/integrate/deploy) — deploy through the versioned factory.
+- [Honest limits](/docs/limits) — what this does **not** promise. Read it before you rely on
+  any claim above.

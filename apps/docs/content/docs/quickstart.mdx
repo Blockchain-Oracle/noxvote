@@ -1,0 +1,61 @@
+---
+title: Quick start
+description: Run the complete confidential ballot — four wallets, one replacement, a sealed tally, one public verdict — on the released local Nox stack.
+---
+
+The judged demo story runs end to end on your machine against the **released** Nox Docker
+stack: Handle Gateway, KMS, ingestor, JetStream, and Runner. Nothing is mocked.
+
+## Prerequisites
+
+- Node.js 22–24 and pnpm
+- Docker (running)
+- [Foundry](https://getfoundry.sh) (`forge` on your PATH)
+
+## Run it
+
+<Steps>
+<Step>
+
+### Install and verify the contracts
+
+```bash
+pnpm install
+forge test        # 119 tests, full suite green
+```
+
+</Step>
+<Step>
+
+### Run the full confidential flow
+
+```bash
+pnpm test:integration
+```
+
+The Hardhat Nox plugin boots the released Docker stack, then proves the whole story: four
+weighted Merkle-eligible wallets encrypt choices through the Handle Gateway and cast them,
+one voter replaces a vote twice (Against → Abstain → For), the ballot closes at privacy floor
+four, anyone requests the tally, and the core finalizes **Passed** from the Gateway's signed
+decryption proof — while every submitted ballot handle stays non-public.
+
+</Step>
+<Step>
+
+### Read the record
+
+The test asserts what the demo claims: recorded participation is public (4 wallets, weight
+10), no submitted handle is ever publicly decryptable, no viewer grant is emitted, and exactly
+one handle — the verdict — is marked publicly decryptable. Warm close-to-proof time is under
+0.6 seconds; the full path takes about 15 seconds.
+
+</Step>
+</Steps>
+
+## What just happened
+
+Choices were encrypted **before** the wallet transaction, so the public chain carries only
+opaque handles. The tally runs inside Nox's confidential compute; only one encrypted boolean —
+"did For outweigh Against?" — was ever allowed to become public. See
+[How it works](/docs/how-it-works) for each stage, and
+[Verify a result](/docs/verification) for exactly what the proof checks.

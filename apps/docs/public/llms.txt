@@ -1,0 +1,17 @@
+# NoxVote
+
+> Confidential governance voting for Safe and OpenZeppelin Governor on the released Nox stack. Wallets, weights, and participation are public; individual choices and exact totals are never disclosed — only a pass/reject verdict, and only above the privacy floor.
+
+## Docs
+
+- [Deployed addresses](https://docs.noxvote.xyz/docs/addresses): Where the Sepolia addresses will land, and the local development profile.
+- [Architecture](https://docs.noxvote.xyz/docs/architecture): The immutable contract stack — ballot core, eligibility strategies, Safe module, compatible Governor, and the versioned factory that deploys them.
+- [How it works](https://docs.noxvote.xyz/docs/how-it-works): Five lifecycle stages, what becomes public at each, and why only one value ever reaches the public record.
+- [Overview](https://docs.noxvote.xyz/docs): What NoxVote is, what stays private, what stays public, and what is deliberately not promised.
+- [Deploy the contracts](https://docs.noxvote.xyz/docs/integrate/deploy): Deploy a complete confidential voting stack through the versioned factory, with pinned creation-code hashes and full on-chain evidence.
+- [Governor path](https://docs.noxvote.xyz/docs/integrate/governor): A compatible OpenZeppelin Governor whose only voting route is confidential, with truthful async states and a real TimelockController.
+- [Safe path](https://docs.noxvote.xyz/docs/integrate/safe): Retrofit an existing Safe with confidential voting - enable the module, register a committed proposal, and let anyone execute the Passed verdict exactly once.
+- [Honest limits](https://docs.noxvote.xyz/docs/limits): What NoxVote deliberately does not promise, and who you are trusting, named in full.
+- [Quick start](https://docs.noxvote.xyz/docs/quickstart): Run the complete confidential ballot — four wallets, one replacement, a sealed tally, one public verdict — on the released local Nox stack.
+- [Verify a result](https://docs.noxvote.xyz/docs/verification): What the decryption proof actually checks, what module state binds, and what you can independently inspect on-chain.
+- [Voter guide](https://docs.noxvote.xyz/docs/voters): What you see, what you sign, what becomes public, and how vote replacement works.

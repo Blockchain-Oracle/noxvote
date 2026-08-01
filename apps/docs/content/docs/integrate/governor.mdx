@@ -1,0 +1,49 @@
+---
+title: Governor path
+description: A compatible OpenZeppelin Governor whose only voting route is confidential, with truthful async states and a real TimelockController.
+---
+
+`ConfidentialGovernor` composes OpenZeppelin 5.6.1 `Governor`, `GovernorSettings`,
+`GovernorVotes`, `GovernorVotesQuorumFraction`, and `GovernorTimelockControl` around an
+adapter-owned ballot core. It is deployed complete and immutable by the
+[factory](/docs/integrate/deploy), which wires the timelock roles and renounces admin.
+
+## Propose
+
+```solidity
+function proposeConfidential(
+    address[] memory targets,
+    uint256[] memory values,
+    bytes[] memory calldatas,
+    string memory description,
+    uint32 privacyFloor
+) public returns (uint256 proposalId, bytes32 ballotId);
+```
+
+`proposeConfidential` reproduces OpenZeppelin's proposer checks, creates a normal one- or
+multi-action proposal, then **atomically** registers its token snapshot, schedule, and action
+commitment in the core. If core registration fails, the Governor proposal rolls back.
+
+## What is deliberately disabled
+
+- Standard `propose` — every proposal must be confidential.
+- All five public plaintext cast routes, both internal cast overloads, and `_countVote` —
+  there is no plaintext ballot path to fall back to. Signature-based rejections do not
+  consume nonces.
+- Standard `cancel` — replaced by `cancelConfidential`, which allows the proposer to cancel
+  only while the ballot is still Scheduled and cancels Governor and core atomically.
+
+## Truthful states
+
+The detailed getter reports the real lifecycle: `Scheduled`, `Open`, `Closed`,
+`TallyPending`, `Withheld`, `Rejected`, `Passed`, `Queued`, `Executed`, `Canceled`. Standard
+Governor clients see the closest honest standard value — a closed-but-unresolved proposal
+reads `Pending` (never a premature `Succeeded`), `Withheld`/`Rejected` map to `Defeated`,
+`Passed` maps to `Succeeded`. Third-party Governor UIs may misread the compatibility
+`Pending` state; the detailed state is the truth.
+
+## Execution
+
+A finalized Passed proposal queues through the real `TimelockController` with the configured
+delay, exposes its exact ETA, and executes permissionlessly at the ETA — standard OpenZeppelin
+governance semantics, driven by a confidential verdict instead of a public tally.

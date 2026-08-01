@@ -1,0 +1,61 @@
+---
+title: How it works
+description: Five lifecycle stages, what becomes public at each, and why only one value ever reaches the public record.
+---
+
+Every ballot operation moves through five stages. What becomes public at each step: your
+wallet, your voting weight, and the time you acted. Your choice is not among them, at any
+stage.
+
+<Mermaid
+  chart={`
+sequenceDiagram
+    participant V as Voter wallet
+    participant G as Handle Gateway (attested)
+    participant C as Ballot core (on-chain)
+    participant N as Nox confidential compute
+
+    V->>G: Encoded choice (For / Against / Abstain)
+    G-->>V: Encrypted handle + input proof
+    V->>C: castVote(ballotId, sequence, handle, proof, eligibility)
+    Note over C: Public record - wallet, weight, time.<br/>Never the choice.
+    C->>N: Fold operation into sealed totals
+    N-->>C: Recorded (status only)
+    Note over C,N: After close, above the privacy floor
+    C->>N: requestTally - permissionless
+    N-->>C: One encrypted boolean verdict
+    N-->>C: Gateway-signed decryption proof
+    C->>C: finalize() - Passed or Rejected, once
+`}
+/>
+
+## The five stages
+
+1. **Preparing encrypted handle** — the SDK sends your encoded choice to the attested Handle
+   Gateway, which encrypts it and returns a handle and proof. The Gateway sees the input; this
+   is inside the declared trust boundary, and we say so plainly.
+2. **Ready for wallet** — the transaction is assembled, waiting for your signature.
+3. **Submitting** — the transaction goes on-chain. It contains the opaque handle, not your
+   choice. Your wallet and the time are now public.
+4. **Confidential computation** — Nox folds the operation into the sealed totals. No progress
+   figure is shown, because none is knowable.
+5. **Recorded** — a receipt confirms the operation status. Only an eligible wallet's newest
+   effective Recorded operation counts.
+
+## Replacement, floor, and the reveal
+
+Before close you may replace your vote up to two times (`sequence` 1 → 2 → 3). The newest
+accepted operation counts; a replacement never increases the unique-wallet count. Abstain is a
+real participation choice, and any non-canonical encrypted value is deterministically
+normalized to Abstain — there is no hidden validity class.
+
+At close, anyone may request the tally. Two rules then apply, in order:
+
+- Below the **privacy floor** (unique Recorded wallets), the result is **withheld** —
+  terminally, with no Nox call and no verdict handle at all.
+- At or above it, the core derives exactly one encrypted boolean — governance quorum met and
+  For weight above Against weight — and grants public decryption to that handle **only**.
+
+The contract accepts the configured Gateway's signed evidence for the exact stored verdict
+handle, validates encoding, domain, and replay, and finalizes **Passed** or **Rejected** once.
+Exact totals are not disclosed. Ever.
