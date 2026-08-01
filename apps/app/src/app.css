@@ -2,6 +2,7 @@
 @import './screens.css';
 @import './vote.css';
 @import './verify.css';
+@import './install.css';
 
 /* NoxVote app — ORBIT, light-only. Contract: DESIGN.md at the repo root.
  * Screen-level styles arrive with their screens; this layer carries only the
@@ -20,6 +21,18 @@
   padding: 18px 32px;
   border-bottom: 1px solid var(--dust);
   background: var(--lifted);
+}
+.shell__nav {
+  display: inline-flex;
+  align-items: center;
+  gap: 24px;
+}
+.shell__nav a {
+  color: var(--slate);
+  text-decoration: none;
+}
+.shell__nav a:hover {
+  color: var(--ink);
 }
 .shell__net {
   display: inline-flex;

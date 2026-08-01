@@ -401,6 +401,18 @@ the released chain surface actually provides. Reconciled as follows:
   `Canceled` result/lifecycle state the original inventory never named. It is
   adopted as an eleventh lifecycle label and a terminal detail/tally state,
   rendered neutrally (no triad, no danger).
+- **Adapter install flow (screen 2) is a decoded-calldata handoff, not an
+  in-app transaction.** Enabling a Safe module (`onlySafe`-gated) or deploying
+  a host stack (factory) is an owner-threshold or deployment transaction the
+  app cannot sign. The `confirming / awaiting additional Safe owners /
+  rejected / failed` states therefore live in the Safe's own signing UI;
+  NoxVote presents the exact decoded call and shows the resulting `installed`
+  state via its live verification reads. This resolves the map's open question
+  on whether install needs an in-app transaction-builder flow: it does not.
+- **Installation verification (screen 3) never drops addresses.** Even in the
+  read-error (`unverified`) state, host and adapter addresses render from
+  configuration, since they are static and always knowable; only the friendly
+  read-derived metadata is absent.
 
 ## Open Questions
 

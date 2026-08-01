@@ -80,6 +80,11 @@ Values are normative in the frontmatter. The laws:
   4.37:1 on canvas it fails AA for normal text; it never sets text.
 - **True white is reserved** (deliberate `#ffffff`): floating nav, satellites,
   secondary pills — never a page canvas. No pure `#000000` anywhere.
+- **Passed chip covers positive verification** (added 2026-08-01, B5 review,
+  delegated): the `passed` triad chip may label a genuine positive
+  verification verdict — a Verified adapter, a Compatible host — not only a
+  Passed ballot. Both are affirmative, checked states; the chip stays the
+  triad's home. It never labels a neutral or in-progress state.
 - **Danger is for invalid, never for withheld** (added 2026-08-01, B1 review,
   delegated to the frontend agent): `danger` marks error and invalid/mismatch
   states only — wrong action hash, wrong proof signer, wrong handle, execution

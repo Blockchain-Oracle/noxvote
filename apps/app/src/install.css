@@ -1,0 +1,100 @@
+/* B5 — install overview, permission review, verification. Contract: DESIGN.md. */
+
+.install__grid {
+  display: grid;
+  gap: 20px;
+}
+.install__banner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  margin-bottom: 20px;
+  padding: 16px 24px;
+  border: 1px solid var(--dust);
+  border-radius: var(--r-card);
+  background: var(--lifted);
+  color: var(--charcoal);
+}
+.install__banner--warn {
+  border-color: var(--danger);
+  color: var(--danger);
+}
+
+.boundaries {
+  display: grid;
+  gap: 0;
+}
+.boundaries__head,
+.boundaries__row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 20px;
+  padding: 11px 0;
+  border-bottom: 1px solid var(--ghost);
+}
+.boundaries__row:last-child {
+  border-bottom: 0;
+}
+.boundaries__head {
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--slate);
+}
+.boundaries__col-private,
+.boundaries__row span:last-child {
+  color: var(--slate);
+}
+
+.install__warning {
+  color: var(--charcoal);
+}
+.install__handoff {
+  margin-top: 16px;
+  padding-top: 14px;
+  border-top: 1px solid var(--ghost);
+}
+.install__handoff summary {
+  cursor: pointer;
+  color: var(--slate);
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+.install__handoff summary:hover {
+  color: var(--ink);
+}
+.install__handoff summary:focus-visible {
+  outline: 2px solid var(--ink);
+  outline-offset: 3px;
+}
+/* A disabled-but-consistently-bound module is a valid config, not an error. */
+.install__removed {
+  color: var(--charcoal);
+}
+.install__boundsafe {
+  margin-top: 4px;
+  color: var(--danger);
+}
+.install__calldata {
+  margin: 10px 0 0;
+  color: var(--slate);
+  line-height: 1.7;
+  overflow-wrap: anywhere;
+}
+
+/* Neutral-danger chip for a verification mismatch (invalid, not a triad state). */
+.chip--danger {
+  color: var(--danger);
+}
+.chip--danger::before {
+  background: currentColor;
+}
+
+@media (max-width: 767px) {
+  .install__banner {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+}
