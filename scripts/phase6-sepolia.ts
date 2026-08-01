@@ -86,6 +86,7 @@ const DEPLOYER_GAS_BUDGET = 25_000_000n;
 const VOTER_GAS_BUDGET = 3_000_000n;
 const MINIMUM_VOTER_BALANCE = parseEther("0.003");
 const MINIMUM_DEPLOYER_BALANCE = parseEther("0.045");
+const RESUME_BALANCE_BUFFER = parseEther("0.003");
 const EXPECTED_FACTORY_CREATION_HASHES = {
   factory: "0x8081bb2add253ccced934d38eddb3d9724c5ee377560670c41707ee7f70f9644",
   safeModule:
@@ -398,6 +399,44 @@ function requiredDeployerBalance(report: PreflightReport) {
     : MINIMUM_DEPLOYER_BALANCE;
 }
 
+async function requiredResumeBalance(
+  client: PublicClient,
+  state: Phase6Evidence,
+  report: PreflightReport,
+) {
+  const receiptResults = await Promise.allSettled(
+    Object.values(state.transactions).map((hash) =>
+      client.getTransactionReceipt({ hash }),
+    ),
+  );
+  const consumedDeployerGas = receiptResults.reduce(
+    (total, result) =>
+      result.status === "fulfilled" &&
+      isAddressEqual(result.value.from, state.deployer)
+        ? total + result.value.gasUsed
+        : total,
+    0n,
+  );
+  const remainingDeployerGas =
+    consumedDeployerGas >= DEPLOYER_GAS_BUDGET
+      ? 0n
+      : DEPLOYER_GAS_BUDGET - consumedDeployerGas;
+  const voterTarget = voterFundingTarget(report);
+  const voterBalances = await Promise.all(
+    state.voters.map((address) => client.getBalance({ address })),
+  );
+  const remainingVoterFunding = voterBalances.reduce(
+    (total, balance) =>
+      total + (balance < voterTarget ? voterTarget - balance : 0n),
+    0n,
+  );
+  return (
+    BigInt(report.gasPrice) * remainingDeployerGas +
+    remainingVoterFunding +
+    RESUME_BALANCE_BUFFER
+  );
+}
+
 async function reportPhase6Account(
   client: PublicClient,
   report: PreflightReport,
@@ -407,14 +446,29 @@ async function reportPhase6Account(
   const voters = [0, 1, 2, 3].map((index) =>
     deriveVoterAccount(privateKey, index),
   );
+  const voterAddresses = voters.map((voter) => voter.address) as [
+    Address,
+    Address,
+    Address,
+    Address,
+  ];
+  const state = await loadOrCreateEvidence(
+    deployer.address,
+    voterAddresses,
+    report,
+  );
+  const isResume = Object.keys(state.transactions).length > 0;
   const balance = await client.getBalance({ address: deployer.address });
-  const requiredBalance = requiredDeployerBalance(report);
+  const requiredBalance = isResume
+    ? await requiredResumeBalance(client, state, report)
+    : requiredDeployerBalance(report);
   console.info(
     JSON.stringify(
       {
         phase6Account: {
           deployer: deployer.address,
-          voters: voters.map((voter) => voter.address),
+          voters: voterAddresses,
+          resumeCheckpoint: isResume,
           balanceWei: balance.toString(),
           balanceSepoliaEth: formatEther(balance),
           requiredBalanceWei: requiredBalance.toString(),
@@ -470,13 +524,16 @@ async function executePhase6(
   const deployerBalance = await client.getBalance({
     address: deployerAccount.address,
   });
-  const requiredBalance = requiredDeployerBalance(report);
+  const isResume = Object.keys(state.transactions).length > 0;
+  const requiredBalance = isResume
+    ? await requiredResumeBalance(client, state, report)
+    : requiredDeployerBalance(report);
   assert.ok(
     deployerBalance >= requiredBalance,
     `Dedicated deployer ${deployerAccount.address} has ${formatEther(deployerBalance)} Sepolia ETH; at least ${formatEther(requiredBalance)} is required by the current gas/funding gate`,
   );
   console.info(
-    `Phase 6 execute enabled for ${deployerAccount.address}; balance=${formatEther(deployerBalance)} Sepolia ETH`,
+    `Phase 6 execute enabled for ${deployerAccount.address}; balance=${formatEther(deployerBalance)} Sepolia ETH; resume=${isResume}`,
   );
 
   await fundVoters(client, deployer, voters, state, report);
@@ -555,7 +612,7 @@ async function deployBaseGraph(context: ExecutionContext) {
     await executeSafeTransaction(
       "enableSafeModule",
       safe,
-      state.contracts.safeModule,
+      safe,
       encodeFunctionData({
         abi: SAFE_MODULE_MANAGER_ABI,
         functionName: "enableModule",

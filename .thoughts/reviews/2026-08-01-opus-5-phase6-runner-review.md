@@ -76,3 +76,12 @@ was narrowed from a blanket reserve to measured actor-scoped budgets: 25 million
 heaviest calls at ~8.7 million gas for the Governor stack and ~4.1 million gas for the Safe
 module/core pair. The runner still increases the required balance when the current gas price exceeds
 that floor and remains resumable if the testnet balance eventually needs a top-up.
+
+The first live attempt then exposed a runner-only Safe registration wiring defect that neither Opus
+pass caught: the transaction encoded `Safe.enableModule(module)` correctly but sent it to the module
+rather than to the Safe. RPC simulation reverted before broadcast, so there is no failed transaction
+hash. The production test fixture already demonstrated the correct self-targeted Safe call. The
+runner now targets the Safe, and its resume funding check debits confirmed deployer gas plus existing
+voter balances instead of requiring the original full-run balance after partial progress. The
+checkpoint preserves the confirmed factory, Safe, and module/core deployments for the corrected
+resume.

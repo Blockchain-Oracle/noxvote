@@ -34,6 +34,11 @@ four ballots are recorded, the incomplete attempt is preserved and a fresh propo
 On-chain state checks also prevent already-recorded votes, tally requests, finalizations, queues, and
 executions from being repeated after a normal resume.
 
+On resume, the funding gate subtracts gas already consumed by confirmed deployer transactions, checks
+the current voter balances for any remaining top-ups, and retains a `0.003` Sepolia ETH buffer. This
+prevents a valid checkpoint from being blocked merely because part of its initial budget was already
+spent. Unconfirmed saved hashes are conservatively treated as unspent gas until reconciled.
+
 Do not report Phase 6 complete unless the checkpoint status is `complete`, both exact target calls are
 observed once, and the public Nox verdict proofs finalize successfully.
 
