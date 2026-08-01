@@ -71,3 +71,43 @@ pnpm install && pnpm -r --filter "./apps/*" build && forge test   # sanity: all 
 3. Build `apps/app` foundation (config module, wagmi, ABIs, state selectors, QueryBoundary convention).
 4. Screen batches B1–B6, design-auditor after each; Abu's detailed design review at B1.
 5. Full SPEC verification (AC1–AC5) and cycle close.
+
+## Task list for the build session (recreate these as tracked tasks on resume)
+
+Phase 0 tasks (commit milestone / verify checkpoint / merge contract branch) are COMPLETE. Remaining,
+in order — full detail for each lives in the approved plan
+(`/Users/abu/.claude/plans/phase-6-is-complete-vast-thompson.md`):
+
+- [ ] **Phase 1 — cleanup (5 surgical fixes)**: shared stagger hook with timer cleanup in
+  `packages/ui/src/motion.ts` (fixes `record.tsx:32-40` leak; `orbit.tsx:132-135` is the correct
+  pattern); docs imports `Mark` + brand constants from `@noxvote/ui` instead of re-declaring
+  (`apps/docs/app/lib/layout.shared.tsx:3-13`); `apps/landing/src/sections/hero.tsx:15-16`
+  `fill="#f3f0ee"` → `var(--canvas)`; `apps/docs/app/routes/home.tsx` uses ORBIT radius/type tokens;
+  add `controls.css`/`orbit.css`/`record.css` to `packages/ui/package.json` exports map.
+- [ ] **Phase 2 — `apps/app` foundation**: scaffold mirrors `apps/landing` (Vite 8, React 19.2,
+  Tailwind 4); `react-router@^8` SPA/data mode; deps `wagmi` + `@tanstack/react-query` + `viem` +
+  `@iexec-nox/handle` (pin beta matching checkpoint's `noxHandleSdk` commit). Build
+  `src/config/addresses.ts` (checkpoint import, sepolia/local profiles, never invented addresses),
+  `config/wagmi.ts`+`chains.ts`, `abi/*` from Foundry `out/`, `hooks/*` (query keys + event
+  invalidation), `state/*` pure discriminated-union selectors (14-state proposal detail, 10-state
+  tally), `write/*` orchestrators (5-stage overlay bound to real awaitables; For=1/Against=0/
+  Abstain=65535; replacement = sequence+1 with empty eligibility proof; finalize via
+  `HandleClient.publicDecrypt`), `QueryBoundary`/`Skeleton`/`ErrorState`/`EmptyState`/
+  `RedactedResult`, `lib/copy.ts` (verbatim copy laws, grep-auditable).
+- [ ] **Phase 3 B1**: screens 7 proposal detail, 13 tally panel, 15 list (read-only slice);
+  design-auditor; **Abu's detailed design review lands here**.
+- [ ] **Phase 3 B2**: screens 8 vote drawer, 9 progress overlay, 10 receipt (voter write flow,
+  Handle SDK encryption); design-auditor.
+- [ ] **Phase 3 B3**: screens 11 change-vote, 12 verification center, 14 execution + tally write
+  wiring (requestTally/finalize); design-auditor.
+- [ ] **Phase 3 B4**: screen 12 evidence provenance (onchain vs indexed), 15 ten lifecycle labels,
+  16 guarantee overlay; design-auditor.
+- [ ] **Phase 3 B5**: screens 1 overview, 2 permission review, 3 install verification (Safe +
+  Governor variants); design-auditor.
+- [ ] **Phase 3 B6**: screens 4 editor, 5 config panel, 6 publish review — Governor path wires
+  first (`proposeConfidential` caller-open); Safe `registerProposal` is `onlySafe` → decoded-calldata
+  handoff; design-auditor.
+- [ ] **Phase 4 — full SPEC verification + close**: `pnpm install`; `pnpm -r --filter "./apps/*"
+  build`; `forge test` (119/119); `pnpm test:integration`; drive the 4-wallet demo in the browser;
+  AC1–AC5; copy-law grep; final design-auditor sweep; `/abu-harness:verify`; update `apps:dev`/
+  `apps:build` root scripts to include the new app.
