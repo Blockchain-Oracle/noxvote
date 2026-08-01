@@ -190,6 +190,18 @@ pnpm --filter app dev        # against that same local stack profile, drive the 
 - [ ] R9 design-auditor pass per batch
 - [ ] AC1–AC5
 
+## Secrets
+
+Secrets: `VITE_ETHERSCAN_API_KEY` (apps/app/.env.local, gitignored).
+
+- `VITE_ETHERSCAN_API_KEY` — read-only Etherscan V2 API key (one key covers
+  Sepolia). Used by the Create flow to fetch verified-contract ABIs so an author
+  can pick a callable function instead of pasting raw calldata (Etherscan
+  primary, Sourcify fallback when the key is absent or the contract is only on
+  Sourcify). Lives in `apps/app/.env.local` (gitignored via `.env.*`). Vite
+  inlines `VITE_*` into the client bundle, which is acceptable for a public,
+  read-only, rate-limited key; it is never committed.
+
 ## Sources
 
 - `.thoughts/decisions/CURRENT.md` (canonical decisions; 2026-08-01 frontend + Phase 6 updates)
