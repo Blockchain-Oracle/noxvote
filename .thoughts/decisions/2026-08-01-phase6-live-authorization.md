@@ -28,10 +28,22 @@ the subgraph was current, the on-chain Gateway signer was
 `MultiSendCallOnly`, and compatibility fallback handler matched the current Safe deployment registry.
 The exact reviewed Foundry factory, Safe-module, Governor, and Timelock creation-code hashes also pass.
 
-No transaction has been broadcast. The remaining operational prerequisite is a dedicated deployer
-made available as `PHASE6_DEPLOYER_PRIVATE_KEY` with at least the runner's current dynamic funding
-gate (currently no less than `0.25` Sepolia ETH and higher when current gas requires it). Unrelated
-local keystores must not be reused implicitly.
+Before execution, the dedicated deployer was made available through the explicitly selected local
+credential boundary. After the original `0.25` Sepolia ETH blanket floor blocked the funded account,
+the user explicitly rejected that conservative testnet reserve. The runner uses
+measured actor-scoped budgets: 25 million gas for deployer transactions, 3 million gas per voter, and
+a `0.045` Sepolia ETH minimum. The local factory measurements include ~8.7 million gas for the
+Governor stack and ~4.1 million gas for the Safe module/core pair. The dynamic gate can still rise
+with current gas. Unrelated local keystores must not be reused implicitly.
+
+## Completion
+
+Phase 6 completed on Ethereum Sepolia at block `11396305`. The factory-deployed official Safe/module/
+core path and the compatible Governor/core/real-Timelock path each consumed a real released-Nox
+Passed verdict and executed the committed target exactly once. All `37` recorded transaction receipts
+succeeded. The canonical public evidence is
+[`../verification/2026-08-01-phase6-sepolia-live-verification.md`](../verification/2026-08-01-phase6-sepolia-live-verification.md)
+and [`../../deployments/sepolia/phase6-live.json`](../../deployments/sepolia/phase6-live.json).
 
 ## Evidence Routing
 

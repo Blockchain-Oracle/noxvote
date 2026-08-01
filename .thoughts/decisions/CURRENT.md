@@ -58,9 +58,10 @@
   proof matrix before accepting the correct proof. The contract CI workflow, deterministic
   Safe/Governor gas baselines, and the reconciled local production verification audit are installed;
   the workflow has not yet been observed on a remote runner. Phase 5 and the local Phase 6 preflight
-  remediation are complete. Phase 6 is authorized and its same-day read-only Nox/Safe/Gateway/
-  subgraph/code-hash preflight passes. No transaction has been broadcast because the dedicated funded
-  deployer is not configured. Frontend implementation is now separately authorized: a dedicated
+  remediation are complete. Phase 6 now passes live on Ethereum Sepolia: `37/37` successful
+  transactions deployed both production host graphs, real released-Nox Passed verdicts finalized,
+  and both committed targets executed once through the official Safe and real Timelock. Frontend
+  implementation is now separately authorized: a dedicated
   frontend agent builds `apps/landing`, `apps/app`, and `apps/docs` from the root `SPEC.md` inside
   the accepted ORBIT direction (see the 2026-08-01 frontend milestone authorization). Billable
   production infrastructure, public publishing, and submission claims remain gated on the user.
@@ -113,6 +114,8 @@
   [`2026-08-01-frontend-milestone-authorization.md`](2026-08-01-frontend-milestone-authorization.md)
 - **Accepted visual direction (Direction C — ORBIT):**
   [`../design/2026-08-01-orbit-direction.md`](../design/2026-08-01-orbit-direction.md)
+- **Phase 6 Sepolia live verification:**
+  [`../verification/2026-08-01-phase6-sepolia-live-verification.md`](../verification/2026-08-01-phase6-sepolia-live-verification.md)
 - **Accepted production technical architecture:**
   [`../design/2026-07-30-confidential-governance-technical-architecture.md`](../design/2026-07-30-confidential-governance-technical-architecture.md)
 - **Active contract quality profile:**
@@ -424,17 +427,17 @@
     and uses the exact reviewed Foundry factory, Safe-module, Governor, and Timelock creation bytecode,
     checkpoints only public addresses and transactions, and performs no write in preflight mode. The
     local 119-test suite, 960,000-call invariant profile, build/type/format/lint/diff gates, and one
-    fresh Docker-backed 11/11 released-stack run pass. No live transaction has been signed or
-    broadcast: `PHASE6_DEPLOYER_PRIVATE_KEY` is not configured and unrelated local keystores are not
-    authorized substitutes.
+    fresh Docker-backed 11/11 released-stack run pass. The live runner then completed `37/37`
+    successful Sepolia transactions through block `11396305`, with both real-Nox verdicts finalized
+    and both exact targets executed once. Public addresses, hashes, gas, and recovery evidence are
+    recorded in the Phase 6 live verification artifact and checkpoint.
 
 ## External Gates And Unclaimed Scale
 
 1. Larger electorates remain an unclaimed scale dimension until separately benchmarked; the judged
    contract configuration is four eligible wallets and floor four.
-2. Live Ethereum Sepolia deployment and transaction execution are authorized and same-day dependency
-   verification passes, but observed gas/latency/failure evidence remains pending a dedicated funded
-   deployer and the actual live run.
+2. Live Ethereum Sepolia deployment, gas, latency, recovery, and exact-execution evidence now pass for
+   the judged four-wallet/floor-four graph. Remote CI observation remains pending.
 3. Visual direction is accepted (Direction C — ORBIT) and frontend implementation is authorized
    through the root `SPEC.md` handoff. The product name is decided: **NoxVote** on `noxvote.xyz`
    (`app.` / `docs.` subdomains); the domain was RDAP-verified unregistered on 2026-08-01 and
