@@ -12,3 +12,9 @@ dist/
 .mise.local.toml
 offchain-services.log
 .thoughts/raw/
+
+# Frontend workspace build artifacts
+apps/docs/build/
+apps/docs/.source/
+apps/docs/.react-router/
+.screenshots/

@@ -16,6 +16,11 @@
     "test:forge": "forge test -vvv",
     "test:invariant": "FOUNDRY_PROFILE=invariant forge test --match-contract ConfidentialGovernanceInvariantTest --summary -vv",
     "test:integration": "pnpm build:forge && hardhat test nodejs",
+    "phase6:preflight": "pnpm build && node --env-file-if-exists=.env scripts/phase6-sepolia.ts",
+    "phase6:account": "pnpm build && node --env-file-if-exists=.env scripts/phase6-sepolia.ts --account",
+    "phase6:execute": "pnpm build && node --env-file-if-exists=.env scripts/phase6-sepolia.ts --execute",
+    "apps:build": "pnpm -r --filter \"./apps/*\" build",
+    "apps:dev": "pnpm --filter @noxvote/landing dev",
     "format": "forge fmt && prettier --write \"**/*.{ts,json,md,yml,yaml}\"",
     "format:check": "forge fmt --check && prettier --check \"**/*.{ts,json,md,yml,yaml}\"",
     "clean": "forge clean && hardhat clean"
