@@ -397,6 +397,10 @@ the released chain surface actually provides. Reconciled as follows:
   visually-distinct indexer enrichment; never as a bare fact.
 - **Participation card:** gains a public **Recorded weight** row (aggregate
   turnout weight is on-chain public data and demo-relevant).
+- **`Canceled` terminal state:** the deployed contract enum carries a
+  `Canceled` result/lifecycle state the original inventory never named. It is
+  adopted as an eleventh lifecycle label and a terminal detail/tally state,
+  rendered neutrally (no triad, no danger).
 
 ## Open Questions
 

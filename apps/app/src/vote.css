@@ -102,6 +102,8 @@
 .drawer__close {
   border: 0;
   background: none;
+  padding: 8px 6px;
+  min-height: 24px;
   color: var(--slate);
   font: inherit;
   cursor: pointer;

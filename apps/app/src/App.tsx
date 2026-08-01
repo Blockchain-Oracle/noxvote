@@ -4,6 +4,7 @@ import { activeChain } from './config/chains.ts'
 import { COPY } from './lib/copy.ts'
 import { ProposalDetail } from './routes/ProposalDetail.tsx'
 import { ProposalList } from './routes/ProposalList.tsx'
+import { VerificationCenter } from './routes/VerificationCenter.tsx'
 
 function Shell() {
   return (
@@ -27,6 +28,7 @@ const router = createBrowserRouter([
     children: [
       { index: true, element: <ProposalList /> },
       { path: 'b/:core/:ballotId', element: <ProposalDetail /> },
+      { path: 'b/:core/:ballotId/verify', element: <VerificationCenter /> },
     ],
   },
 ])

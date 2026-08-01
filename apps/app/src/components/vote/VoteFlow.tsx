@@ -14,6 +14,7 @@ import { VoterCard } from '../detail/VoterCard.tsx'
 import { VoteDrawer } from './VoteDrawer.tsx'
 import { ProgressOverlay } from './ProgressOverlay.tsx'
 import { ReceiptPanel } from './ReceiptPanel.tsx'
+import { ChangeVoteConfirm, changeVoteState } from './ChangeVoteConfirm.tsx'
 
 /**
  * Owns the voter write flow: standing assembly, the drawer, the five-stage
@@ -25,11 +26,13 @@ export function VoteFlow({
   ballotId,
   record,
   detailed,
+  timestampClock,
 }: {
   core: Hex
   ballotId: Hex
   record: BallotRecordView
   detailed: DetailedState
+  timestampClock: boolean | undefined
 }) {
   const { address, chainId, isConnected } = useAccount()
   const proof = firstCastEligibilityProof(address)
@@ -56,8 +59,12 @@ export function VoteFlow({
   })
   const [drawerOpen, setDrawerOpen] = useState(false)
   const [overlayOpen, setOverlayOpen] = useState(false)
+  const [changeOpen, setChangeOpen] = useState(false)
 
   const operation = operationReceiptState(cast.state, receipt.data)
+  const castBusy =
+    cast.state.stage !== 'idle' && cast.state.stage !== 'recorded' && cast.state.stage !== 'failed'
+  const change = changeVoteState(drawer, castBusy, record.voteEnd, timestampClock ?? true)
 
   return (
     <>
@@ -71,6 +78,20 @@ export function VoteFlow({
         onCast={
           drawer.phase === 'ready' && !drawer.replacement ? () => setDrawerOpen(true) : undefined
         }
+        onChangeVote={
+          receipt.data?.recorded && drawer.phase !== 'disconnected'
+            ? () => setChangeOpen(true)
+            : undefined
+        }
+      />
+      <ChangeVoteConfirm
+        state={change}
+        open={changeOpen}
+        onClose={() => setChangeOpen(false)}
+        onContinue={() => {
+          setChangeOpen(false)
+          setDrawerOpen(true)
+        }}
       />
       <ReceiptPanel state={operation} ballotId={ballotId} wallet={address} />
       <VoteDrawer

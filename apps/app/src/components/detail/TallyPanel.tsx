@@ -1,3 +1,4 @@
+import type { ReactNode } from 'react'
 import type { Hex } from '../../config/addresses.ts'
 import { COPY } from '../../lib/copy.ts'
 import { formatDateTime, truncateHex } from '../../lib/format.ts'
@@ -6,15 +7,29 @@ import type { TallyState } from '../../state/tally.ts'
 import type { HostInfo } from '../../hooks/useHost.ts'
 
 /**
- * DEMO-CRITICAL B, read-only slice: every state renders from chain facts.
- * The permissionless request/finalize actions wire in the write batch —
- * until then no dead buttons render.
+ * DEMO-CRITICAL B: every state renders from chain facts; the permissionless
+ * request/finalize/resume actions arrive from the owning flow — no dead
+ * buttons, no invented progress (elapsed is measured by the caller).
  */
-export function TallyPanel({ state, host }: { state: TallyState; host: HostInfo | undefined }) {
+export function TallyPanel({
+  state,
+  host,
+  action,
+  elapsed,
+}: {
+  state: TallyState
+  host: HostInfo | undefined
+  action?: ReactNode
+  elapsed?: string
+}) {
   return (
     <section className="card tally">
       <h2 className="card__title">Tally</h2>
       {body(state, host)}
+      {state.phase === 'computing' && elapsed && (
+        <p className="tally__handle mono">Elapsed {elapsed}</p>
+      )}
+      {action}
     </section>
   )
 }
@@ -85,7 +100,7 @@ function body(state: TallyState, host: HostInfo | undefined) {
       )
     case 'bad-proof':
       return (
-        <div className="outcome outcome--withheld">
+        <div className="outcome outcome--danger">
           <p className="outcome__verdict">Proof rejected</p>
           <p className="outcome__body mono">{state.reason}</p>
         </div>

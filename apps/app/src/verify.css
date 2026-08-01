@@ -1,0 +1,60 @@
+/* B3 — verification center, execution, danger outcomes. Contract: DESIGN.md. */
+
+.evidence__grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 20px;
+  align-items: start;
+}
+.evidence__head {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 12px;
+}
+.evidence__prov {
+  font-size: 12px;
+  padding: 3px 10px;
+  border-radius: var(--r-pill);
+  border: 1px solid var(--dust);
+  color: var(--slate);
+  white-space: nowrap;
+}
+.evidence__prov--indexed {
+  border-style: dashed;
+}
+.evidence--mismatch {
+  border: 1.5px solid var(--danger);
+}
+.evidence__mismatch {
+  margin: 0 0 14px;
+  color: var(--danger);
+}
+.evidence__banner {
+  margin-bottom: 24px;
+}
+
+/* Danger outcome rim — invalid/mismatch only, never the Withheld outcome. */
+.outcome--danger {
+  border-color: var(--danger);
+}
+.outcome--danger .outcome__verdict {
+  color: var(--danger);
+}
+
+.detail__verify {
+  margin-left: auto;
+  color: var(--slate);
+  font-size: 14px;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+.detail__verify:hover {
+  color: var(--ink);
+}
+
+@media (max-width: 900px) {
+  .evidence__grid {
+    grid-template-columns: 1fr;
+  }
+}

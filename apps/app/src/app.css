@@ -1,6 +1,7 @@
 @import '@noxvote/ui/theme.css';
 @import './screens.css';
 @import './vote.css';
+@import './verify.css';
 
 /* NoxVote app — ORBIT, light-only. Contract: DESIGN.md at the repo root.
  * Screen-level styles arrive with their screens; this layer carries only the

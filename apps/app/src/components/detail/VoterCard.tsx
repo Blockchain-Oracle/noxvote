@@ -18,6 +18,7 @@ export function VoterCard({
   wallet,
   eligibilityNeedsProof,
   onCast,
+  onChangeVote,
 }: {
   record: BallotRecordView
   detailed: DetailedState
@@ -26,6 +27,7 @@ export function VoterCard({
   wallet: `0x${string}` | undefined
   eligibilityNeedsProof: boolean
   onCast?: () => void
+  onChangeVote?: () => void
 }) {
   const { connect, connectors, isPending } = useConnect()
   const { switchChain } = useSwitchChain()
@@ -95,6 +97,11 @@ export function VoterCard({
             {onCast && (
               <Pill onClick={onCast} className="voter__action">
                 Cast confidential vote
+              </Pill>
+            )}
+            {onChangeVote && (
+              <Pill onClick={onChangeVote} className="voter__action">
+                Change vote
               </Pill>
             )}
           </>

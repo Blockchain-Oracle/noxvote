@@ -2,9 +2,10 @@ import { Link, useParams } from 'react-router'
 import { Eyebrow } from '@noxvote/ui'
 import { ErrorState, Skeleton } from '../components/QueryBoundary.tsx'
 import { LifecycleChip } from '../components/LifecycleChip.tsx'
+import { ExecutionPanel } from '../components/detail/ExecutionPanel.tsx'
 import { ParticipationCard } from '../components/detail/ParticipationCard.tsx'
 import { RulesCard } from '../components/detail/RulesCard.tsx'
-import { TallyPanel } from '../components/detail/TallyPanel.tsx'
+import { TallyFlow } from '../components/detail/TallyFlow.tsx'
 import { VoteFlow } from '../components/vote/VoteFlow.tsx'
 import { activeChain } from '../config/chains.ts'
 import type { Hex } from '../config/addresses.ts'
@@ -15,11 +16,13 @@ import {
   useExpectedVerdictHandle,
 } from '../hooks/useBallot.ts'
 import { useBallotLive } from '../hooks/useBallotLive.ts'
+import { useExecutionFacts } from '../hooks/useExecution.ts'
 import { useGovernanceQuorum, useHost } from '../hooks/useHost.ts'
 import { ballotTitle, lifecycleLabel } from '../lib/lifecycle.ts'
 import { formatDateTime, formatRemaining, truncateHex } from '../lib/format.ts'
 import { DetailedState } from '../state/chain.ts'
-import { tallyState } from '../state/tally.ts'
+import { executionState } from '../state/execution.ts'
+import { useExecuteHost } from '../write/execute.ts'
 
 export function ProposalDetail() {
   const params = useParams()
@@ -63,16 +66,6 @@ export function ProposalDetail() {
   }
 
   const chip = lifecycleLabel(detailed.data)
-  const tally = tallyState({
-    loading: verdictHandle.isPending || result.isPending,
-    detailed: detailed.data,
-    record: record.data,
-    expectedVerdictHandle: verdictHandle.data,
-    result: result.data,
-    request: { status: 'idle' },
-    proof: { status: 'idle' },
-    finalize: { status: 'idle' },
-  })
 
   return (
     <>
@@ -89,17 +82,68 @@ export function ProposalDetail() {
         <p className="detail__status">
           <LifecycleChip tone={chip.tone}>{chip.label}</LifecycleChip>
           <StatusLine detailed={detailed.data} record={record.data} timestampClock={host.data?.timestampClock} />
+          <Link className="detail__verify" to={`/b/${core}/${ballotId}/verify`}>
+            Verification center
+          </Link>
         </p>
       </header>
       <div className="detail__grid">
         <RulesCard record={record.data} host={host.data} quorum={quorum.data} />
         <div className="detail__col">
           <ParticipationCard record={record.data} />
-          <VoteFlow core={core} ballotId={ballotId} record={record.data} detailed={detailed.data} />
+          <VoteFlow
+            core={core}
+            ballotId={ballotId}
+            record={record.data}
+            detailed={detailed.data}
+            timestampClock={host.data?.timestampClock}
+          />
         </div>
       </div>
-      <TallyPanel state={tally} host={host.data} />
+      <TallyFlow
+        core={core}
+        ballotId={ballotId}
+        record={record.data}
+        detailed={detailed.data}
+        result={result.data}
+        expectedVerdictHandle={verdictHandle.data}
+        loading={verdictHandle.isPending || result.isPending}
+        host={host.data}
+      />
+      <HostExecution core={core} recordData={record.data} hostData={host.data} resultData={result.data} />
     </>
+  )
+}
+
+function HostExecution({
+  core,
+  recordData,
+  hostData,
+  resultData,
+}: {
+  core: Hex
+  recordData: NonNullable<ReturnType<typeof useBallotRecord>['data']>
+  hostData: ReturnType<typeof useHost>['data']
+  resultData: ReturnType<typeof useBallotResult>['data']
+}) {
+  const facts = useExecutionFacts(core, recordData, hostData, resultData)
+  const executor = useExecuteHost(hostData?.address)
+  const state = executionState(facts.data, executor.progress)
+  const data = facts.data
+  return (
+    <ExecutionPanel
+      state={state}
+      onQueue={
+        data?.governorData ? () => executor.queueGovernor(data.governorData!) : undefined
+      }
+      onExecute={
+        data?.hostKind === 'safe' && data.actions
+          ? () => executor.executeSafe(recordData.hostProposalId, data.actions!)
+          : data?.governorData
+            ? () => executor.executeGovernor(data.governorData!)
+            : undefined
+      }
+    />
   )
 }
 
