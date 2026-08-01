@@ -9,6 +9,7 @@ import {
   VerdictProofSection,
 } from '../components/verify/ProofSections.tsx'
 import { Skeleton } from '../components/QueryBoundary.tsx'
+import { CopyHash, ExplorerLink } from '../components/Hashes.tsx'
 import { activeChain } from '../config/chains.ts'
 import { profile, type Hex } from '../config/addresses.ts'
 import { useBallotRecord, useBallotResult, useExpectedVerdictHandle } from '../hooks/useBallot.ts'
@@ -18,7 +19,7 @@ import { useHandleAcl } from '../hooks/useHandleAcl.ts'
 import { useHost } from '../hooks/useHost.ts'
 import { useVerdictRecheck } from '../hooks/useVerdictRecheck.ts'
 import { COPY } from '../lib/copy.ts'
-import { formatWeight, truncateHex } from '../lib/format.ts'
+import { formatWeight } from '../lib/format.ts'
 import { Result, ZERO_HANDLE } from '../state/chain.ts'
 import { detailPath } from './ProposalList.tsx'
 
@@ -86,24 +87,36 @@ export function VerificationCenter() {
         <EvidenceSection title="Identity" provenance="onchain">
           <dl className="rules">
             <EvidenceRow label="Network" value={`${activeChain.name} (${activeChain.id})`} />
-            <EvidenceRow label="Ballot core" value={truncateHex(core, 10, 6)} />
+            <EvidenceRow
+              label="Ballot core"
+              value={<ExplorerLink kind="address" value={core} tail={6} />}
+            />
             <EvidenceRow
               label="Host"
               value={
-                host.data
-                  ? `${host.data.kind === 'safe' ? 'Safe module' : host.data.kind === 'governor' ? 'Governor' : 'Host'} ${truncateHex(host.data.address, 10, 6)}`
-                  : 'Resolving…'
+                host.data ? (
+                  <>
+                    {host.data.kind === 'safe'
+                      ? 'Safe module '
+                      : host.data.kind === 'governor'
+                        ? 'Governor '
+                        : 'Host '}
+                    <ExplorerLink kind="address" value={host.data.address} tail={6} />
+                  </>
+                ) : (
+                  'Resolving…'
+                )
               }
             />
-            <EvidenceRow label="Ballot id" value={truncateHex(ballotId, 10, 8)} />
-            <EvidenceRow label="Host proposal" value={truncateHex(rec.hostProposalId, 10, 8)} />
+            <EvidenceRow label="Ballot id" value={<CopyHash value={ballotId} />} />
+            <EvidenceRow label="Host proposal" value={<CopyHash value={rec.hostProposalId} />} />
           </dl>
         </EvidenceSection>
         <EvidenceSection title="Commitments" provenance="onchain">
           <dl className="rules">
-            <EvidenceRow label="Config hash" value={truncateHex(rec.configHash, 10, 8)} />
-            <EvidenceRow label="Action hash" value={truncateHex(rec.actionHash, 10, 8)} />
-            <EvidenceRow label="Clock-mode hash" value={truncateHex(rec.clockModeHash, 10, 8)} />
+            <EvidenceRow label="Config hash" value={<CopyHash value={rec.configHash} />} />
+            <EvidenceRow label="Action hash" value={<CopyHash value={rec.actionHash} />} />
+            <EvidenceRow label="Clock-mode hash" value={<CopyHash value={rec.clockModeHash} />} />
             <EvidenceRow
               label="Window"
               value={`${rec.voteStart.toLocaleString('en-US')} → ${rec.voteEnd.toLocaleString('en-US')} (host clock)`}
@@ -113,7 +126,7 @@ export function VerificationCenter() {
         </EvidenceSection>
         <EvidenceSection title="Eligibility" provenance="onchain">
           <dl className="rules">
-            <EvidenceRow label="Strategy" value={strategyLabel(rec.eligibilityStrategy)} />
+            <EvidenceRow label="Strategy" value={<StrategyValue strategy={rec.eligibilityStrategy} />} />
             <EvidenceRow label="Snapshot" value={rec.snapshot.toLocaleString('en-US')} />
           </dl>
         </EvidenceSection>
@@ -127,8 +140,19 @@ export function VerificationCenter() {
               {history.data.operations.map((op) => (
                 <EvidenceRow
                   key={op.txHash + op.sequence.toString()}
-                  label={`${truncateHex(op.voter)} · seq ${op.sequence.toString()}`}
-                  value={`weight ${formatWeight(op.weight)}${op.replacement ? ' · replacement' : ''} · tx ${truncateHex(op.txHash, 8, 6)}`}
+                  label={
+                    <>
+                      <ExplorerLink kind="address" value={op.voter} head={6} tail={4} /> · seq{' '}
+                      {op.sequence.toString()}
+                    </>
+                  }
+                  value={
+                    <>
+                      weight {formatWeight(op.weight)}
+                      {op.replacement ? ' · replacement' : ''} · tx{' '}
+                      <ExplorerLink kind="tx" value={op.txHash} head={8} tail={6} />
+                    </>
+                  }
                 />
               ))}
             </dl>
@@ -145,7 +169,13 @@ export function VerificationCenter() {
             {history.data?.tallyWithheld && (
               <EvidenceRow
                 label={COPY.resultWithheld}
-                value={`${history.data.tallyWithheld.recordedVoters} of ${history.data.tallyWithheld.privacyFloor} · tx ${truncateHex(history.data.tallyWithheld.txHash, 8, 6)}`}
+                value={
+                  <>
+                    {history.data.tallyWithheld.recordedVoters} of{' '}
+                    {history.data.tallyWithheld.privacyFloor} · tx{' '}
+                    <ExplorerLink kind="tx" value={history.data.tallyWithheld.txHash} head={8} tail={6} />
+                  </>
+                }
               />
             )}
           </dl>
@@ -170,15 +200,20 @@ export function VerificationCenter() {
   )
 }
 
-function strategyLabel(strategy: Hex): string {
+function StrategyValue({ strategy }: { strategy: Hex }) {
+  let name: string | null = null
   if (profile.kind !== 'unconfigured') {
     const c = profile.contracts
     if (strategy.toLowerCase() === c.merkleWeightedAllowlistStrategy?.toLowerCase()) {
-      return `Weighted allowlist ${truncateHex(strategy)}`
-    }
-    if (strategy.toLowerCase() === c.ivotesSnapshotStrategy?.toLowerCase()) {
-      return `Token snapshot ${truncateHex(strategy)}`
+      name = 'Weighted allowlist'
+    } else if (strategy.toLowerCase() === c.ivotesSnapshotStrategy?.toLowerCase()) {
+      name = 'Token snapshot'
     }
   }
-  return truncateHex(strategy, 10, 6)
+  return (
+    <>
+      {name ? `${name} ` : null}
+      <ExplorerLink kind="address" value={strategy} tail={6} />
+    </>
+  )
 }

@@ -1,5 +1,7 @@
+import type { ReactNode } from 'react'
 import { COPY } from '../../lib/copy.ts'
-import { formatDateTime, formatWeight, truncateHex } from '../../lib/format.ts'
+import { formatDateTime, formatWeight } from '../../lib/format.ts'
+import { CopyHash } from '../Hashes.tsx'
 import type { BallotRecordView } from '../../state/chain.ts'
 import type { HostInfo } from '../../hooks/useHost.ts'
 
@@ -41,14 +43,14 @@ export function RulesCard({
         />
         <Row label="Opens" value={clock(record.voteStart)} />
         <Row label="Closes" value={clock(record.voteEnd)} />
-        <Row label="Action commitment" value={truncateHex(record.actionHash, 10, 8)} />
+        <Row label="Action commitment" value={<CopyHash value={record.actionHash} />} />
       </dl>
       <p className="card__note">{COPY.totalsNotDisclosed}. Only the final verdict is published.</p>
     </section>
   )
 }
 
-function Row({ label, value }: { label: string; value: string }) {
+function Row({ label, value }: { label: string; value: ReactNode }) {
   return (
     <div className="rules__row">
       <dt>{label}</dt>

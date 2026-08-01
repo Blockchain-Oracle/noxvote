@@ -28,7 +28,7 @@ export function EvidenceSection({
   )
 }
 
-export function EvidenceRow({ label, value }: { label: string; value: ReactNode }) {
+export function EvidenceRow({ label, value }: { label: ReactNode; value: ReactNode }) {
   return (
     <div className="rules__row">
       <dt>{label}</dt>

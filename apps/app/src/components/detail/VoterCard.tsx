@@ -3,7 +3,12 @@ import { useConnect, useSwitchChain } from 'wagmi'
 import { activeChain } from '../../config/chains.ts'
 import { COPY } from '../../lib/copy.ts'
 import { formatWeight, truncateHex } from '../../lib/format.ts'
-import { DetailedState, type BallotRecordView, type BallotReceiptView } from '../../state/chain.ts'
+import {
+  DetailedState,
+  isTerminal,
+  type BallotRecordView,
+  type BallotReceiptView,
+} from '../../state/chain.ts'
 import type { VoterStanding } from '../../state/proposalDetail.ts'
 
 /**
@@ -34,20 +39,26 @@ export function VoterCard({
 
   const body = () => {
     switch (standing.kind) {
-      case 'disconnected':
+      case 'disconnected': {
+        const settled = isTerminal(detailed)
         return (
           <>
             <p className="card__body">
-              Connect a wallet to check eligibility and your operation status.
+              {settled
+                ? 'Voting has closed and the outcome is settled. Every operation is recorded publicly — connect a wallet only to confirm your own was recorded.'
+                : 'Connect a wallet to check eligibility and your operation status.'}
             </p>
             <Pill
-              onClick={() => connectors[0] && connect({ connector: connectors[0] })}
+              onClick={() =>
+                connectors[0] && connect({ connector: connectors[0], chainId: activeChain.id })
+              }
               className="voter__action"
             >
               {isPending ? 'Connecting…' : 'Connect wallet'}
             </Pill>
           </>
         )
+      }
       case 'wrong-network':
         return (
           <>

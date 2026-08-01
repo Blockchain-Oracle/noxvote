@@ -1,5 +1,7 @@
 @import '@noxvote/ui/theme.css';
 @import './screens.css';
+@import './hashes.css';
+@import './execution.css';
 @import './vote.css';
 @import './verify.css';
 @import './install.css';

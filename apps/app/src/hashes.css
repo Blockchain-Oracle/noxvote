@@ -1,0 +1,50 @@
+/* Interactive hash affordances — explorer link (tx / address) and copy
+ * (bytes32 the explorer cannot resolve). Contract: DESIGN.md. Ink links, no
+ * accent colour; the dashed underline is the "this is interactive" signal. */
+
+.hash-link,
+.hash-copy {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  vertical-align: baseline;
+  padding: 0 0 1px;
+  border: 0;
+  border-bottom: 1px dashed var(--dust);
+  background: none;
+  font-family: var(--mono);
+  font-size: inherit;
+  line-height: inherit;
+  color: inherit;
+  text-decoration: none;
+  white-space: nowrap;
+  cursor: pointer;
+  transition: opacity var(--fast) var(--ease), border-color var(--fast) var(--ease);
+}
+.hash-link:hover,
+.hash-copy:hover {
+  opacity: 0.62;
+  border-bottom-color: var(--ink);
+}
+.hash-link:focus-visible,
+.hash-copy:focus-visible {
+  outline: 2px solid var(--ink);
+  outline-offset: 2px;
+  border-radius: 2px;
+}
+.hash-copy.is-copied {
+  opacity: 1;
+  border-bottom-color: var(--passed);
+  color: var(--passed);
+}
+
+.hash-ext {
+  display: inline-flex;
+  align-items: center;
+  opacity: 0.55;
+  font-size: 0.85em;
+}
+.hash-ico {
+  width: 11px;
+  height: 11px;
+}

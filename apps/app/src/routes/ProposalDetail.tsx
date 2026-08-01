@@ -21,8 +21,8 @@ import { useExecutionFacts } from '../hooks/useExecution.ts'
 import { useGovernanceQuorum, useHost } from '../hooks/useHost.ts'
 import { useHostExecuted } from '../hooks/useHostExecuted.ts'
 import { ballotTitle, lifecycleLabel } from '../lib/lifecycle.ts'
-import { LIFECYCLE_LABELS } from '../lib/copy.ts'
-import { formatDateTime, formatRemaining, truncateHex } from '../lib/format.ts'
+import { CopyHash } from '../components/Hashes.tsx'
+import { formatDateTime, formatRemaining } from '../lib/format.ts'
 import { useState } from 'react'
 import { DetailedState } from '../state/chain.ts'
 import { executionState } from '../state/execution.ts'
@@ -75,9 +75,7 @@ export function ProposalDetail() {
     )
   }
 
-  const chip = executed.data
-    ? { label: LIFECYCLE_LABELS.executed, tone: 'neutral' as const }
-    : lifecycleLabel(detailed.data)
+  const chip = lifecycleLabel(detailed.data)
 
   return (
     <>
@@ -88,11 +86,12 @@ export function ProposalDetail() {
         <Eyebrow>Confidential outcome</Eyebrow>
         <h1 className="d-lg">{ballotTitle(ballotId)}</h1>
         <p className="detail__meta mono">
-          {activeChain.name} · ballot {truncateHex(ballotId, 10, 6)} · proposal{' '}
-          {truncateHex(record.data.hostProposalId, 10, 6)}
+          {activeChain.name} · ballot <CopyHash value={ballotId} tail={6} /> · proposal{' '}
+          <CopyHash value={record.data.hostProposalId} tail={6} />
         </p>
         <p className="detail__status">
           <LifecycleChip tone={chip.tone}>{chip.label}</LifecycleChip>
+          {executed.data && <span className="exec-tag">Executed on-chain</span>}
           <StatusLine detailed={detailed.data} record={record.data} timestampClock={host.data?.timestampClock} />
           <Link className="detail__verify" to={`/b/${core}/${ballotId}/verify`}>
             Verification center
@@ -158,6 +157,7 @@ function HostExecution({
   return (
     <ExecutionPanel
       state={state}
+      queueStep={Boolean(data?.needsQueuing || data?.queued)}
       onQueue={
         data?.governorData ? () => executor.queueGovernor(data.governorData!) : undefined
       }

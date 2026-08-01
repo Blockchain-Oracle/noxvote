@@ -1,0 +1,215 @@
+/* Execution panel — the committed action's journey to on-chain finality.
+ * Contract: DESIGN.md. The passed accent marks the affirmative "executed"
+ * moment (an affirmative, checked state); ember marks the live/waiting node. */
+
+.exec-track {
+  list-style: none;
+  display: flex;
+  margin: 0 0 24px;
+  padding: 0;
+}
+.exec-step {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 9px;
+  position: relative;
+}
+.exec-step:not(:first-child)::before {
+  content: '';
+  position: absolute;
+  top: 12px;
+  left: calc(-50% + 14px);
+  width: calc(100% - 28px);
+  height: 2px;
+  background: var(--dust);
+}
+.exec-step--linked::before {
+  background: var(--ink);
+}
+.exec-step__node {
+  width: 26px;
+  height: 26px;
+  border-radius: 50%;
+  border: 1.5px solid var(--dust);
+  background: var(--lifted);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--canvas);
+  position: relative;
+  z-index: 1;
+}
+.exec-step__node svg {
+  width: 15px;
+  height: 15px;
+}
+.exec-step--done .exec-step__node {
+  background: var(--ink);
+  border-color: var(--ink);
+}
+.exec-step--active .exec-step__node {
+  border-color: var(--ember);
+}
+.exec-step--active .exec-step__node::after {
+  content: '';
+  width: 9px;
+  height: 9px;
+  border-radius: 50%;
+  background: var(--ember);
+}
+.exec-step__label {
+  font-family: var(--mono);
+  font-size: 12px;
+  color: var(--slate);
+}
+.exec-step--done .exec-step__label,
+.exec-step--active .exec-step__label {
+  color: var(--charcoal);
+}
+
+/* ---- executed: the payoff moment ---- */
+.exec-done {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 18px 20px;
+  border: 1px solid var(--ghost);
+  border-radius: 16px;
+  background: var(--canvas);
+}
+.exec-done__glyph {
+  flex: none;
+  width: 38px;
+  height: 38px;
+  color: var(--passed);
+}
+.exec-done__glyph svg {
+  width: 38px;
+  height: 38px;
+  display: block;
+}
+.exec-done__title {
+  margin: 0 0 3px;
+  font-size: 21px;
+  font-weight: 500;
+  letter-spacing: -0.02em;
+  color: var(--passed);
+}
+.exec-done__sub {
+  margin: 0;
+  color: var(--charcoal);
+  font-size: 15px;
+  line-height: 1.4;
+}
+
+.exec-receipt {
+  margin: 20px 0 0;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0 24px;
+}
+.exec-receipt div {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  padding: 14px 0 0;
+}
+.exec-receipt dt {
+  font-family: var(--mono);
+  font-size: 12px;
+  color: var(--slate);
+}
+.exec-receipt dd {
+  margin: 0;
+  font-size: 15px;
+}
+
+/* ---- committed action (ready state) ---- */
+.exec-action {
+  margin-top: 20px;
+  padding-top: 16px;
+  border-top: 1px solid var(--ghost);
+  display: grid;
+  gap: 12px;
+}
+.exec-action__row {
+  display: flex;
+  align-items: baseline;
+  gap: 12px;
+}
+.exec-action__lead {
+  flex: none;
+  min-width: 88px;
+  font-family: var(--mono);
+  font-size: 12px;
+  color: var(--slate);
+}
+.exec-action__detail {
+  font-family: var(--mono);
+  font-size: 14px;
+  color: var(--charcoal);
+}
+
+/* ---- waiting / ready bodies ---- */
+.exec-wait {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  padding: 16px 18px;
+  border: 1px solid var(--ghost);
+  border-radius: 16px;
+  background: var(--canvas);
+}
+.exec-wait__dot {
+  flex: none;
+  margin-top: 6px;
+  width: 9px;
+  height: 9px;
+  position: relative;
+}
+.exec-wait__dot i {
+  position: absolute;
+  inset: 0;
+  border-radius: 50%;
+  background: var(--ember);
+}
+.exec-wait__dot i::after {
+  content: '';
+  position: absolute;
+  inset: -4px;
+  border-radius: 50%;
+  border: 1.5px solid var(--ember);
+  opacity: 0.5;
+  animation: exec-pulse 1800ms var(--ease) infinite;
+}
+@keyframes exec-pulse {
+  0% {
+    transform: scale(0.6);
+    opacity: 0.6;
+  }
+  70% {
+    transform: scale(1.5);
+    opacity: 0;
+  }
+  100% {
+    opacity: 0;
+  }
+}
+.exec-wait__body,
+.exec-ready__body {
+  margin: 0;
+  color: var(--charcoal);
+  line-height: 1.45;
+}
+.exec-wait__eta {
+  color: var(--ink);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .exec-wait__dot i::after {
+    animation: none;
+    opacity: 0;
+  }
+}

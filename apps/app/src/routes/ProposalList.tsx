@@ -1,5 +1,6 @@
+import type { CSSProperties } from 'react'
 import { Link } from 'react-router'
-import { Eyebrow } from '@noxvote/ui'
+import { Eyebrow, MarkGlyph } from '@noxvote/ui'
 import { QueryBoundary } from '../components/QueryBoundary.tsx'
 import { LifecycleChip } from '../components/LifecycleChip.tsx'
 import type { Hex } from '../config/addresses.ts'
@@ -7,9 +8,8 @@ import { useBallotList, type RegisteredBallot } from '../hooks/useBallotList.ts'
 import { useDetailedState, useBallotRecord } from '../hooks/useBallot.ts'
 import { useHost } from '../hooks/useHost.ts'
 import { useHostExecuted } from '../hooks/useHostExecuted.ts'
-import { ballotTitle, lifecycleLabel } from '../lib/lifecycle.ts'
-import { LIFECYCLE_LABELS } from '../lib/copy.ts'
-import { truncateHex } from '../lib/format.ts'
+import { ballotTitle, ballotTiming, lifecycleLabel } from '../lib/lifecycle.ts'
+import { formatWeight, truncateHex } from '../lib/format.ts'
 import { DetailedState } from '../state/chain.ts'
 
 export function ProposalList() {
@@ -33,8 +33,8 @@ export function ProposalList() {
       >
         {(rows) => (
           <div className="list__rows">
-            {rows.map((row) => (
-              <ProposalRow key={row.ballotId} ballot={row} />
+            {rows.map((row, i) => (
+              <ProposalCard key={row.ballotId} ballot={row} index={i} />
             ))}
           </div>
         )}
@@ -43,38 +43,93 @@ export function ProposalList() {
   )
 }
 
-function ProposalRow({ ballot }: { ballot: RegisteredBallot }) {
-  const detailed = useDetailedState(ballot.core, ballot.ballotId)
+function ProposalCard({ ballot, index }: { ballot: RegisteredBallot; index: number }) {
   const record = useBallotRecord(ballot.core, ballot.ballotId)
+  const detailed = useDetailedState(ballot.core, ballot.ballotId, record.data)
   const host = useHost(ballot.core)
   const executed = useHostExecuted(
     host.data,
     ballot.hostProposalId,
     detailed.data === DetailedState.Passed,
   )
-  const chip =
-    detailed.data === undefined
-      ? null
-      : executed.data
-        ? { label: LIFECYCLE_LABELS.executed, tone: 'neutral' as const }
-        : lifecycleLabel(detailed.data)
+  const chip = detailed.data === undefined ? null : lifecycleLabel(detailed.data)
+  const live = detailed.data === DetailedState.Open
+  const timing = ballotTiming(detailed.data, record.data, host.data?.timestampClock)
   return (
-    <Link to={detailPath(ballot.core, ballot.ballotId)} className="prop-row">
-      <span className="prop-row__main">
-        <span className="prop-row__title">{ballotTitle(ballot.ballotId)}</span>
-        <span className="prop-row__meta mono">
-          {host.data ? hostLabel(host.data.kind) : '…'} · {truncateHex(ballot.ballotId, 10, 6)}
+    <Link
+      to={detailPath(ballot.core, ballot.ballotId)}
+      className="pcard"
+      style={{ '--i': index } as CSSProperties}
+    >
+      <span className="pcard__head">
+        <span className="pcard__host">
+          <MarkGlyph />
+          <span className="host-name">{host.data ? hostLabel(host.data.kind) : '…'}</span>
+          <span className="dot-sep" aria-hidden="true">
+            ·
+          </span>
+          <span className="pcard__id mono">{truncateHex(ballot.ballotId, 10, 6)}</span>
+        </span>
+        <span className="pcard__chipwrap">
+          {live && <i className="live-dot" aria-hidden="true" />}
+          {chip && <LifecycleChip tone={chip.tone}>{chip.label}</LifecycleChip>}
         </span>
       </span>
-      <span className="prop-row__side">
-        {record.data && (
-          <span className="prop-row__floor mono">
-            {record.data.recordedVoters} / {record.data.privacyFloor} floor
-          </span>
-        )}
-        {chip && <LifecycleChip tone={chip.tone}>{chip.label}</LifecycleChip>}
+      <span className="pcard__title">
+        {ballotTitle(ballot.ballotId)}
+        {executed.data && <span className="exec-tag">Executed on-chain</span>}
+      </span>
+      <span className="pcard__rail">
+        <span className="rail-left">
+          {record.data && (
+            <span className="rail-fact">
+              <Pips lit={record.data.recordedVoters} total={record.data.privacyFloor} />
+              <span className="rail-label mono">
+                {record.data.recordedVoters} / {record.data.privacyFloor} floor
+              </span>
+            </span>
+          )}
+          {record.data && (
+            <>
+              <span className="rail-sep" aria-hidden="true" />
+              <span className="rail-fact">
+                <span className="rail-label mono">weight {formatWeight(record.data.recordedWeight)}</span>
+              </span>
+            </>
+          )}
+          {timing && (
+            <>
+              <span className="rail-sep" aria-hidden="true" />
+              <span className="rail-fact">
+                <span className={`timing${timing.live ? ' timing--live' : ''}`}>
+                  {timing.live && <i className="live-dot" aria-hidden="true" />}
+                  {timing.text}
+                </span>
+              </span>
+            </>
+          )}
+        </span>
+        <span className="pcard__cta" aria-hidden="true">
+          View record
+          <span className="cta-arrow">→</span>
+        </span>
       </span>
     </Link>
+  )
+}
+
+/** Privacy-floor progress — each lit pip is a recorded wallet (DESIGN: the pips
+ * are a sanctioned home for the recorded accent). Collapses to the numeric
+ * label alone when the floor is too large to read as dots. */
+function Pips({ lit, total }: { lit: number; total: number }) {
+  if (total < 1 || total > 10) return null
+  const on = Math.min(lit, total)
+  return (
+    <span className="pips" aria-hidden="true">
+      {Array.from({ length: total }, (_, i) => (
+        <i key={i} className={`pip${i < on ? ' pip--lit' : ''}`} />
+      ))}
+    </span>
   )
 }
 

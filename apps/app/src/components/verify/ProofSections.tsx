@@ -1,9 +1,9 @@
 import { Skeleton } from '../QueryBoundary.tsx'
+import { CopyHash, ExplorerLink } from '../Hashes.tsx'
 import { EvidenceRow, EvidenceSection } from './EvidenceSection.tsx'
 import { profile, type Hex } from '../../config/addresses.ts'
 import type { BallotHistory } from '../../hooks/useBallotHistory.ts'
 import type { VerdictRecheck } from '../../hooks/useVerdictRecheck.ts'
-import { truncateHex } from '../../lib/format.ts'
 import { Result, ZERO_HANDLE } from '../../state/chain.ts'
 import type { ExecutionFacts } from '../../state/execution.ts'
 
@@ -14,9 +14,12 @@ export function TallyRequestSection({ history }: { history: BallotHistory | unde
         <dl className="rules">
           <EvidenceRow
             label="Expected verdict handle"
-            value={truncateHex(history.tallyRequested.expectedVerdictHandle, 12, 10)}
+            value={<CopyHash value={history.tallyRequested.expectedVerdictHandle} head={12} tail={10} />}
           />
-          <EvidenceRow label="Request tx" value={truncateHex(history.tallyRequested.txHash, 10, 8)} />
+          <EvidenceRow
+            label="Request tx"
+            value={<ExplorerLink kind="tx" value={history.tallyRequested.txHash} />}
+          />
         </dl>
       ) : (
         <p className="card__body">No tally request yet — it opens when voting closes.</p>
@@ -44,7 +47,7 @@ export function VerdictProofSection({
         <p className="card__body">No expected verdict handle is stored yet.</p>
       ) : (
         <dl className="rules">
-          <EvidenceRow label="Handle" value={truncateHex(verdictHandle, 12, 10)} />
+          <EvidenceRow label="Handle" value={<CopyHash value={verdictHandle} head={12} tail={10} />} />
           <EvidenceRow
             label="Publicly decryptable"
             value={acl === undefined ? 'Checking…' : acl.publiclyDecryptable ? 'yes — verdict only' : 'no'}
@@ -54,10 +57,16 @@ export function VerdictProofSection({
             value={acl === undefined ? 'Checking…' : acl.coreAllowed ? 'held by the core' : 'not held'}
           />
           {profile.kind !== 'unconfigured' && (
-            <EvidenceRow label="Gateway signer" value={truncateHex(profile.nox.gatewaySigner)} />
+            <EvidenceRow
+              label="Gateway signer"
+              value={<ExplorerLink kind="address" value={profile.nox.gatewaySigner} />}
+            />
           )}
           {history?.finalized && (
-            <EvidenceRow label="Finalize tx" value={truncateHex(history.finalized.txHash, 10, 8)} />
+            <EvidenceRow
+              label="Finalize tx"
+              value={<ExplorerLink kind="tx" value={history.finalized.txHash} />}
+            />
           )}
         </dl>
       )}
@@ -110,7 +119,10 @@ export function ExecutionSection({
         <dl className="rules">
           <EvidenceRow label="Executed" value="once, against the committed action" />
           {execution.executionTx && (
-            <EvidenceRow label="Execution tx" value={truncateHex(execution.executionTx, 10, 8)} />
+            <EvidenceRow
+              label="Execution tx"
+              value={<ExplorerLink kind="tx" value={execution.executionTx} />}
+            />
           )}
         </dl>
       ) : (
