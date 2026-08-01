@@ -1,12 +1,13 @@
 # Source Manifest
 
-Mirrors live under `.thoughts/raw/` and are ignored. All entries below were retrieved on 2026-07-29.
+Mirrors live under `.thoughts/raw/` and are ignored. The initial corpus was retrieved on 2026-07-29;
+the Phase 6 entries below were refreshed on 2026-08-01.
 
 ## iExec Nox official sources
 
 | Source                                              | Mirror commit                              | Use                                                                                                                            |
 | --------------------------------------------------- | ------------------------------------------ | ------------------------------------------------------------------------------------------------------------------------------ |
-| https://github.com/iExec-Nox/documentation          | `ce4262e181bc9dfbb99ae5d0e28c4ea4f4422da7` | Current Nox documentation and network/API routing                                                                              |
+| https://github.com/iExec-Nox/documentation          | `e21835571131bf574376610c4be15902cd4752b9` | Current Nox documentation and network/API routing; refreshed for Phase 6                                                       |
 | https://github.com/iExec-Nox/nox-protocol-contracts | `688c965dff38c1b86a1cf49ebc1263873b9d9645` | Released Solidity SDK, NoxCompute interfaces, ACL and proof verification                                                       |
 | https://github.com/iExec-Nox/nox-handle-sdk         | `b1cbfade5ea51b1ce54b51f5d9ad8e49fa8c7f5e` | Handle preparation request, private/public decryption, and proof types; released input encryption occurs in the Handle Gateway |
 | https://github.com/iExec-Nox/nox-hardhat-plugin     | `a9a913264b2ec8c7b71864b61efe8a03491b5ce5` | Supported local confidential-stack test workflow                                                                               |
@@ -14,6 +15,36 @@ Mirrors live under `.thoughts/raw/` and are ignored. All entries below were retr
 | https://github.com/iExec-Nox/nox-runner             | `c56433e7d8f12c46e362d89f8304353c1f72c933` | Confidential operation execution semantics                                                                                     |
 | https://github.com/iExec-Nox/nox-handle-gateway     | `a7379bbb38bf6731d5bf5e7aadf2c2f4d545023b` | Ciphertext/handle lifecycle and decryption gateway                                                                             |
 | https://github.com/iExec-Nox/nox-product-poc        | `7024a8167f0c61a24ce569af9272b457bff8b6ce` | Official visible product-PoC collision baseline                                                                                |
+
+## Phase 6 deployment sources and live verification
+
+| Source                                          | Commit or live state                       | Use                                                                  |
+| ----------------------------------------------- | ------------------------------------------ | -------------------------------------------------------------------- |
+| https://github.com/safe-global/safe-deployments | `9f5c7a4259fdd03fd63fa5a57d3d9802cb38ad12` | Official Safe 1.5.0 canonical address and code-hash registry         |
+| Ethereum Sepolia public RPC                     | Block `11395848`, checked 2026-08-01       | Chain, proxy slot, runtime code, Gateway signer, gas, and role reads |
+| https://gateway-testnets.noxprotocol.dev        | HTTP 200, checked 2026-08-01               | Released Handle Gateway health and SDK endpoint                      |
+| Ethereum Sepolia Nox subgraph                   | Block `11395848`, HTTP 200                 | Current handle/ACL indexing endpoint                                 |
+
+The current Sepolia addresses and exact runtime hashes are:
+
+| Dependency                   | Address                                      | Runtime code hash                                                    |
+| ---------------------------- | -------------------------------------------- | -------------------------------------------------------------------- |
+| NoxCompute proxy             | `0x24Ef36Ec5b626D7DCD09a98F3083c2758F0F77bF` | `0x9051c2db7e8a643e765dbe24abc6661bcd78bcd849f9e1f83bf5a59e95dd7438` |
+| NoxCompute implementation    | `0xc9B5D2e99e45dc652b3B90bA5FA79667ACFEb819` | `0x2353cc148349b7dda236c6dc2e66735db4138a4d7498765729bc01fb121f4256` |
+| Safe 1.5.0 singleton         | `0xFf51A5898e281Db6DfC7855790607438dF2ca44b` | `0xdda019cbd7c867a533a2a86e5c53434fdc50b13122b5a5ddb4a8df61b31c20f2` |
+| Safe 1.5.0 proxy factory     | `0x14F2982D601c9458F93bd70B218933A6f8165e7b` | `0x967dae4cda22b0c9ef7f31b010bdc1ceb0af9904b0c3dc060b5302e4c18a4529` |
+| Safe 1.5.0 MultiSendCallOnly | `0xA83c336B20401Af773B6219BA5027174338D1836` | `0xcdbdcec38d2f1c7d961b0029ff8416b7e86e9974d6f0e9c9580c7d17fcfb6663` |
+| Safe compatibility handler   | `0x3EfCBb83A4A7AfcB4F68D501E2c2203a38be77f4` | `0x3c6a85bcf7b563daa624b884b4e9a1b9fa5371edde7be945d998071a48f28bbc` |
+
+The Nox proxy implementation slot resolved to the implementation above. The current official
+`nox-protocol-contracts` Sepolia Ignition artifact has the same 16,873-byte runtime as the live code.
+After zeroing only the nine locations declared in that artifact's `immutableReferences`, every byte
+matches. The live code's short Solidity metadata trailer is expected because the official production
+profile uses `viaIR`, optimizer runs 200, and `metadata.bytecodeHash = none`.
+
+At block `11395848`, three independent Sepolia RPC reads agreed on the live Nox Gateway signer
+`0xE13191F53671957C8a48A7A3Ff15E16450a1552F`; the configured proof-expiration duration was `3600`
+seconds. The Phase 6 runner pins both values and fails closed if either changes.
 
 ## Released packages checked
 

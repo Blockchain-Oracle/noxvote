@@ -9,10 +9,13 @@ expanded-graph runs pass all 11 Docker-backed integration cases and clean the of
 factory-deployed production Safe direct/batch paths and production Governor/real-Timelock path now
 consume real released-Nox verdicts.
 
-This is not a product-completion or deployment verdict. Ethereum Sepolia, funded accounts, external
-transactions, frontend behavior, visual design, publishing, and submission remain **NOT RUN** or
-unauthorized. In particular, AC9 is only locally proven; its explicit testnet clause belongs to the
-blocked Phase 6 gate.
+This is not a product-completion or live-transaction verdict. The user authorized Phase 6 accounts,
+funding checks, deployment, and required Ethereum Sepolia transactions on 2026-08-01. The read-only
+live dependency/code-hash preflight passes, but funded accounts and external transactions remain
+**NOT RUN** because no dedicated deployer is configured. AC9 is therefore still only locally proven
+until the authorized Phase 6 transaction path executes. The separate ORBIT frontend track is now
+authorized, but remains NOT RUN and outside this contract audit. Publishing and submission remain
+unauthorized.
 
 ## Artifacts Checked
 
@@ -49,20 +52,20 @@ blocked Phase 6 gate.
 
 ## Acceptance Criteria Coverage
 
-| Criterion                                    | Status                      | Evidence                                                                                                                                                                             |
-| -------------------------------------------- | --------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
-| AC1 no plaintext public choice               | PASS (local)                | Released Handle Gateway test imports opaque `uint16` evidence; calldata/events contain no plaintext choice field.                                                                    |
-| AC2 no non-core ballot ACL                   | PASS (local)                | Casting and tally ACL tests plus manual `Nox.allow*` review: ballot/intermediate handles use `allowThis`; only verdict uses `allowPublicDecryption`.                                 |
-| AC3 newest replacement only                  | PASS (local)                | Two replacements and encrypted subtract/add path pass deterministic tests and 10,000-run stateful invariants.                                                                        |
-| AC4 noncanonical is Abstain; stale immutable | PASS (local released stack) | Full-shape real-Nox graph resolves with noncanonical input normalized to Abstain; stale/out-of-order calls do not mutate public accounting.                                          |
-| AC5 no running public tally                  | PASS (contract scope)       | No option-total getter or public-decryption ACL exists. UI is not run.                                                                                                               |
-| AC6 below-floor withholding                  | PASS (local released stack) | Below-floor request terminates as Withheld without constructing or publishing a verdict.                                                                                             |
-| AC7 exact verdict proof                      | PASS (local released stack) | Complete local matrix plus production-core released-stack rejection of short, mutated, wrong-signer/domain/handle, malformed-length, and noncanonical-boolean evidence.              |
-| AC8 exact Passed-only action                 | PASS (local released stack) | Factory-deployed production Safe direct/batch and production Governor/real-Timelock paths execute only the committed action after a real Passed verdict.                             |
-| AC9 real Nox and host transition             | PARTIAL                     | Released local Nox and production Safe/Governor host transitions pass without mocks. The criterion's explicit testnet clause is NOT RUN under blocked Phase 6.                       |
-| AC10–AC14 UI and verification UX             | NOT RUN                     | Frontend and visual design are unauthorized in this contract gate.                                                                                                                   |
-| AC15 Safe compatibility                      | PASS (local released stack) | Factory-deployed module consumes a real verdict for official Safe direct/batch execution; Foundry proves changed action, replay, disabled module, failure, and reentrancy rejection. |
-| AC16 Governor compatibility                  | PASS (local released stack) | Factory-deployed production Governor consumes a real verdict, queues through the real TimelockController, observes delay, and executes.                                              |
+| Criterion                                    | Status                      | Evidence                                                                                                                                                                                   |
+| -------------------------------------------- | --------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| AC1 no plaintext public choice               | PASS (local)                | Released Handle Gateway test imports opaque `uint16` evidence; calldata/events contain no plaintext choice field.                                                                          |
+| AC2 no non-core ballot ACL                   | PASS (local)                | Casting and tally ACL tests plus manual `Nox.allow*` review: ballot/intermediate handles use `allowThis`; only verdict uses `allowPublicDecryption`.                                       |
+| AC3 newest replacement only                  | PASS (local)                | Two replacements and encrypted subtract/add path pass deterministic tests and 10,000-run stateful invariants.                                                                              |
+| AC4 noncanonical is Abstain; stale immutable | PASS (local released stack) | Full-shape real-Nox graph resolves with noncanonical input normalized to Abstain; stale/out-of-order calls do not mutate public accounting.                                                |
+| AC5 no running public tally                  | PASS (contract scope)       | No option-total getter or public-decryption ACL exists. UI is not run.                                                                                                                     |
+| AC6 below-floor withholding                  | PASS (local released stack) | Below-floor request terminates as Withheld without constructing or publishing a verdict.                                                                                                   |
+| AC7 exact verdict proof                      | PASS (local released stack) | Complete local matrix plus production-core released-stack rejection of short, mutated, wrong-signer/domain/handle, malformed-length, and noncanonical-boolean evidence.                    |
+| AC8 exact Passed-only action                 | PASS (local released stack) | Factory-deployed production Safe direct/batch and production Governor/real-Timelock paths execute only the committed action after a real Passed verdict.                                   |
+| AC9 real Nox and host transition             | PARTIAL                     | Released local Nox and production Safe/Governor host transitions pass without mocks. Live Sepolia dependencies pass read-only verification; the criterion's transaction clause is NOT RUN. |
+| AC10–AC14 UI and verification UX             | NOT RUN                     | A separate ORBIT frontend track is authorized, but no UI result is assessed by this contract audit.                                                                                        |
+| AC15 Safe compatibility                      | PASS (local released stack) | Factory-deployed module consumes a real verdict for official Safe direct/batch execution; Foundry proves changed action, replay, disabled module, failure, and reentrancy rejection.       |
+| AC16 Governor compatibility                  | PASS (local released stack) | Factory-deployed production Governor consumes a real verdict, queues through the real TimelockController, observes delay, and executes.                                                    |
 
 ## Quality Gates
 
@@ -78,6 +81,7 @@ blocked Phase 6 gate.
 | Production-source spike imports   | PASS; none found                                                                                                |
 | Diff and edited-file formatting   | PASS                                                                                                            |
 | Contract CI definition            | INSTALLED; five jobs defined, remote-run observation still pending                                              |
+| Phase 6 live dependency preflight | PASS; Nox/Safe code hashes, Gateway, subgraph, source provenance, and exact Foundry creation bytecode verified  |
 
 The first changed-graph run began from no running Nox services with cached Docker images; two further
 clean-start repetitions followed. This is a cold service-stack measurement, not a cold image-download
@@ -128,23 +132,25 @@ future regressions above 20% of these pinned baselines:
 
 ## Gaps And Risks
 
-- Phase 6 Ethereum Sepolia behavior, addresses, gas, latency, accounts, funding, deployment, and
-  external transactions are NOT RUN and require explicit authorization.
+- Phase 6 Ethereum Sepolia addresses and dependency code hashes pass current read-only verification.
+  Live gas, latency, failure behavior, accounts, funding, deployment, and external transactions are
+  still NOT RUN because the dedicated deployer is not configured.
 - Larger electorates are unbenchmarked; evidence is bounded to the judged four-wallet/floor-four graph.
 - The current single-node Nox KMS and plaintext-seeing Handle Gateway remain trusted dependencies.
 - Confidential choice does not make participation anonymous and re-voting is not receipt-freeness.
-- Frontend status, verification, and trust-disclosure criteria AC10–AC14 remain NOT RUN under the
-  separate design/frontend gate.
+- Frontend status, verification, and trust-disclosure criteria AC10–AC14 remain NOT RUN in this
+  audit; the dedicated ORBIT implementation track is now separately authorized.
 - The contract CI workflow is installed but has not yet been observed on a remote GitHub runner. The
   recorded local three-repetition real-Nox pass remains the current executable evidence.
 
 ## Follow-ups
 
-1. Stop at the Phase 6 authorization boundary unless the user explicitly approves accounts, funding,
-   deployment, and external transactions.
-2. Reverify official Sepolia Nox, Gateway, Safe, and explorer addresses immediately before any live
-   action.
-3. Resolve visual-design authority separately; do not infer UI authorization from this contract pass.
+1. Configure a dedicated Phase 6 deployer and satisfy the runner's dynamic funding gate without
+   implicitly reusing unrelated local keystores.
+2. Let `pnpm phase6:execute` repeat the official Sepolia Nox, Gateway, Safe, explorer, and exact
+   creation-code checks immediately before its first authorized broadcast.
+3. Keep ORBIT frontend implementation and its later verification audit separate from this contract
+   deployment evidence.
 4. Observe the installed contract workflow on a remote runner before treating CI as independently
    green.
 
@@ -164,3 +170,9 @@ future regressions above 20% of these pinned baselines:
 - Manual review covered external calls, reentrancy consumption/rollback, action/proposal domains,
   Timelock roles, permanent ACL grants, public-decryption paths, factory creation/runtime hashes, and
   production-source isolation from `src/spike`.
+- `pnpm phase6:preflight`: PASS against Ethereum Sepolia chain `11155111`; live Nox proxy and
+  implementation, Gateway, subgraph, official Safe 1.5.0 dependencies, and exact reviewed Foundry
+  factory/module/Governor/Timelock creation-code hashes match. No transaction was signed or broadcast.
+- `pnpm test:integration`: the first attempt stopped before contract execution because the active
+  OrbStack daemon was not running; after starting the configured daemon, one fresh complete 11/11
+  released-stack run passed and cleaned the stack.

@@ -10,8 +10,9 @@ Nox-to-Safe execution, Runner recovery, explicit JetStream redelivery, the full 
 matrix, and real Nox-to-compatible-Governor-to-Timelock execution. The research supports permanent
 public-chain choice confidentiality and verdict-only disclosure, but not client-side encryption or a
 MACI-equivalent receipt-free claim on released Nox. A contract quality profile and contract-only
-implementation plan are accepted and local phased contract implementation is underway. Visual design
-is externally owned and UI planning is paused. The first production core-boundary slice passes local
+implementation plan are accepted and local phased contract implementation is underway. The user has
+accepted the ORBIT visual direction and separately authorized a dedicated frontend track for the
+landing, app, and docs surfaces. The first production core-boundary slice passes local
 build and unit/fuzz gates, and production IVotes/Merkle eligibility strategies now pass the expanded
 suite. The direct-wallet confidential-cast slice now fixes first-cast weight, enforces one initial
 ballot plus two sequenced replacements, rejects invalid public conditions before Nox, and persists only
@@ -66,7 +67,9 @@ high-confidence invariants, boundary reports, and three real-Nox repetitions; it
 not yet run on a remote GitHub runner. Four deterministic Safe/Governor gas tests enforce 20%
 regression ceilings, and the reconciled production verification audit passes the authorized local
 contract gate. Phase 5 and local Phase 6 preflight remediation are complete. Slither is not required.
-Live Phase 6 testnet deployment remains unauthorized.
+Phase 6 target accounts, funding checks, deployment, and required Sepolia transactions are now
+authorized. The current read-only live dependency and bytecode preflight passes, while transactions
+remain not run because a dedicated funded deployer has not been configured.
 
 Start here:
 
@@ -83,15 +86,18 @@ Start here:
 11. `.thoughts/design/2026-07-29-product-surface-map.md`
 12. `.thoughts/verification/2026-07-31-production-contract-verification-audit.md`
 13. `.thoughts/reviews/2026-07-31-opus-5-predeployment-review.md`
-14. `.thoughts/verification/2026-07-30-full-shape-spike-report.md`
-15. `.thoughts/plans/2026-07-30-full-shape-feasibility-spike.md`
-16. `.thoughts/decisions/2026-07-30-fable-review-reconciliation.md`
-17. `.thoughts/research/2026-07-29-open-source-private-voting-landscape.md`
-18. `.thoughts/briefs/2026-07-29-confidential-voting-research-brief.md` (historical research seed)
-19. `.thoughts/plans/2026-07-29-confidential-voting-research-plan.md`
-20. `.thoughts/research/2026-07-29-confidential-voting-architecture-synthesis.md` (historical first pass)
-21. `.thoughts/reviews/2026-07-30-fable-5-product-review.md`
-22. `.thoughts/plans/2026-07-29-confidential-voting-decision-plan.md` (historical first-pass scope)
+14. `.thoughts/decisions/2026-08-01-phase6-live-authorization.md`
+15. `.thoughts/decisions/2026-08-01-frontend-milestone-authorization.md`
+16. `.thoughts/design/2026-08-01-orbit-direction.md`
+17. `.thoughts/verification/2026-07-30-full-shape-spike-report.md`
+18. `.thoughts/plans/2026-07-30-full-shape-feasibility-spike.md`
+19. `.thoughts/decisions/2026-07-30-fable-review-reconciliation.md`
+20. `.thoughts/research/2026-07-29-open-source-private-voting-landscape.md`
+21. `.thoughts/briefs/2026-07-29-confidential-voting-research-brief.md` (historical research seed)
+22. `.thoughts/plans/2026-07-29-confidential-voting-research-plan.md`
+23. `.thoughts/research/2026-07-29-confidential-voting-architecture-synthesis.md` (historical first pass)
+24. `.thoughts/reviews/2026-07-30-fable-5-product-review.md`
+25. `.thoughts/plans/2026-07-29-confidential-voting-decision-plan.md` (historical first-pass scope)
 
 The previous NoxLimit repository was preserved intact at
 `/Users/abu/dev/hackathon/wtf-noxlimit-archive-2026-07-29`.

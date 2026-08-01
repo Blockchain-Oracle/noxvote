@@ -50,12 +50,15 @@ enforce the quality profile's 20% regression ceiling. The full Forge suite passe
 high-confidence invariant profile passes again at 960,000 modeled calls, and a five-job contract CI
 workflow is installed but not yet observed on a remote runner. The reconciled production verification
 audit passes the authorized local contract gate. Phase 5 and local Phase 6 preflight remediation are
-complete. Phase 6 live Ethereum Sepolia work remains blocked pending explicit authorization. The
-spike artifacts are not production components.
+complete. On 2026-08-01 the user authorized Phase 6 target accounts, funding checks, deployment, and
+required Ethereum Sepolia transactions. The read-only live dependency/code-hash preflight passes, but
+no transaction has been broadcast because a dedicated funded deployer is not configured. The spike
+artifacts are not production components.
 
-Visual design ownership is `EXTERNAL_COMMISSION`. The external designer owns visual language. Do not
-choose UI taste, tokens, layouts, or frontend architecture until returned direction is audited,
-accepted by the user, and captured in a design document.
+Visual design ownership is resolved. On 2026-08-01 the user accepted Direction C — ORBIT and
+authorized a dedicated frontend agent to implement `apps/landing`, `apps/app`, and `apps/docs` from
+the root `SPEC.md`. The accepted tokens and laws live in
+`.thoughts/design/2026-08-01-orbit-direction.md`; the contract track must not invent or override them.
 
 The previous NoxLimit product is historical and preserved intact at
 `/Users/abu/dev/hackathon/wtf-noxlimit-archive-2026-07-29`. Do not copy its product decisions,
@@ -112,5 +115,7 @@ later only when a specific fact is relevant and reverified against current relea
 Broader research, product definition, stories, feature inventory, functional surface map, governance
 host comparison, architecture, and bounded local feasibility spike are complete. Other builders are
 not a product or build gate. Local phased contract implementation is authorized under the accepted
-plan. UI planning is paused under external design ownership. Frontend implementation, deployments,
-billable infrastructure, public publishing, and submission claims are not authorized.
+plan. Phase 6 credentials, funding checks, deployment, required Sepolia transactions, evidence
+maintenance, and commits are authorized under the 2026-08-01 live decision. Frontend implementation
+is separately authorized for the dedicated ORBIT track; it does not broaden this contract task.
+Billable production infrastructure, public publishing, and submission claims are not authorized.
