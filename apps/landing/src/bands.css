@@ -1,0 +1,164 @@
+/* NoxVote landing — rules, outcomes, denial list. Contract: DESIGN.md. */
+
+.rules {
+  display: grid;
+  grid-template-columns: 0.85fr 1.15fr;
+  gap: 64px;
+  align-items: start;
+}
+.rules h2 {
+  margin-top: 20px;
+}
+.rules__note {
+  margin-top: 20px;
+  color: var(--slate);
+}
+.rules__note strong {
+  color: var(--ink);
+  font-weight: 700;
+}
+
+.rules__panel {
+  padding: 32px;
+  border-radius: var(--r-card);
+  background: var(--canvas);
+  border: 1px solid var(--dust);
+}
+
+.rules__row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 16px;
+  padding-block: 15px;
+  border-top: 1px solid var(--dust);
+}
+.rules__row:first-child {
+  border-top: 0;
+  padding-top: 0;
+}
+.rules__row dt {
+  font-size: 15px;
+  font-weight: 500;
+  letter-spacing: -0.02em;
+}
+.rules__row dd {
+  color: var(--charcoal);
+  text-align: right;
+}
+
+.rules__fixture {
+  margin-top: 18px;
+  font-size: 12px;
+  color: var(--slate);
+}
+
+/* ---- Two outcomes: pill-shaped panels, rim carries the state colour ---- */
+
+.outcomes {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 32px;
+}
+
+.outcome {
+  padding: 56px clamp(40px, 5vw, 76px);
+  border-radius: var(--r-pill);
+  background: var(--lifted);
+  border: 1.5px solid var(--dust);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+}
+.outcome--passed {
+  border-color: var(--passed);
+}
+.outcome--withheld {
+  border-color: var(--withheld);
+}
+
+.outcome__cond {
+  font-family: var(--mono);
+  font-size: 13px;
+  color: var(--slate);
+}
+.outcome h3 {
+  margin-top: 20px;
+  font-size: clamp(22px, 2.2vw, 28px);
+  font-weight: 500;
+  line-height: 1.18;
+  letter-spacing: -0.02em;
+  max-width: 18ch;
+}
+.outcome p {
+  margin-top: 16px;
+  color: var(--slate);
+  max-width: 38ch;
+}
+.outcome__foot {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  margin-top: 26px;
+}
+.outcome__foot .mono {
+  color: var(--slate);
+}
+
+/* ---- What this does not promise ---- */
+
+.deny__row {
+  display: grid;
+  grid-template-columns: 0.65fr 1.35fr;
+  gap: 40px;
+  padding-block: 26px;
+  border-top: 1px solid var(--dust);
+}
+.deny__row:last-child {
+  border-bottom: 1px solid var(--dust);
+}
+.deny__term {
+  font-size: 20px;
+  font-weight: 500;
+  letter-spacing: -0.02em;
+}
+.deny__row p {
+  color: var(--slate);
+}
+
+@media (max-width: 1080px) {
+  .rules {
+    grid-template-columns: 1fr;
+    gap: 40px;
+  }
+}
+
+@media (max-width: 900px) {
+  .outcomes {
+    grid-template-columns: 1fr;
+    gap: 24px;
+  }
+  .deny__row {
+    grid-template-columns: 1fr;
+    gap: 10px;
+  }
+}
+
+@media (max-width: 767px) {
+  .rules__panel {
+    padding: 24px 20px;
+  }
+  .rules__row dd {
+    text-align: left;
+  }
+  /* A 999px radius on a narrow column swallows its own corners, so the
+   * outcome panels relax to the frame radius rather than losing their text. */
+  .outcome {
+    border-radius: var(--r-frame);
+    padding: 40px 28px;
+  }
+}

@@ -1,0 +1,251 @@
+/* NoxVote landing — floating nav, stadium hero, problem band. Contract: DESIGN.md. */
+
+.navbar {
+  position: sticky;
+  top: 24px;
+  z-index: 60;
+  width: min(var(--max), 100% - (var(--gutter) * 2));
+  margin: 24px auto 0;
+}
+
+.nav {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 32px;
+  padding: 12px 16px 12px 26px;
+  border-radius: var(--r-pill);
+  background: var(--white);
+  box-shadow: var(--halo-nav);
+}
+
+.nav__links {
+  display: flex;
+  align-items: center;
+  gap: 40px;
+}
+.nav__links a {
+  color: var(--ink);
+  font-size: 16px;
+  font-weight: 500;
+  letter-spacing: -0.03em;
+  text-decoration: none;
+  padding: 6px 2px;
+  transition: opacity var(--fast) var(--ease);
+}
+.nav__links a:hover {
+  opacity: 0.55;
+}
+
+.nav__cta {
+  min-height: 44px;
+  padding: 0 24px;
+  font-size: 15px;
+}
+
+/* ---- Stadium hero ---- */
+
+.stage {
+  padding: 20px var(--gutter) 0;
+}
+
+.stage__frame {
+  position: relative;
+  overflow: hidden;
+  border-radius: var(--r-frame);
+  background: var(--ink);
+  box-shadow: var(--halo);
+  min-height: min(560px, 64vh);
+  display: flex;
+  align-items: center;
+}
+
+.stage__field {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+}
+
+.stage__body {
+  position: relative;
+  z-index: 1;
+  max-width: 780px;
+  padding: 64px clamp(32px, 5vw, 72px);
+  color: var(--canvas);
+}
+
+.stage__eyebrow {
+  color: var(--dust);
+}
+
+.stage h1 {
+  margin: 22px 0 0;
+  max-width: 15ch;
+}
+
+.stage__lead {
+  margin-top: 22px;
+  max-width: 54ch;
+  color: var(--dust);
+}
+
+.stage__cta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 14px;
+  margin-top: 32px;
+}
+
+.stage__status {
+  margin-top: 24px;
+  color: var(--dust);
+  font-size: 14px;
+}
+
+/* ---- Problem band: ghost watermark behind a 3-up ---- */
+
+.watermark {
+  position: absolute;
+  top: 34px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: max-content;
+  color: var(--ghost);
+  font-size: clamp(96px, 18vw, 210px);
+  font-weight: 500;
+  line-height: 0.86;
+  letter-spacing: -0.02em;
+  white-space: nowrap;
+  pointer-events: none;
+  user-select: none;
+}
+
+.band__intro {
+  position: relative;
+  max-width: 720px;
+  margin-bottom: 64px;
+}
+.band__intro h2 {
+  margin-top: 20px;
+}
+.band__intro p {
+  margin-top: 18px;
+}
+
+.trio {
+  position: relative;
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 24px;
+}
+
+.trio li {
+  padding: 32px;
+  border-radius: var(--r-card);
+  background: var(--lifted);
+  border: 1px solid var(--dust);
+}
+
+.trio__n {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  border: 1px solid var(--dust);
+  color: var(--slate);
+  font-family: var(--mono);
+  font-size: 13px;
+}
+
+.trio h3 {
+  margin-top: 22px;
+  font-size: 24px;
+  font-weight: 500;
+  letter-spacing: -0.02em;
+}
+.trio p {
+  margin-top: 12px;
+  color: var(--slate);
+}
+
+/* ---- Responsive ---- */
+
+@media (max-width: 1180px) {
+  .nav__links {
+    gap: 26px;
+  }
+  .nav__links a {
+    font-size: 15px;
+  }
+}
+
+@media (max-width: 900px) {
+  .nav__links {
+    display: none;
+  }
+  .nav {
+    padding-left: 22px;
+  }
+  .trio {
+    grid-template-columns: 1fr;
+  }
+  .stage__frame {
+    min-height: 0;
+  }
+  .stage__body {
+    padding: 48px 32px;
+  }
+}
+
+@media (max-width: 767px) {
+  .navbar {
+    width: calc(100% - 32px);
+    margin-top: 16px;
+    top: 16px;
+  }
+  .stage {
+    padding-inline: 16px;
+  }
+  .stage__body {
+    padding: 40px 24px;
+  }
+  .stage h1 {
+    max-width: none;
+  }
+  .stage__cta {
+    flex-direction: column;
+    align-items: stretch;
+  }
+  .stage__cta .pill {
+    justify-content: center;
+  }
+  .watermark {
+    top: 20px;
+    font-size: 88px;
+  }
+  .band__intro {
+    margin-bottom: 40px;
+  }
+  .trio li {
+    padding: 26px;
+  }
+}
+
+/* Below this the nav pill cannot hold the wordmark and a two-word CTA on one
+ * line, and a wrapped pill label looks broken. The hero repeats both CTAs
+ * immediately underneath, so dropping it here costs nothing. */
+@media (max-width: 480px) {
+  .nav__cta {
+    display: none;
+  }
+  .nav {
+    padding-right: 26px;
+  }
+  .mark span {
+    font-size: 15px;
+  }
+}
