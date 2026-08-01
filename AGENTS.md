@@ -50,10 +50,10 @@ enforce the quality profile's 20% regression ceiling. The full Forge suite passe
 high-confidence invariant profile passes again at 960,000 modeled calls, and a five-job contract CI
 workflow is installed but not yet observed on a remote runner. The reconciled production verification
 audit passes the authorized local contract gate. Phase 5 and local Phase 6 preflight remediation are
-complete. On 2026-08-01 the user authorized Phase 6 target accounts, funding checks, deployment, and
-required Ethereum Sepolia transactions. The read-only live dependency/code-hash preflight passes, but
-no transaction has been broadcast because a dedicated funded deployer is not configured. The spike
-artifacts are not production components.
+complete. Phase 6 now passes live on Ethereum Sepolia: `37/37` transactions deployed the production
+Safe/module/core and Governor/core/real-Timelock graphs, both consumed real released-Nox Passed
+verdicts, and both exact targets executed once. The public checkpoint completed at block `11396305`.
+The spike artifacts are not production components.
 
 Visual design ownership is `EXTERNAL_COMMISSION`. The external designer owns visual language. Do not
 choose UI taste, tokens, layouts, or frontend architecture until returned direction is audited,

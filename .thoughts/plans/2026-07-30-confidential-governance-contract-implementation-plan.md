@@ -950,9 +950,9 @@ an ACL leak, an action mismatch, or an unproven recovery claim.
 
 ### Status
 
-`AUTHORIZED; READ-ONLY PREFLIGHT PASS; TRANSACTIONS NOT RUN`. The user authorized target accounts,
-funding checks, deployment, and external transactions on 2026-08-01. No dedicated deployer secret is
-currently configured, so no transaction has been signed or broadcast.
+`COMPLETE; LIVE SEPOLIA PASS`. The authorized factory-deployed Safe/module/core and compatible
+Governor/core/real-Timelock paths both consumed real released-Nox verdicts and executed their exact
+actions once. The public checkpoint records `37/37` successful receipts through block `11396305`.
 
 ### Unblocking Actions
 
@@ -962,11 +962,11 @@ currently configured, so no transaction has been signed or broadcast.
    every execution.**
 3. Verify bytecode/code hashes before configuring the immutable factory/module. **PASS for the current
    official Nox and Safe deployments and the exact reviewed Foundry creation bytecode.**
-4. Configure one dedicated deployer with the runner's required Sepolia ETH balance. **PENDING.**
+4. Configure one dedicated deployer with the runner's required Sepolia ETH balance. **COMPLETE.**
 5. Deploy versioned strategies, factory, one Safe module/core, one Governor/core, token, and timelock.
-   **AUTHORIZED; NOT RUN.**
+   **COMPLETE on Ethereum Sepolia.**
 6. Execute the four-wallet floor-four judged path with real Handle Gateway inputs, verdict proof, and
-   exact Safe action; then run the Governor queue/timelock path. **AUTHORIZED; NOT RUN.**
+   exact Safe action; then run the Governor queue/timelock path. **COMPLETE.**
 
 ### No Fallback
 
@@ -986,7 +986,8 @@ Before contract completion, a separate verification audit must confirm:
 - Governor threshold/snapshot/cast/state/timelock compatibility;
 - real Nox, Safe, Governor, restart, redelivery, and proof-negative results;
 - static analysis, fuzz, invariant, size, and gas evidence;
-- clear separation between local PASS, read-only live preflight PASS, and live transactions NOT RUN.
+- clear separation between local PASS, read-only live preflight PASS, and observed live transaction
+  PASS.
 
 ## Handoff Notes
 
@@ -1003,6 +1004,7 @@ Before contract completion, a separate verification audit must confirm:
 
 - [Contract-planning authorization](../decisions/2026-07-30-contract-planning-authorization.md)
 - [Phase 6 live authorization](../decisions/2026-08-01-phase6-live-authorization.md)
+- [Phase 6 Sepolia live verification](../verification/2026-08-01-phase6-sepolia-live-verification.md)
 - [Accepted technical architecture](../design/2026-07-30-confidential-governance-technical-architecture.md)
 - [Contract quality profile](../quality/2026-07-30-contract-quality-profile.md)
 - [Product specification](../specs/2026-07-29-confidential-governance-module.md)

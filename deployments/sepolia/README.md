@@ -4,6 +4,11 @@ This directory holds the public, resumable Phase 6 deployment checkpoint. The ch
 only addresses, transaction hashes, dependency/code-hash observations, ballot IDs, verdict handles,
 and public execution results. It must never contain a private key.
 
+The 2026-08-01 run is complete: `phase6-live.json` records `37/37` successful Sepolia transactions,
+real-Nox Passed verdicts for both Safe and Governor paths, and exact one-time execution through the
+official Safe and the factory-deployed real Timelock. The reconciled result is documented in
+[`../../.thoughts/verification/2026-08-01-phase6-sepolia-live-verification.md`](../../.thoughts/verification/2026-08-01-phase6-sepolia-live-verification.md).
+
 ## Account And Funding
 
 1. Create a dedicated Ethereum Sepolia account. Do not reuse a production, personal, or unrelated
