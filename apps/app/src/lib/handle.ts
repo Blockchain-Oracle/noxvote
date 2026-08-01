@@ -23,5 +23,3 @@ export async function createHandleClient(wallet: WalletClient, account: Hex, nox
     subgraphUrl: nox.subgraphUrl as `https://${string}`,
   })
 }
-
-export type HandleClient = Awaited<ReturnType<typeof createHandleClient>>

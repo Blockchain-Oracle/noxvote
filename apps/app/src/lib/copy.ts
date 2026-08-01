@@ -38,8 +38,6 @@ export const BALLOT_STAGES = [
   'Recorded',
 ] as const
 
-export type BallotStageName = (typeof BALLOT_STAGES)[number]
-
 /** The eleven proposal-list lifecycle labels, exactly as the surface map
  * names them (Canceled adopted in the 2026-08-01 reconciliation addendum).
  * `tallyFailed`/`executionFailed` surface only in the tally/execution panels —

@@ -95,10 +95,6 @@
   outline: 2px solid var(--ink);
   outline-offset: 3px;
 }
-.create__hostnote {
-  margin-top: 16px;
-  font-size: 14px;
-}
 
 @media (max-width: 767px) {
   .create__row {

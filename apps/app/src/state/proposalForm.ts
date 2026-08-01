@@ -106,11 +106,13 @@ export function draftToArgs(draft: ProposalDraft): {
   description: string
   privacyFloor: number
 } {
+  // Trim to match what validateDraft checked, so a stray space never turns a
+  // validated draft into an avoidable simulate failure.
   return {
-    targets: [draft.target as Hex],
-    values: [BigInt(draft.value)],
-    calldatas: [draft.calldata as Hex],
-    description: draft.description,
+    targets: [draft.target.trim() as Hex],
+    values: [BigInt(draft.value.trim())],
+    calldatas: [draft.calldata.trim() as Hex],
+    description: draft.description.trim(),
     privacyFloor: Number(draft.privacyFloor),
   }
 }

@@ -3,7 +3,7 @@ import { profile } from '../config/addresses.ts'
 
 /** First block worth scanning: the Sepolia deployment's own preflight block;
  * genesis for the local stack. */
-export function scanFromBlock(): bigint {
+function scanFromBlock(): bigint {
   return profile.kind === 'sepolia' ? 11_396_142n : 0n
 }
 
