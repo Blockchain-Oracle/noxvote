@@ -413,6 +413,16 @@ the released chain surface actually provides. Reconciled as follows:
   read-error (`unverified`) state, host and adapter addresses render from
   configuration, since they are static and always knowable; only the friendly
   read-derived metadata is absent.
+- **Author-flow states that belong to the Safe/generic path, not the native
+  Governor (B6 review).** The editor `off`/`on` toggle states presume a host
+  where confidential outcome is optional; a NoxVote Governor disables every
+  plaintext cast route, so its only honest editor state is `mandatory by
+  policy` (locked on). The publish `commitment mismatch` state presumes a
+  pre-existing commitment to disagree with; on the caller-open
+  `proposeConfidential` path the author *creates* the commitment, so mismatch
+  cannot occur there — it belongs to the Safe `registerProposal` handoff and to
+  the verification center. Both omissions are intentional. The config panel's
+  `restored draft` state is realized via session-scoped draft persistence.
 
 ## Open Questions
 

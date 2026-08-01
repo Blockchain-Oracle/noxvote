@@ -1,0 +1,107 @@
+/* B6 — author flow: editor, config panel, publish review. Contract: DESIGN.md. */
+
+.create__steps {
+  display: flex;
+  gap: 14px;
+  margin: 14px 0 28px;
+  padding: 0;
+  list-style: none;
+  color: var(--slate);
+}
+.create__steps li {
+  padding: 6px 14px;
+  border: 1px solid var(--dust);
+  border-radius: var(--r-pill);
+}
+.create__steps li.is-active {
+  border-color: var(--ink);
+  color: var(--ink);
+}
+
+.create__mandatory {
+  margin-bottom: 20px;
+  padding-bottom: 16px;
+  border-bottom: 1px solid var(--ghost);
+}
+.create__mandatory .chip {
+  margin-bottom: 10px;
+}
+
+.create__field {
+  display: grid;
+  gap: 6px;
+  margin-bottom: 18px;
+}
+.create__label {
+  font-size: 14px;
+  color: var(--slate);
+}
+.create__input {
+  width: 100%;
+  padding: 12px 14px;
+  border: 1px solid var(--dust);
+  border-radius: var(--r-card);
+  background: var(--white);
+  color: var(--ink);
+  font: inherit;
+  resize: vertical;
+}
+.create__input:focus-visible {
+  outline: 2px solid var(--ink);
+  outline-offset: 3px;
+}
+.create__row {
+  display: grid;
+  grid-template-columns: 1fr 1.4fr;
+  gap: 16px;
+}
+.create__error {
+  color: var(--danger);
+  font-size: 14px;
+}
+
+.create__fixed {
+  margin-top: 8px;
+}
+/* Informational, not a state-triad surface — neutral hairline, not --recorded. */
+.create__semantic {
+  border-color: var(--dust);
+}
+.create__restored {
+  margin-bottom: 16px;
+  color: var(--slate);
+}
+.create__warn {
+  color: var(--danger);
+}
+
+.create__ack {
+  display: flex;
+  gap: 12px;
+  align-items: flex-start;
+  margin: 20px 0;
+  color: var(--charcoal);
+  font-size: 14px;
+  line-height: 1.5;
+}
+.create__ack input {
+  margin-top: 3px;
+  flex: none;
+  width: 18px;
+  height: 18px;
+  accent-color: var(--ink);
+}
+.create__ack input:focus-visible {
+  outline: 2px solid var(--ink);
+  outline-offset: 3px;
+}
+.create__hostnote {
+  margin-top: 16px;
+  font-size: 14px;
+}
+
+@media (max-width: 767px) {
+  .create__row {
+    grid-template-columns: 1fr;
+  }
+}

@@ -24,6 +24,9 @@ export const COPY = {
   /** The honest input trust boundary: Gateway-side encryption, stated plainly. */
   gatewayPreparation:
     'The Handle Gateway prepares the encrypted handle before your wallet transaction. The SDK sends your encoded choice to the attested Gateway operated by iExec; it is not encrypted in this page.',
+  /** The author's publish-time trust acknowledgement (screen 6). */
+  trustAcknowledgement:
+    'I understand the trust boundary: the Handle Gateway sees each encoded choice before encrypting it, and NoxVote does not promise anonymity, receipt-freeness, or a full tally proof.',
 } as const
 
 /** Ballot progress overlay: ordered stage names (never a fake percentage). */

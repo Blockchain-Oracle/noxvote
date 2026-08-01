@@ -2,6 +2,7 @@ import { createBrowserRouter, Link, Outlet, RouterProvider } from 'react-router'
 import { Mark } from '@noxvote/ui'
 import { activeChain } from './config/chains.ts'
 import { COPY } from './lib/copy.ts'
+import { Create } from './routes/Create.tsx'
 import { Install } from './routes/Install.tsx'
 import { ProposalDetail } from './routes/ProposalDetail.tsx'
 import { ProposalList } from './routes/ProposalList.tsx'
@@ -13,6 +14,7 @@ function Shell() {
       <header className="shell__header">
         <Mark href="/" />
         <nav className="shell__nav">
+          <Link to="/create">Create</Link>
           <Link to="/install">Adapters</Link>
           <span className="shell__net mono">{activeChain.name}</span>
         </nav>
@@ -31,6 +33,7 @@ const router = createBrowserRouter([
     element: <Shell />,
     children: [
       { index: true, element: <ProposalList /> },
+      { path: 'create', element: <Create /> },
       { path: 'install', element: <Install /> },
       { path: 'b/:core/:ballotId', element: <ProposalDetail /> },
       { path: 'b/:core/:ballotId/verify', element: <VerificationCenter /> },
