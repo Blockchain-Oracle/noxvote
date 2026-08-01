@@ -34,17 +34,23 @@ and hand a clean runway to the remaining scope: contract-branch merge, cleanup f
 
 ## Current state
 
-- Branch `frontend/noxvote-apps` @ `caf3d78` + this checkpoint's fixes (workspace key, simplifier trim,
-  report, this handoff — committed together as the checkpoint commit).
-- Landing + docs + `packages/ui` built and verified; `forge test` 119/119; copy-law grep clean.
-- `apps/app` does not exist. `deployments/` not yet on this branch (merge pending).
+- Branch `frontend/noxvote-apps` @ `ddd2391` — checkpoint commit `3321b6c` plus the completed merge of
+  `codex/confidential-voting-research` (`0f205c4`). Working tree clean.
+- Landing + docs + `packages/ui` built and verified; post-merge re-prove passed: `pnpm install` clean,
+  both apps build green, `forge test` 119/119.
+- `deployments/sepolia/phase6-live.json` (12 live addresses, both proofs) is now ON this branch.
+  Merge conflicts were resolved newest-truth-per-fact: Phase 6 status from the contract side,
+  ORBIT/frontend/NoxVote facts from this side (`CURRENT.md`, `AGENTS.md`, `README.md`,
+  phase6 authorization + contract plan docs).
+- `apps/app` does not exist yet — that is the remaining scope.
 
 ## Commands to resume
 
 ```bash
 cd /Users/abu/dev/hackathon/wtf/.claude/worktrees/frontend-noxvote
-git merge codex/confidential-voting-research   # step 1: receive Phase 6
-pnpm install && pnpm -r --filter "./apps/*" build && forge test   # re-prove after merge
+# Phase 0 is complete. Resume at Phase 1 (cleanup fixes) then Phase 2 (apps/app foundation)
+# per the approved plan: /Users/abu/.claude/plans/phase-6-is-complete-vast-thompson.md
+pnpm install && pnpm -r --filter "./apps/*" build && forge test   # sanity: all green as of ddd2391
 ```
 
 ## Known risks and open items
@@ -59,7 +65,7 @@ pnpm install && pnpm -r --filter "./apps/*" build && forge test   # re-prove aft
 
 ## Next steps
 
-1. Merge `codex/confidential-voting-research` (`0f205c4`, 4 commits) into this branch.
+1. ~~Merge `codex/confidential-voting-research`~~ — DONE (`ddd2391`), re-proven green.
 2. Apply the five cleanup fixes (stagger hook/timer leak, docs brand/Mark imports, hero `var(--canvas)`,
    docs home tokens, `@noxvote/ui` CSS exports map).
 3. Build `apps/app` foundation (config module, wagmi, ABIs, state selectors, QueryBoundary convention).
