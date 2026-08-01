@@ -48,6 +48,11 @@
 .pill:active {
   transform: translateY(0) scale(0.98);
 }
+.pill:disabled {
+  opacity: 0.4;
+  cursor: default;
+  transform: none;
+}
 
 /* On the ink stadium the fill inverts so the pill stays a pill and stays
  * readable — same radius, padding and label weight as the ink pill. */

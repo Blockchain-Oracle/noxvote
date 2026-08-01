@@ -5,7 +5,7 @@ import { LifecycleChip } from '../components/LifecycleChip.tsx'
 import { ParticipationCard } from '../components/detail/ParticipationCard.tsx'
 import { RulesCard } from '../components/detail/RulesCard.tsx'
 import { TallyPanel } from '../components/detail/TallyPanel.tsx'
-import { VoterCard } from '../components/detail/VoterCard.tsx'
+import { VoteFlow } from '../components/vote/VoteFlow.tsx'
 import { activeChain } from '../config/chains.ts'
 import type { Hex } from '../config/addresses.ts'
 import {
@@ -95,7 +95,7 @@ export function ProposalDetail() {
         <RulesCard record={record.data} host={host.data} quorum={quorum.data} />
         <div className="detail__col">
           <ParticipationCard record={record.data} />
-          <VoterCard core={core} ballotId={ballotId} record={record.data} detailed={detailed.data} />
+          <VoteFlow core={core} ballotId={ballotId} record={record.data} detailed={detailed.data} />
         </div>
       </div>
       <TallyPanel state={tally} host={host.data} />

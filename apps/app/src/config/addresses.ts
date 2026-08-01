@@ -60,6 +60,9 @@ export type ChainProfile =
       rpcUrl: string
       contracts: Partial<DeployedContracts> & { safeCore: Hex }
       nox: NoxDependencies
+      /** Optional organizer-provided allowlist material for Merkle ballots:
+       * voter address (lowercase) → fixed weight + sibling hashes. */
+      eligibility?: Record<string, { weight: string; proof: Hex[] }>
     }
   | { kind: 'unconfigured'; reason: string }
 
@@ -111,6 +114,7 @@ type LocalStackFile = {
     subgraphUrl?: string
     noxProofExpirationSeconds?: string | number
   }
+  eligibility?: Record<string, { weight: string; proof: Hex[] }>
 }
 
 function localProfile(): ChainProfile {
@@ -134,6 +138,7 @@ function localProfile(): ChainProfile {
     chainId: file?.chainId ?? 31337,
     rpcUrl: file?.rpcUrl ?? env.VITE_LOCAL_RPC_URL ?? 'http://127.0.0.1:8545',
     contracts: { ...file?.contracts, safeCore: core },
+    eligibility: file?.eligibility,
     nox: {
       computeAddress: compute,
       gatewaySigner: (file?.dependencies?.noxGatewaySigner ?? '0x') as Hex,

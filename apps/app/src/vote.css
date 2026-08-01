@@ -1,0 +1,215 @@
+/* B2 — vote drawer, progress overlay, receipt. Contract: DESIGN.md. */
+
+.drawer,
+.overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 40;
+  background: rgba(20, 20, 19, 0.32);
+  display: flex;
+}
+.drawer {
+  justify-content: flex-end;
+}
+.overlay {
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+}
+
+.drawer__panel {
+  width: min(440px, 100%);
+  height: 100dvh;
+  overflow-y: auto;
+  padding: 32px;
+  background: var(--lifted);
+  border-left: 1px solid var(--dust);
+  border-radius: var(--r-card) 0 0 var(--r-card);
+  box-shadow: var(--halo);
+  animation: drawer-in var(--base) var(--ease);
+}
+@keyframes drawer-in {
+  from {
+    transform: translateX(24px);
+    opacity: 0;
+  }
+  to {
+    transform: none;
+    opacity: 1;
+  }
+}
+
+.overlay__panel {
+  width: min(520px, 100%);
+  padding: 32px;
+  background: var(--lifted);
+  border: 1px solid var(--dust);
+  border-radius: var(--r-card);
+  box-shadow: var(--halo);
+  animation: drawer-in var(--base) var(--ease);
+}
+
+/* ---- Drawer options: three equal choices, nothing preselected ---- */
+
+.drawer__options {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 10px;
+  margin: 18px 0;
+}
+.drawer__option {
+  min-height: 52px;
+  border: 1.5px solid var(--dust);
+  border-radius: var(--r-pill);
+  background: var(--white);
+  color: var(--ink);
+  font: inherit;
+  font-weight: 500;
+  letter-spacing: -0.03em;
+  cursor: pointer;
+  transition:
+    border-color var(--fast) var(--ease),
+    transform var(--fast) var(--ease);
+}
+.drawer__option:hover {
+  transform: translateY(-2px);
+}
+.drawer__option.is-chosen {
+  border-color: var(--ink);
+  background: var(--ink);
+  color: var(--canvas);
+}
+
+.drawer__weight {
+  margin: 14px 0 0;
+  color: var(--slate);
+}
+.drawer__warning {
+  margin-bottom: 4px;
+}
+.drawer__gateway {
+  margin: 0 0 8px;
+  color: var(--slate);
+  font-size: 14px;
+  line-height: 1.45;
+}
+.drawer__actions {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  margin-top: 20px;
+}
+.drawer__close {
+  border: 0;
+  background: none;
+  color: var(--slate);
+  font: inherit;
+  cursor: pointer;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+.drawer__promise {
+  margin: 22px 0 0;
+  padding-top: 16px;
+  border-top: 1px solid var(--ghost);
+  color: var(--slate);
+  font-size: 14px;
+}
+
+/* ---- Overlay stages ---- */
+
+.overlay__stages {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  display: grid;
+  gap: 0;
+}
+.overlay__stages li {
+  position: relative;
+  padding: 12px 0 12px 30px;
+  border-bottom: 1px solid var(--ghost);
+  color: var(--slate);
+}
+.overlay__stages li::before {
+  content: '';
+  position: absolute;
+  left: 4px;
+  top: 18px;
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  border: 1.5px solid var(--dust);
+  background: var(--white);
+}
+.overlay__stages li.is-done {
+  color: var(--ink);
+}
+.overlay__stages li.is-done::before {
+  border-color: var(--ink);
+  background: var(--ink);
+}
+.overlay__stages li.is-active {
+  color: var(--ink);
+}
+.overlay__stages li.is-active::before {
+  border-color: var(--ember);
+  background: var(--ember);
+}
+.overlay__stages li.is-failed {
+  color: var(--danger);
+}
+.overlay__stages li.is-failed::before {
+  border-color: var(--danger);
+  background: var(--danger);
+}
+.overlay__stage-name {
+  font-weight: 500;
+  letter-spacing: -0.02em;
+}
+.overlay__stage-note {
+  display: block;
+  margin-top: 4px;
+  font-size: 14px;
+  line-height: 1.45;
+  color: var(--slate);
+}
+.overlay__stage-note--failed {
+  color: var(--danger);
+}
+.overlay__tx,
+.overlay__elapsed {
+  margin: 14px 0 0;
+  color: var(--slate);
+}
+.overlay__done {
+  margin: 16px 0 0;
+}
+.overlay__limit {
+  color: var(--slate);
+}
+.overlay__note {
+  margin: 18px 0 0;
+  color: var(--slate);
+  font-size: 14px;
+  line-height: 1.45;
+}
+
+.receipt__bad {
+  color: var(--danger);
+}
+
+@media (max-width: 767px) {
+  .drawer__panel {
+    border-radius: 0;
+  }
+  .drawer__options {
+    grid-template-columns: 1fr;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .drawer__panel,
+  .overlay__panel {
+    animation: none;
+  }
+}

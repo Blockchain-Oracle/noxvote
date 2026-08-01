@@ -15,6 +15,7 @@ export function Pill({
   href,
   onClick,
   className,
+  disabled = false,
   children,
 }: {
   variant?: PillVariant
@@ -22,6 +23,8 @@ export function Pill({
   href?: string
   onClick?: MouseEventHandler
   className?: string
+  /** Button form only — a link is never disabled, it is simply not rendered. */
+  disabled?: boolean
   children: ReactNode
 }) {
   const cls = ['pill', PILL_VARIANT[variant], className].filter(Boolean).join(' ')
@@ -40,7 +43,7 @@ export function Pill({
       {body}
     </a>
   ) : (
-    <button className={cls} type="button" onClick={onClick}>
+    <button className={cls} type="button" onClick={onClick} disabled={disabled}>
       {body}
     </button>
   )

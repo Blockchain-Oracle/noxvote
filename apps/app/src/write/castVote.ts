@@ -1,6 +1,6 @@
 import { useQueryClient } from '@tanstack/react-query'
 import { useRef, useState } from 'react'
-import { parseEventLogs } from 'viem'
+import { BaseError, ContractFunctionRevertedError, parseEventLogs } from 'viem'
 import { useAccount, useChainId, usePublicClient, useWalletClient } from 'wagmi'
 import { confidentialBallotCoreAbi } from '../abi/confidentialBallotCore.ts'
 import { profile, type Hex } from '../config/addresses.ts'
@@ -77,15 +77,20 @@ export function useCastVote(params: CastVoteParams) {
       if (!checkpoint.current.txHash) {
         setState({ stage: 'wallet' })
         const { handle, handleProof } = checkpoint.current.encrypted
-        checkpoint.current.txHash = await walletClient.writeContract({
+        // Simulate first: the core's custom errors (WrongBallotSequence,
+        // eligibility rejections, …) surface decoded before the wallet opens.
+        const { request } = await publicClient.simulateContract({
+          account: walletClient.account,
           address: core,
           abi: confidentialBallotCoreAbi,
           functionName: 'castVote',
           args: [ballotId, sequence, handle, handleProof, eligibilityProof],
         })
+        checkpoint.current.txHash = await walletClient.writeContract(request)
       }
     } catch (error) {
-      // A rejected signature spends nothing: clear so retry re-opens the wallet.
+      // Nothing is spent here — the encrypted input is kept and retry
+      // re-simulates and re-opens the wallet.
       setState({ stage: 'failed', at: 'wallet', message: describe(error) })
       return
     }
@@ -95,7 +100,15 @@ export function useCastVote(params: CastVoteParams) {
       setState({ stage: 'submitting', txHash })
       const receipt = await publicClient.waitForTransactionReceipt({ hash: txHash, timeout: 180_000 })
       if (receipt.status !== 'success') {
-        setState({ stage: 'failed', at: 'submitting', message: 'The transaction reverted on-chain.' })
+        // Definitively failed — clear the hash so retry runs a fresh
+        // simulate + submit (which decodes the actual rejection) instead of
+        // re-polling a transaction that can only fail identically.
+        checkpoint.current.txHash = undefined
+        setState({
+          stage: 'failed',
+          at: 'submitting',
+          message: 'The transaction reverted on-chain. Retry re-checks and re-submits the same choice.',
+        })
         return
       }
       setState({ stage: 'computing', txHash })
@@ -141,9 +154,13 @@ export function useCastVote(params: CastVoteParams) {
 }
 
 function describe(error: unknown): string {
-  if (error instanceof Error) {
-    const short = (error as { shortMessage?: string }).shortMessage
-    return short ?? error.message
+  if (error instanceof BaseError) {
+    const revert = error.walk((e) => e instanceof ContractFunctionRevertedError)
+    if (revert instanceof ContractFunctionRevertedError && revert.data?.errorName) {
+      return `Rejected by the ballot core: ${revert.data.errorName}`
+    }
+    return error.shortMessage
   }
+  if (error instanceof Error) return error.message
   return String(error)
 }
