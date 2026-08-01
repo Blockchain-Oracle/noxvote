@@ -104,6 +104,8 @@ asked for exactly that.
 - `apps/docs/**` — new: react-router + fumadocs documentation site.
 - `packages/ui/**` — new: ORBIT tokens, font files, shared primitives (pills, chips, halo cards,
   constellation stage circle).
+- `.thoughts/verification/*.md`, `.thoughts/handoffs/*.md` — harness process artifacts: the verify
+  stage's dated evidence reports and handoffs for this milestone (required by the verify skill).
 
 ## Integrations
 

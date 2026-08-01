@@ -2,7 +2,7 @@ import { useLayoutEffect, useRef, useState, type CSSProperties, type ReactNode }
 import { useOnceVisible } from './motion.ts'
 
 /** Canonical lifecycle stages (product vocabulary, surface map). */
-export const ORBIT_STAGES = [
+const ORBIT_STAGES = [
   {
     x: 108,
     y: 138,

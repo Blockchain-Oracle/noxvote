@@ -3,13 +3,12 @@ import { Step, Steps } from 'fumadocs-ui/components/steps'
 import type { MDXComponents } from 'mdx/types'
 import { Mermaid } from './mermaid'
 
-export function getMDXComponents(components?: MDXComponents) {
+export function getMDXComponents() {
   return {
     ...defaultMdxComponents,
     Mermaid,
     Step,
     Steps,
-    ...components,
   } satisfies MDXComponents
 }
 

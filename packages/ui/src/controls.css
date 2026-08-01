@@ -52,15 +52,6 @@
   transform: translateY(0) scale(0.98);
 }
 
-.pill--outline {
-  background: var(--white);
-  color: var(--ink);
-}
-.pill--outline:hover {
-  background: var(--ink);
-  color: var(--canvas);
-}
-
 /* On the ink stadium the fill inverts so the pill stays a pill and stays
  * readable — same radius, padding and label weight as the ink pill. */
 .pill--on-ink {
@@ -94,17 +85,6 @@ button:focus-visible {
 .on-ink a:focus-visible,
 .on-ink .pill:focus-visible {
   outline: 2px solid var(--canvas);
-}
-
-.link {
-  color: inherit;
-  text-decoration: none;
-  border-bottom: 1.5px solid currentColor;
-  padding-bottom: 2px;
-  transition: opacity var(--fast) var(--ease);
-}
-.link:hover {
-  opacity: 0.62;
 }
 
 /* ---- Chips: the only place the state triad may appear ---- */

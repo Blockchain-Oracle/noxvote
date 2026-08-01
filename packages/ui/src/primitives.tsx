@@ -3,12 +3,11 @@ import { BRAND } from './brand.ts'
 
 const PILL_VARIANT = {
   ink: '',
-  outline: 'pill--outline',
   'on-ink': 'pill--on-ink',
   'on-ink-ghost': 'pill--on-ink-ghost',
 } as const
 
-export type PillVariant = keyof typeof PILL_VARIANT
+type PillVariant = keyof typeof PILL_VARIANT
 
 export function Pill({
   variant = 'ink',
