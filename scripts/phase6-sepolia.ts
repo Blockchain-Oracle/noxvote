@@ -78,9 +78,14 @@ const EXPECTED_NOX_GATEWAY_SIGNER = getAddress(
 const EXPECTED_NOX_PROOF_EXPIRATION_SECONDS = 3_600n;
 const SAFE_VOTING_WINDOW_SECONDS = 600n;
 const GOVERNOR_VOTING_PERIOD_BLOCKS = 60;
-const DEPLOYER_GAS_BUDGET = 80_000_000n;
-const VOTER_GAS_BUDGET = 6_000_000n;
-const MINIMUM_DEPLOYER_BALANCE = parseEther("0.25");
+// The live graph's heavy local measurements are ~8.7m gas for the Governor
+// stack and ~4.1m gas for the Safe module/core pair. These actor-scoped
+// budgets retain headroom for the remaining deployments and proof lifecycle
+// calls without requiring a blanket quarter-ETH testnet balance.
+const DEPLOYER_GAS_BUDGET = 25_000_000n;
+const VOTER_GAS_BUDGET = 3_000_000n;
+const MINIMUM_VOTER_BALANCE = parseEther("0.003");
+const MINIMUM_DEPLOYER_BALANCE = parseEther("0.045");
 const EXPECTED_FACTORY_CREATION_HASHES = {
   factory: "0x8081bb2add253ccced934d38eddb3d9724c5ee377560670c41707ee7f70f9644",
   safeModule:
@@ -379,9 +384,9 @@ function requireDeployerPrivateKey(): Hex {
 
 function voterFundingTarget(report: PreflightReport) {
   const dynamicTarget = BigInt(report.gasPrice) * VOTER_GAS_BUDGET;
-  return dynamicTarget > parseEther("0.012")
+  return dynamicTarget > MINIMUM_VOTER_BALANCE
     ? dynamicTarget
-    : parseEther("0.012");
+    : MINIMUM_VOTER_BALANCE;
 }
 
 function requiredDeployerBalance(report: PreflightReport) {

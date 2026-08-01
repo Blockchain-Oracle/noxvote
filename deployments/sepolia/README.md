@@ -16,7 +16,10 @@ and public execution results. It must never contain a private key.
    the public deployer/voter addresses, current deployer balance, and required balance. It writes no
    deployment evidence and broadcasts nothing.
 4. Fund the printed deployer address with the reported amount of Sepolia ETH. The current floor is
-   `0.25` Sepolia ETH, but the dynamic requirement can be higher when gas requires it.
+   `0.045` Sepolia ETH, and the dynamic requirement increases when the current gas price makes the
+   actor-scoped 25-million deployer plus 3-million-per-voter gas budgets more expensive. The reduced
+   testnet floor follows measured factory maxima (~8.7 million gas for Governor and ~4.1 million for
+   Safe module/core) and the user's explicit cost calibration; it is not a mainnet budget.
 5. Rerun `mise exec -- pnpm phase6:account` until `sufficientlyFunded` is `true`.
 
 ## Authorized Execution

@@ -28,10 +28,13 @@ the subgraph was current, the on-chain Gateway signer was
 `MultiSendCallOnly`, and compatibility fallback handler matched the current Safe deployment registry.
 The exact reviewed Foundry factory, Safe-module, Governor, and Timelock creation-code hashes also pass.
 
-No transaction has been broadcast. The remaining operational prerequisite is a dedicated deployer
-made available as `PHASE6_DEPLOYER_PRIVATE_KEY` with at least the runner's current dynamic funding
-gate (currently no less than `0.25` Sepolia ETH and higher when current gas requires it). Unrelated
-local keystores must not be reused implicitly.
+No transaction has been broadcast. The dedicated deployer is available through the explicitly
+selected local credential boundary. After the original `0.25` Sepolia ETH blanket floor blocked the
+funded account, the user explicitly rejected that conservative testnet reserve. The runner now uses
+measured actor-scoped budgets: 25 million gas for deployer transactions, 3 million gas per voter, and
+a `0.045` Sepolia ETH minimum. The local factory measurements include ~8.7 million gas for the
+Governor stack and ~4.1 million gas for the Safe module/core pair. The dynamic gate can still rise
+with current gas. Unrelated local keystores must not be reused implicitly.
 
 ## Evidence Routing
 

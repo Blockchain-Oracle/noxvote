@@ -66,3 +66,13 @@ dedicated RPC, and forbids whole-checkpoint deletion during an ambiguous resume.
 requires Node `>=24 <25`, matching `.mise.toml` and the verified runtime. The runner, environment
 template, deployment runbook, authorization, and review are frozen together in the contract/deployment
 commit. The separately owned frontend `SPEC.md` is intentionally excluded from this review and commit.
+
+## Subsequent Testnet Funding Calibration
+
+After funding the dedicated account, the user explicitly rejected the review's conservative `0.25`
+Sepolia ETH reserve. This does not alter the Opus code/security findings above. The operational gate
+was narrowed from a blanket reserve to measured actor-scoped budgets: 25 million deployer gas,
+3 million gas per voter, and a `0.045` Sepolia ETH floor. Local factory gas reports measured the two
+heaviest calls at ~8.7 million gas for the Governor stack and ~4.1 million gas for the Safe
+module/core pair. The runner still increases the required balance when the current gas price exceeds
+that floor and remains resumable if the testnet balance eventually needs a top-up.
