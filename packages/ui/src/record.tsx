@@ -1,5 +1,4 @@
-import { useState } from 'react'
-import { useOnceVisible } from './motion.ts'
+import { useStaggerReveal } from './motion.ts'
 import { Chip, Redact, type ChipState } from './primitives.tsx'
 
 export type RecordRow = {
@@ -27,17 +26,7 @@ export function RecordCard({
   floor: { met: number; of: number; label: string }
   note: string
 }) {
-  const [visible, setVisible] = useState(0)
-
-  const ref = useOnceVisible<HTMLElement>((reduced) => {
-    if (reduced) {
-      setVisible(rows.length)
-      return
-    }
-    rows.forEach((_, i) => {
-      window.setTimeout(() => setVisible((n) => Math.max(n, i + 1)), i * 110)
-    })
-  })
+  const { ref, shown: visible } = useStaggerReveal<HTMLElement>(rows.length, { step: 110 })
 
   return (
     <figure className="record" ref={ref}>

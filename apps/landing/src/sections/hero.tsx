@@ -12,8 +12,8 @@ function SealField() {
     >
       <defs>
         <pattern id="sealField" width="46" height="30" patternUnits="userSpaceOnUse">
-          <rect x="0" y="12" width="26" height="7" rx="3.5" fill="#f3f0ee" opacity="0.075" />
-          <rect x="32" y="12" width="10" height="7" rx="3.5" fill="#f3f0ee" opacity="0.042" />
+          <rect x="0" y="12" width="26" height="7" rx="3.5" fill="var(--canvas)" opacity="0.075" />
+          <rect x="32" y="12" width="10" height="7" rx="3.5" fill="var(--canvas)" opacity="0.042" />
         </pattern>
       </defs>
       <rect width="1400" height="640" fill="url(#sealField)" />

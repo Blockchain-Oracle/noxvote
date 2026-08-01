@@ -62,14 +62,25 @@ export function Redact() {
   return <span className="redact" role="img" aria-label="Choice sealed by design" />
 }
 
+/**
+ * The orbit-ring glyph alone, for chrome that supplies its own wordmark shell
+ * (e.g. the docs nav, whose framework wraps the title in its own link).
+ * Self-sized and self-colored so it only needs tokens.css, not controls.css.
+ */
+export function MarkGlyph() {
+  return (
+    <svg className="mark__glyph" width="24" height="24" viewBox="0 0 24 24" aria-hidden="true">
+      <circle cx="11" cy="13" r="8.2" fill="none" stroke="currentColor" strokeWidth="1.7" />
+      <circle cx="18.8" cy="6.2" r="3.1" fill="var(--ember)" />
+    </svg>
+  )
+}
+
 /** Wordmark: orbit ring with an ember satellite. */
 export function Mark({ href = '#top', label = BRAND }: { href?: string; label?: string }) {
   return (
     <a className="mark" href={href}>
-      <svg className="mark__glyph" viewBox="0 0 24 24" aria-hidden="true">
-        <circle cx="11" cy="13" r="8.2" fill="none" stroke="currentColor" strokeWidth="1.7" />
-        <circle className="mark__sat" cx="18.8" cy="6.2" r="3.1" />
-      </svg>
+      <MarkGlyph />
       <span>{label}</span>
     </a>
   )

@@ -1,5 +1,5 @@
-import { useLayoutEffect, useRef, useState, type CSSProperties, type ReactNode } from 'react'
-import { useOnceVisible } from './motion.ts'
+import { useLayoutEffect, useRef, type CSSProperties, type ReactNode } from 'react'
+import { useStaggerReveal } from './motion.ts'
 
 /** Canonical lifecycle stages (product vocabulary, surface map). */
 const ORBIT_STAGES = [
@@ -100,10 +100,7 @@ const GLYPHS: ReactNode[] = [
  * stack and the arcs are removed (orbit.css).
  */
 export function OrbitConstellation() {
-  const [drawn, setDrawn] = useState(false)
-  const [docked, setDocked] = useState(0)
   const arcsRef = useRef<SVGSVGElement | null>(null)
-  const timers = useRef<number[]>([])
 
   /* Measure real arc lengths; the authored --len values are fallback only. */
   useLayoutEffect(() => {
@@ -116,23 +113,10 @@ export function OrbitConstellation() {
     }
   }, [])
 
-  const ref = useOnceVisible<HTMLDivElement>((reduced) => {
-    setDrawn(true)
-    if (reduced) {
-      /* End state, synchronously — scheduling would race StrictMode cleanup. */
-      setDocked(ORBIT_STAGES.length)
-      return
-    }
-    ORBIT_STAGES.forEach((_, i) => {
-      const id = window.setTimeout(() => setDocked((n) => Math.max(n, i + 1)), 260 + i * 150)
-      timers.current.push(id)
-    })
-  }, 0.2)
-
-  useLayoutEffect(() => {
-    const pending = timers.current
-    return () => pending.forEach((id) => window.clearTimeout(id))
-  }, [])
+  const { ref, shown: docked, entered: drawn } = useStaggerReveal<HTMLDivElement>(
+    ORBIT_STAGES.length,
+    { step: 150, base: 260, threshold: 0.2 },
+  )
 
   return (
     <div className="orbit__stage" role="list" ref={ref}>

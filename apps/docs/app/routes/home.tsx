@@ -49,7 +49,7 @@ export default function Home() {
             />
             Documentation
           </p>
-          <h1 className="mt-4 max-w-[24ch] text-4xl md:text-5xl leading-[1.05]">
+          <h1 className="mt-4 max-w-[24ch] text-[clamp(36px,4.4vw,64px)] leading-none">
             Your wallet and participation are public; your choice is private.
           </h1>
           <p className="mt-5 max-w-[58ch] text-lg text-fd-muted-foreground">
@@ -62,7 +62,7 @@ export default function Home() {
               <Link
                 key={card.to}
                 to={card.to}
-                className="group rounded-3xl border border-fd-border bg-fd-card p-6 no-underline transition-transform duration-200 hover:-translate-y-0.5"
+                className="group rounded-[var(--r-card)] border border-fd-border bg-fd-card p-6 no-underline transition-transform duration-200 hover:-translate-y-0.5"
               >
                 <span className="flex items-baseline justify-between font-medium text-fd-foreground">
                   {card.title}

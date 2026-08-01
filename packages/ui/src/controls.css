@@ -16,9 +16,6 @@
   height: 24px;
   flex: none;
 }
-.mark__sat {
-  fill: var(--ember);
-}
 .on-ink .mark,
 .foot .mark {
   color: var(--canvas);

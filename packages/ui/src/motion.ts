@@ -1,4 +1,4 @@
-import { useEffect, useRef } from 'react'
+import { useEffect, useRef, useState } from 'react'
 
 function prefersReducedMotion(): boolean {
   return (
@@ -50,4 +50,40 @@ export function useOnceVisible<T extends Element>(
   }, [threshold])
 
   return ref
+}
+
+/**
+ * Staggered entrance on first visibility: `shown` counts items revealed so
+ * far, `entered` flips once when the element first becomes visible. Under
+ * reduced motion every item appears at once, synchronously — scheduling
+ * would race StrictMode cleanup. Pending timers are cleared on unmount, so
+ * consumers must never schedule their own reveal timeouts.
+ */
+export function useStaggerReveal<T extends Element>(
+  count: number,
+  { step, base = 0, threshold }: { step: number; base?: number; threshold?: number },
+) {
+  const [entered, setEntered] = useState(false)
+  const [shown, setShown] = useState(0)
+  const timers = useRef<number[]>([])
+
+  const ref = useOnceVisible<T>((reduced) => {
+    setEntered(true)
+    if (reduced) {
+      setShown(count)
+      return
+    }
+    for (let i = 0; i < count; i++) {
+      timers.current.push(
+        window.setTimeout(() => setShown((n) => Math.max(n, i + 1)), base + i * step),
+      )
+    }
+  }, threshold)
+
+  useEffect(() => {
+    const pending = timers.current
+    return () => pending.forEach((id) => window.clearTimeout(id))
+  }, [])
+
+  return { ref, shown, entered }
 }
