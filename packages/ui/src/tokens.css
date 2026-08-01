@@ -24,6 +24,9 @@
   --recorded: #1f5f8b;
   --withheld: #8a6d3b;
   --passed: #2e6f4e;
+  /* Invalid/mismatch and error states only — never the Withheld outcome,
+   * never decorative. Measured 6.75:1 on canvas, 7.41:1 on lifted. */
+  --danger: #963022;
 
   --sans: 'Sofia Sans', Arial, sans-serif;
   --mono: 'JetBrains Mono', ui-monospace, monospace;

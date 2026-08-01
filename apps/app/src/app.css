@@ -70,7 +70,10 @@
   background: var(--lifted);
 }
 .state-card--error {
-  border: 1.5px solid var(--charcoal);
+  border: 1.5px solid var(--danger);
+}
+.state-card--error .state-card__title {
+  color: var(--danger);
 }
 .state-card__title {
   margin: 0 0 8px;

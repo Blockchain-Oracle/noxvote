@@ -380,6 +380,24 @@ The connected-voter card does **not** repeat the selected choice after submissio
 - Screens 13–14: Stories S7–S8, S10; spec R8–R10, R13.
 - Screens 15–16: Stories S1, S5, S9; spec R6, R11, R12, R14.
 
+## 2026-08-01 Data-Shape Reconciliation (B1 review; Abu delegated the call)
+
+The B1 read-only slice exposed gaps between the sample shapes above and what
+the released chain surface actually provides. Reconciled as follows:
+
+- **Operation tracker:** no `op_…` tracker id exists on-chain. Every "tracker"
+  field renders as the operation's **sequence number + submitting transaction
+  hash** — this also resolves the open question below about raw handle vs
+  derived tracker (answer: neither).
+- **"N of M eligible" denominator:** renders only where the ballot's
+  eligibility strategy `validateConfig` exposes a finite eligible count
+  (Merkle allowlists). Token-snapshot ballots have no finite denominator;
+  recorded participants render without one.
+- **"Pending operations" count:** no on-chain source. It may render only as
+  visually-distinct indexer enrichment; never as a bare fact.
+- **Participation card:** gains a public **Recorded weight** row (aggregate
+  turnout weight is on-chain public data and demo-relevant).
+
 ## Open Questions
 
 - Whether Safe installation can live inside a standard Safe app surface or requires a shareable

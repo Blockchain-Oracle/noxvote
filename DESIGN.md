@@ -16,6 +16,9 @@ colors:
   recorded: "#1f5f8b"
   withheld: "#8a6d3b"
   passed: "#2e6f4e"
+  danger: "#963022" # measured 6.75:1 on canvas, 7.41:1 on lifted — AA as text at every size used
+typography-app:
+  title: { fontFamily: Sofia Sans, fontSize: 18px, fontWeight: 500, letterSpacing: -0.02em } # list/row titles in app surfaces
 typography:
   display-xl: { fontFamily: Sofia Sans, fontSize: 64px, fontWeight: 500, lineHeight: 1, letterSpacing: -0.02em }
   display-lg: { fontFamily: Sofia Sans, fontSize: 36px, fontWeight: 500, lineHeight: 1.22, letterSpacing: -0.02em }
@@ -77,6 +80,13 @@ Values are normative in the frontmatter. The laws:
   4.37:1 on canvas it fails AA for normal text; it never sets text.
 - **True white is reserved** (deliberate `#ffffff`): floating nav, satellites,
   secondary pills — never a page canvas. No pure `#000000` anywhere.
+- **Danger is for invalid, never for withheld** (added 2026-08-01, B1 review,
+  delegated to the frontend agent): `danger` marks error and invalid/mismatch
+  states only — wrong action hash, wrong proof signer, wrong handle, execution
+  mismatch, failed reads/writes. It never marks the privacy-floor Withheld
+  outcome (that is the deliberate `withheld` triad state) and is never
+  decorative. Measured: 6.75:1 on canvas, 7.41:1 on lifted — legal as text.
+  Ember remains graphical-only.
 - **Dust carries text only on ink** (11.8:1) — footer links, on-ink leads —
   never text on canvas. On canvas it is hairlines/borders only.
 - Text pairings: ink or charcoal on canvas/lifted; slate for secondary;
@@ -96,6 +106,11 @@ Frontmatter sizes are desktop values; display/lead sizes fluid-scale down:
 `display-md clamp(21px,1.9vw,24px)`, `lead clamp(17px,1.5vw,20px)`. Eyebrow is
 uppercase with an 8px ember dot. Pill/nav labels: 16/15px, weight 500,
 -0.03em. All hashes, addresses, weights, trackers, rule values set in mono.
+
+App surfaces add one step (2026-08-01, B1 review, delegated): `title`
+18px/500/-0.02em for list-row and item titles — between body and display-md,
+named here so it is a scale step, not drift. Card padding rhythm on app
+surfaces: 20–24px.
 
 Sources: artifact lines 7–18, 64–75, 91–145, 152–171.
 
