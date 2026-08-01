@@ -1,0 +1,156 @@
+/* ORBIT controls — wordmark, pills, links, chips, the sealed cell. Contract: DESIGN.md. */
+
+.mark {
+  display: inline-flex;
+  align-items: center;
+  gap: 11px;
+  color: var(--ink);
+  font-size: 16px;
+  font-weight: 700;
+  letter-spacing: -0.03em;
+  text-decoration: none;
+  white-space: nowrap;
+}
+.mark__glyph {
+  width: 24px;
+  height: 24px;
+  flex: none;
+}
+.mark__sat {
+  fill: var(--ember);
+}
+.on-ink .mark,
+.foot .mark {
+  color: var(--canvas);
+}
+
+.pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  min-height: 52px;
+  padding: 0 30px;
+  border: 1.5px solid var(--ink);
+  border-radius: var(--r-pill);
+  background: var(--ink);
+  color: var(--canvas);
+  font-family: var(--sans);
+  font-size: 16px;
+  font-weight: 500;
+  letter-spacing: -0.03em;
+  text-decoration: none;
+  cursor: pointer;
+  transition:
+    transform var(--fast) var(--ease),
+    background var(--fast) var(--ease),
+    color var(--fast) var(--ease);
+}
+.pill:hover {
+  transform: translateY(-2px);
+}
+.pill:active {
+  transform: translateY(0) scale(0.98);
+}
+
+.pill--outline {
+  background: var(--white);
+  color: var(--ink);
+}
+.pill--outline:hover {
+  background: var(--ink);
+  color: var(--canvas);
+}
+
+/* On the ink stadium the fill inverts so the pill stays a pill and stays
+ * readable — same radius, padding and label weight as the ink pill. */
+.pill--on-ink {
+  background: var(--canvas);
+  border-color: var(--canvas);
+  color: var(--ink);
+}
+.pill--on-ink-ghost {
+  background: transparent;
+  border-color: rgba(243, 240, 238, 0.4);
+  color: var(--canvas);
+}
+.pill--on-ink-ghost:hover {
+  background: var(--canvas);
+  color: var(--ink);
+}
+
+.pill__arrow {
+  transition: transform var(--fast) var(--ease);
+}
+.pill:hover .pill__arrow {
+  transform: translateX(4px);
+}
+
+a:focus-visible,
+.pill:focus-visible,
+button:focus-visible {
+  outline: 2px solid var(--ink);
+  outline-offset: 3px;
+}
+.on-ink a:focus-visible,
+.on-ink .pill:focus-visible {
+  outline: 2px solid var(--canvas);
+}
+
+.link {
+  color: inherit;
+  text-decoration: none;
+  border-bottom: 1.5px solid currentColor;
+  padding-bottom: 2px;
+  transition: opacity var(--fast) var(--ease);
+}
+.link:hover {
+  opacity: 0.62;
+}
+
+/* ---- Chips: the only place the state triad may appear ---- */
+
+.chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  padding: 5px 14px 5px 11px;
+  border-radius: var(--r-pill);
+  border: 1px solid currentColor;
+  font-family: var(--mono);
+  font-size: 12px;
+  font-weight: 500;
+  line-height: 1.4;
+  white-space: nowrap;
+}
+.chip::before {
+  content: '';
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: currentColor;
+  flex: none;
+}
+.chip--recorded {
+  color: var(--recorded);
+}
+.chip--withheld {
+  color: var(--withheld);
+}
+.chip--passed {
+  color: var(--passed);
+}
+
+/* ---- The sealed cell. Never resolves, at any breakpoint. ---- */
+
+.redact {
+  display: block;
+  height: 20px;
+  width: 100%;
+  max-width: 108px;
+  border-radius: var(--r-pill);
+  background: var(--ink);
+  overflow: hidden;
+}
+.on-ink .redact {
+  background: #2b2b29;
+}

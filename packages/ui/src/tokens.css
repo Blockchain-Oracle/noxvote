@@ -1,0 +1,47 @@
+/* ORBIT tokens — the normative values from DESIGN.md. Import standalone when a
+ * surface needs the palette without the landing base layer (e.g. apps/docs). */
+
+:root,
+:root[data-theme='dark'],
+:root[data-theme='light'] {
+  color-scheme: only light;
+}
+
+:root {
+  --canvas: #f3f0ee;
+  --lifted: #fcfbfa;
+  /* True white is reserved: floating nav, satellites, secondary pills. Never a page canvas. */
+  --white: #ffffff;
+  --ink: #141413;
+  --charcoal: #262627;
+  --slate: #696969;
+  --dust: #d1cdc7;
+  --ghost: #e8e2da;
+  /* Arcs and dots only — 4.37:1 on canvas fails AA for normal text. */
+  --ember: #c04a1e;
+
+  /* State triad — lifecycle chips, outcome rims, privacy-floor pips only. */
+  --recorded: #1f5f8b;
+  --withheld: #8a6d3b;
+  --passed: #2e6f4e;
+
+  --sans: 'Sofia Sans', Arial, sans-serif;
+  --mono: 'JetBrains Mono', ui-monospace, monospace;
+
+  --r-frame: 40px;
+  --r-pill: 999px;
+  --r-card: 24px;
+
+  --band: 120px;
+  --max: 1280px;
+  --gutter: 48px;
+
+  /* The only two elevations: wide low-opacity halos, never directional. */
+  --halo: 0 24px 48px rgba(20, 20, 19, 0.08);
+  --halo-nav: 0 4px 24px rgba(20, 20, 19, 0.04);
+
+  --ease: cubic-bezier(0.33, 1, 0.68, 1);
+  --fast: 220ms;
+  --base: 420ms;
+  --draw: 900ms;
+}

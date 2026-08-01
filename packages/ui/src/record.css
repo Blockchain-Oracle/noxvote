@@ -1,0 +1,118 @@
+/* ORBIT — the record the lifecycle produces. Choices are never rendered here. */
+
+.record {
+  max-width: 940px;
+  margin-inline: auto;
+  padding: 32px;
+  border-radius: var(--r-card);
+  background: var(--lifted);
+  border: 1px solid var(--dust);
+  box-shadow: var(--halo);
+}
+
+.record__head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 12px;
+  padding-bottom: 22px;
+  border-bottom: 1px solid var(--dust);
+}
+.record__title {
+  font-size: 20px;
+  font-weight: 500;
+  letter-spacing: -0.02em;
+}
+.record__meta {
+  color: var(--slate);
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.record__cols,
+.record__row {
+  display: grid;
+  grid-template-columns: 1.5fr 0.9fr 1.2fr 1.1fr;
+  align-items: center;
+  gap: 14px 24px;
+}
+
+.record__cols {
+  margin-top: 20px;
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--slate);
+}
+
+.record__row {
+  padding-block: 14px;
+  border-top: 1px solid var(--dust);
+  opacity: 0;
+  transform: translateY(8px);
+  transition:
+    opacity var(--base) var(--ease),
+    transform var(--base) var(--ease);
+}
+.record__row.is-in {
+  opacity: 1;
+  transform: none;
+}
+.record__row:first-of-type {
+  border-top: 0;
+}
+.record__weight {
+  text-align: right;
+}
+
+.record__foot {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-top: 20px;
+  padding-top: 20px;
+  border-top: 1px solid var(--dust);
+  font-size: 14px;
+  color: var(--slate);
+}
+
+.record__floor {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+}
+.record__pips {
+  display: inline-flex;
+  gap: 5px;
+}
+.record__pips i {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  border: 1px solid var(--dust);
+}
+.record__pips i.is-on {
+  background: var(--recorded);
+  border-color: var(--recorded);
+}
+
+@media (max-width: 767px) {
+  .record {
+    padding: 24px 20px;
+  }
+  .record__cols {
+    display: none;
+  }
+  .record__row {
+    grid-template-columns: 1fr auto;
+    gap: 10px 16px;
+  }
+  .redact {
+    max-width: 84px;
+  }
+}

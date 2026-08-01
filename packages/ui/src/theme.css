@@ -1,0 +1,158 @@
+/* ORBIT base layer — tokens, faces, type. Contract: DESIGN.md (repo root).
+ * Light-only system; contrast claims are measured, not aesthetic. */
+@import 'tailwindcss';
+@import './tokens.css';
+@import './fonts.css';
+@import './controls.css';
+@import './orbit.css';
+@import './record.css';
+
+@source './';
+
+@theme inline {
+  --color-canvas: var(--canvas);
+  --color-lifted: var(--lifted);
+  --color-ink: var(--ink);
+  --color-charcoal: var(--charcoal);
+  --color-slate: var(--slate);
+  --color-dust: var(--dust);
+  --color-ghost: var(--ghost);
+  --color-ember: var(--ember);
+  --color-recorded: var(--recorded);
+  --color-withheld: var(--withheld);
+  --color-passed: var(--passed);
+
+  --font-sans: 'Sofia Sans', Arial, sans-serif;
+  --font-mono: 'JetBrains Mono', ui-monospace, monospace;
+
+  --radius-frame: var(--r-frame);
+  --radius-card: var(--r-card);
+  --radius-pill: var(--r-pill);
+
+  --shadow-halo: var(--halo);
+  --shadow-halo-nav: var(--halo-nav);
+
+  --ease-orbit: var(--ease);
+}
+
+body {
+  margin: 0;
+  background: var(--canvas);
+  color: var(--ink);
+  font-family: var(--sans);
+  font-size: 16px;
+  font-weight: 450;
+  line-height: 1.4;
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+  overflow-x: hidden;
+}
+
+.wrap {
+  max-width: var(--max);
+  margin-inline: auto;
+  padding-inline: 32px;
+}
+
+/* Positioned and clipped so a ghost watermark resolves its containing block
+ * here rather than escaping to the document. Any band may carry one. */
+.band {
+  position: relative;
+  overflow: hidden;
+  padding-block: var(--band);
+}
+.band--lifted {
+  background: var(--lifted);
+}
+
+/* ---- Type scale ---- */
+
+.d-xl {
+  font-size: clamp(36px, 4.4vw, 64px);
+  font-weight: 500;
+  line-height: 1;
+  letter-spacing: -0.02em;
+}
+.d-lg {
+  font-size: clamp(28px, 3.2vw, 36px);
+  font-weight: 500;
+  line-height: 1.22;
+  letter-spacing: -0.02em;
+}
+.d-md {
+  font-size: clamp(21px, 1.9vw, 24px);
+  font-weight: 500;
+  line-height: 1.2;
+  letter-spacing: -0.02em;
+}
+.lead {
+  font-size: clamp(17px, 1.5vw, 20px);
+  font-weight: 450;
+  line-height: 1.4;
+}
+.body-sm {
+  font-size: 14px;
+  line-height: 1.45;
+}
+
+/* The half-step body weight is load-bearing; Sofia Sans is variable so 450
+ * resolves exactly rather than snapping to 400 or 500. */
+.eyebrow {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 14px;
+  font-weight: 700;
+  line-height: 1;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+.eyebrow::before {
+  content: '';
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--ember);
+  flex: none;
+}
+
+.mono {
+  font-family: var(--mono);
+  font-size: 14px;
+  font-weight: 450;
+  letter-spacing: 0;
+  font-variant-ligatures: none;
+}
+
+.muted {
+  color: var(--slate);
+}
+.on-ink .muted {
+  color: var(--dust);
+}
+
+@media (max-width: 900px) {
+  :root {
+    --band: 84px;
+    --gutter: 24px;
+  }
+}
+@media (max-width: 767px) {
+  :root {
+    --band: 72px;
+    --r-frame: 32px;
+  }
+  .wrap {
+    padding-inline: 20px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 1ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 1ms !important;
+  }
+}
