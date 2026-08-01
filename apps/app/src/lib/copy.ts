@@ -37,7 +37,11 @@ export const BALLOT_STAGES = [
 
 export type BallotStageName = (typeof BALLOT_STAGES)[number]
 
-/** The ten proposal-list lifecycle labels, exactly as the surface map names them. */
+/** The eleven proposal-list lifecycle labels, exactly as the surface map
+ * names them (Canceled adopted in the 2026-08-01 reconciliation addendum).
+ * `tallyFailed`/`executionFailed` surface only in the tally/execution panels —
+ * the contract's DetailedState enum has no failed states, so they are not
+ * list-chip labels. `unknown` is the honest fallback for an unreadable state. */
 export const LIFECYCLE_LABELS = {
   scheduled: 'Scheduled',
   open: 'Open',
@@ -47,6 +51,8 @@ export const LIFECYCLE_LABELS = {
   passed: 'Passed',
   rejected: 'Rejected',
   executed: 'Executed',
+  canceled: 'Canceled',
   tallyFailed: 'Tally failed',
   executionFailed: 'Execution failed',
+  unknown: 'Unknown',
 } as const

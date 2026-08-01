@@ -4,13 +4,17 @@ import { useChainId, usePublicClient } from 'wagmi'
 import { confidentialGovernorAbi } from '../abi/confidentialGovernor.ts'
 import { safeModuleAbi } from '../abi/safeConfidentialVotingModule.ts'
 import { profile, type Hex } from '../config/addresses.ts'
+import { eventsByName, getEventLogs } from '../lib/logs.ts'
 import { Result, type BallotRecordView } from '../state/chain.ts'
 import type { CommittedAction, ExecutionFacts } from '../state/execution.ts'
 import type { HostInfo } from './useHost.ts'
 
-function scanFromBlock(): bigint {
-  return profile.kind === 'sepolia' ? 11_396_142n : 0n
-}
+const SAFE_EVENTS = eventsByName(safeModuleAbi as never, ['SafeProposalExecuted'])
+const GOVERNOR_EVENTS = eventsByName(confidentialGovernorAbi as never, [
+  'ProposalCreated',
+  'ProposalQueued',
+  'ProposalExecuted',
+])
 
 /** Governor queue/execute arguments recovered from its own ProposalCreated
  * log — the chain is the only source; nothing is retyped by hand. */
@@ -45,7 +49,7 @@ export function useExecutionFacts(
         const executedLogs = parseEventLogs({
           abi: safeModuleAbi,
           eventName: 'SafeProposalExecuted',
-          logs: await client.getLogs({ address: host.address, fromBlock: scanFromBlock() }),
+          logs: await getEventLogs(client, host.address, SAFE_EVENTS),
         }).filter((log) => log.args.safeProposalId === record.hostProposalId)
         const actions = localSafeActions(record.hostProposalId)
         return {
@@ -60,7 +64,7 @@ export function useExecutionFacts(
       }
       if (host.kind === 'governor') {
         const proposalId = BigInt(record.hostProposalId)
-        const logs = await client.getLogs({ address: host.address, fromBlock: scanFromBlock() })
+        const logs = await getEventLogs(client, host.address, GOVERNOR_EVENTS)
         const created = parseEventLogs({
           abi: confidentialGovernorAbi,
           eventName: 'ProposalCreated',

@@ -2,6 +2,7 @@ import { Skeleton } from '../QueryBoundary.tsx'
 import { EvidenceRow, EvidenceSection } from './EvidenceSection.tsx'
 import { profile, type Hex } from '../../config/addresses.ts'
 import type { BallotHistory } from '../../hooks/useBallotHistory.ts'
+import type { VerdictRecheck } from '../../hooks/useVerdictRecheck.ts'
 import { truncateHex } from '../../lib/format.ts'
 import { Result, ZERO_HANDLE } from '../../state/chain.ts'
 import type { ExecutionFacts } from '../../state/execution.ts'
@@ -29,11 +30,13 @@ export function VerdictProofSection({
   acl,
   history,
   mismatch,
+  recheck,
 }: {
   verdictHandle: Hex | undefined
   acl: { publiclyDecryptable: boolean; coreAllowed: boolean } | undefined
   history: BallotHistory | undefined
   mismatch?: string
+  recheck?: VerdictRecheck
 }) {
   return (
     <EvidenceSection title="Verdict proof" provenance="onchain" mismatch={mismatch}>
@@ -58,11 +61,35 @@ export function VerdictProofSection({
           )}
         </dl>
       )}
+      {recheck && <RecheckBlock recheck={recheck} />}
       <p className="card__note">
         The proof shows the configured Gateway signed this plaintext for the stored expected
         handle. It does not prove the complete ballot-processing graph.
       </p>
     </EvidenceSection>
+  )
+}
+
+/** Indexed enrichment inside the verdict section, tagged as such — when it
+ * cannot load, the section says so instead of dressing it up. */
+function RecheckBlock({ recheck }: { recheck: VerdictRecheck }) {
+  const body = () => {
+    switch (recheck.status) {
+      case 'needs-wallet':
+        return 'Connect a wallet to re-fetch the Gateway evidence for this verdict.'
+      case 'checking':
+        return 'Re-fetching the Gateway evidence…'
+      case 'ready':
+        return `Gateway evidence decrypts to ${recheck.value ? 'true' : 'false'} — compare with the on-chain result above.`
+      case 'unavailable':
+        return recheck.reason
+    }
+  }
+  return (
+    <div className="evidence__indexed">
+      <span className="evidence__prov evidence__prov--indexed mono">indexed</span>
+      <p className="evidence__indexed-body">{body()}</p>
+    </div>
   )
 }
 

@@ -3,7 +3,10 @@ import { parseEventLogs } from 'viem'
 import { useChainId, usePublicClient } from 'wagmi'
 import { confidentialBallotCoreAbi } from '../abi/confidentialBallotCore.ts'
 import { profile, type Hex } from '../config/addresses.ts'
+import { eventsByName, getEventLogs } from '../lib/logs.ts'
 import { ballotKeys } from './keys.ts'
+
+const REGISTERED_EVENTS = eventsByName(confidentialBallotCoreAbi as never, ['BallotRegistered'])
 
 export type RegisteredBallot = {
   core: Hex
@@ -17,21 +20,11 @@ export type RegisteredBallot = {
   maxReplacements: number
 }
 
-/** The Sepolia checkpoint's preflight block — every live ballot registered
- * after it; the local stack scans from genesis. */
-function scanFromBlock(): bigint {
-  return profile.kind === 'sepolia' ? 11_396_142n : 0n
-}
-
 async function fetchRegistered(
   client: NonNullable<ReturnType<typeof usePublicClient>>,
   core: Hex,
 ): Promise<RegisteredBallot[]> {
-  const logs = await client.getLogs({
-    address: core,
-    fromBlock: scanFromBlock(),
-    toBlock: 'latest',
-  })
+  const logs = await getEventLogs(client, core, REGISTERED_EVENTS)
   return parseEventLogs({
     abi: confidentialBallotCoreAbi,
     eventName: 'BallotRegistered',

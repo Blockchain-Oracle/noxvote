@@ -1,6 +1,19 @@
-import { http, createConfig } from 'wagmi'
+import { fallback, http, createConfig } from 'wagmi'
 import { injected } from 'wagmi/connectors'
-import { activeChain, localNox, sepolia } from './chains.ts'
+import {
+  activeChain,
+  localNox,
+  sepolia,
+  sepoliaFallbackHttpUrl,
+  sepoliaPrimaryHttpUrl,
+} from './chains.ts'
+
+/** Two archive-capable nodes; viem promotes the fallback on failure. Both
+ * batch JSON-RPC calls so the read burst collapses into few HTTP POSTs. */
+const sepoliaTransport = fallback([
+  http(sepoliaPrimaryHttpUrl, { batch: true }),
+  http(sepoliaFallbackHttpUrl, { batch: true }),
+])
 
 /** One injected EIP-1193 connector (SPEC R6): real signatures, real
  * transactions. The transport for the inactive chain still exists so wagmi can
@@ -8,8 +21,9 @@ import { activeChain, localNox, sepolia } from './chains.ts'
 export const wagmiConfig = createConfig({
   chains: [activeChain],
   connectors: [injected()],
+  batch: { multicall: true },
   transports: {
-    [sepolia.id]: http(import.meta.env.VITE_SEPOLIA_RPC_URL),
+    [sepolia.id]: sepoliaTransport,
     [localNox.id]: http(localNox.rpcUrls.default.http[0]),
   },
 })

@@ -1,5 +1,7 @@
+import { useState } from 'react'
 import { Link, useParams } from 'react-router'
 import { Eyebrow } from '@noxvote/ui'
+import { GuaranteeOverlay } from '../components/GuaranteeOverlay.tsx'
 import { EvidenceRow, EvidenceSection } from '../components/verify/EvidenceSection.tsx'
 import {
   ExecutionSection,
@@ -14,6 +16,7 @@ import { useBallotHistory } from '../hooks/useBallotHistory.ts'
 import { useExecutionFacts } from '../hooks/useExecution.ts'
 import { useHandleAcl } from '../hooks/useHandleAcl.ts'
 import { useHost } from '../hooks/useHost.ts'
+import { useVerdictRecheck } from '../hooks/useVerdictRecheck.ts'
 import { COPY } from '../lib/copy.ts'
 import { formatWeight, truncateHex } from '../lib/format.ts'
 import { Result, ZERO_HANDLE } from '../state/chain.ts'
@@ -39,16 +42,24 @@ export function VerificationCenter() {
     core,
   )
   const execution = useExecutionFacts(core, record.data, host.data, result.data)
+  const finalizedForRecheck = result.data === Result.Passed || result.data === Result.Rejected
+  const recheck = useVerdictRecheck(
+    verdictHandle.data === ZERO_HANDLE ? undefined : verdictHandle.data,
+    finalizedForRecheck,
+  )
+  const [guaranteeOpen, setGuaranteeOpen] = useState(false)
 
   if (record.isPending) return <Skeleton lines={8} />
   if (!record.data) return null
   const rec = record.data
 
-  const finalized = result.data === Result.Passed || result.data === Result.Rejected
+  const finalized = finalizedForRecheck
   const proofMismatch =
     finalized && acl.data !== undefined && !acl.data.publiclyDecryptable
       ? 'The ballot is finalized but the expected verdict handle is not publicly decryptable — the finalize evidence cannot be re-checked. Inspect the finalize transaction.'
-      : undefined
+      : recheck.status === 'ready' && recheck.value !== (result.data === Result.Passed)
+        ? 'The re-fetched Gateway evidence disagrees with the on-chain result. Inspect the finalize transaction and the proof provenance.'
+        : undefined
   const executionMismatch =
     execution.data?.executed && result.data !== undefined && result.data !== Result.Passed
       ? 'An execution exists although the final result is not Passed. This must never happen — inspect the host.'
@@ -145,9 +156,16 @@ export function VerificationCenter() {
           acl={acl.data}
           history={history.data}
           mismatch={proofMismatch}
+          recheck={recheck}
         />
         <ExecutionSection execution={execution.data} result={result.data} mismatch={executionMismatch} />
       </div>
+      <p className="detail__back">
+        <button type="button" className="drawer__close" onClick={() => setGuaranteeOpen(true)}>
+          What is guaranteed — and what is not
+        </button>
+      </p>
+      <GuaranteeOverlay open={guaranteeOpen} onClose={() => setGuaranteeOpen(false)} core={core} />
     </>
   )
 }

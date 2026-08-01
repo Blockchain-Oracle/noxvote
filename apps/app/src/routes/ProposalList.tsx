@@ -6,8 +6,11 @@ import type { Hex } from '../config/addresses.ts'
 import { useBallotList, type RegisteredBallot } from '../hooks/useBallotList.ts'
 import { useDetailedState, useBallotRecord } from '../hooks/useBallot.ts'
 import { useHost } from '../hooks/useHost.ts'
+import { useHostExecuted } from '../hooks/useHostExecuted.ts'
 import { ballotTitle, lifecycleLabel } from '../lib/lifecycle.ts'
+import { LIFECYCLE_LABELS } from '../lib/copy.ts'
 import { truncateHex } from '../lib/format.ts'
+import { DetailedState } from '../state/chain.ts'
 
 export function ProposalList() {
   const list = useBallotList()
@@ -44,7 +47,17 @@ function ProposalRow({ ballot }: { ballot: RegisteredBallot }) {
   const detailed = useDetailedState(ballot.core, ballot.ballotId)
   const record = useBallotRecord(ballot.core, ballot.ballotId)
   const host = useHost(ballot.core)
-  const chip = detailed.data !== undefined ? lifecycleLabel(detailed.data) : null
+  const executed = useHostExecuted(
+    host.data,
+    ballot.hostProposalId,
+    detailed.data === DetailedState.Passed,
+  )
+  const chip =
+    detailed.data === undefined
+      ? null
+      : executed.data
+        ? { label: LIFECYCLE_LABELS.executed, tone: 'neutral' as const }
+        : lifecycleLabel(detailed.data)
   return (
     <Link to={detailPath(ballot.core, ballot.ballotId)} className="prop-row">
       <span className="prop-row__main">

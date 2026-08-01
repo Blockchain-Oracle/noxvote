@@ -15,11 +15,15 @@ import {
   useDetailedState,
   useExpectedVerdictHandle,
 } from '../hooks/useBallot.ts'
+import { GuaranteeOverlay } from '../components/GuaranteeOverlay.tsx'
 import { useBallotLive } from '../hooks/useBallotLive.ts'
 import { useExecutionFacts } from '../hooks/useExecution.ts'
 import { useGovernanceQuorum, useHost } from '../hooks/useHost.ts'
+import { useHostExecuted } from '../hooks/useHostExecuted.ts'
 import { ballotTitle, lifecycleLabel } from '../lib/lifecycle.ts'
+import { LIFECYCLE_LABELS } from '../lib/copy.ts'
 import { formatDateTime, formatRemaining, truncateHex } from '../lib/format.ts'
+import { useState } from 'react'
 import { DetailedState } from '../state/chain.ts'
 import { executionState } from '../state/execution.ts'
 import { useExecuteHost } from '../write/execute.ts'
@@ -39,6 +43,12 @@ export function ProposalDetail() {
     record.data?.hostProposalId ?? '0x',
     record.data?.snapshot ?? 0,
   )
+  const executed = useHostExecuted(
+    host.data,
+    record.data?.hostProposalId,
+    detailed.data === DetailedState.Passed,
+  )
+  const [guaranteeOpen, setGuaranteeOpen] = useState(false)
   useBallotLive(core, ballotId)
 
   if (record.isError || detailed.isError) {
@@ -65,7 +75,9 @@ export function ProposalDetail() {
     )
   }
 
-  const chip = lifecycleLabel(detailed.data)
+  const chip = executed.data
+    ? { label: LIFECYCLE_LABELS.executed, tone: 'neutral' as const }
+    : lifecycleLabel(detailed.data)
 
   return (
     <>
@@ -85,8 +97,21 @@ export function ProposalDetail() {
           <Link className="detail__verify" to={`/b/${core}/${ballotId}/verify`}>
             Verification center
           </Link>
+          <button
+            type="button"
+            className="detail__verify detail__guarantee"
+            onClick={() => setGuaranteeOpen(true)}
+          >
+            What is guaranteed?
+          </button>
         </p>
       </header>
+      <GuaranteeOverlay
+        open={guaranteeOpen}
+        onClose={() => setGuaranteeOpen(false)}
+        verifyPath={`/b/${core}/${ballotId}/verify`}
+        core={core}
+      />
       <div className="detail__grid">
         <RulesCard record={record.data} host={host.data} quorum={quorum.data} />
         <div className="detail__col">

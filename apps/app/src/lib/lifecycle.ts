@@ -10,7 +10,7 @@ export type ChipTone = 'recorded' | 'withheld' | 'passed' | 'neutral'
 export function lifecycleLabel(state: DetailedState): { label: string; tone: ChipTone } {
   switch (state) {
     case DetailedState.Uninitialized:
-      return { label: 'Unknown', tone: 'neutral' }
+      return { label: LIFECYCLE_LABELS.unknown, tone: 'neutral' }
     case DetailedState.Scheduled:
       return { label: LIFECYCLE_LABELS.scheduled, tone: 'neutral' }
     case DetailedState.Open:
@@ -26,7 +26,7 @@ export function lifecycleLabel(state: DetailedState): { label: string; tone: Chi
     case DetailedState.Passed:
       return { label: LIFECYCLE_LABELS.passed, tone: 'passed' }
     case DetailedState.Canceled:
-      return { label: 'Canceled', tone: 'neutral' }
+      return { label: LIFECYCLE_LABELS.canceled, tone: 'neutral' }
   }
 }
 

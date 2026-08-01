@@ -53,6 +53,53 @@
   color: var(--ink);
 }
 
+/* Indexed enrichment sub-block inside an on-chain section. */
+.evidence__indexed {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  margin-top: 14px;
+  padding: 12px 14px;
+  border: 1px dashed var(--dust);
+  border-radius: var(--r-card);
+}
+.evidence__indexed-body {
+  margin: 0;
+  color: var(--slate);
+  font-size: 14px;
+  line-height: 1.45;
+}
+
+/* ---- Guarantee overlay (screen 16) ---- */
+
+.guarantee {
+  max-height: min(80dvh, 720px);
+  overflow-y: auto;
+}
+.guarantee__section {
+  padding: 12px 0;
+  border-bottom: 1px solid var(--ghost);
+}
+.guarantee__title {
+  margin: 0 0 6px;
+  font-size: 18px;
+  font-weight: 500;
+  letter-spacing: -0.02em;
+}
+.guarantee__body {
+  margin: 0;
+  color: var(--charcoal);
+  font-size: 14px;
+  line-height: 1.5;
+}
+.detail__guarantee {
+  margin-left: 0;
+  border: 0;
+  background: none;
+  cursor: pointer;
+  font: inherit;
+}
+
 @media (max-width: 900px) {
   .evidence__grid {
     grid-template-columns: 1fr;

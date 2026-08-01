@@ -2,8 +2,16 @@ import { useQuery } from '@tanstack/react-query'
 import { parseEventLogs } from 'viem'
 import { useChainId, usePublicClient } from 'wagmi'
 import { confidentialBallotCoreAbi } from '../abi/confidentialBallotCore.ts'
-import { profile, type Hex } from '../config/addresses.ts'
+import type { Hex } from '../config/addresses.ts'
+import { eventsByName, getEventLogs } from '../lib/logs.ts'
 import { ballotKeys } from './keys.ts'
+
+const HISTORY_EVENTS = eventsByName(confidentialBallotCoreAbi as never, [
+  'VoteRecorded',
+  'TallyRequested',
+  'TallyWithheld',
+  'BallotFinalized',
+])
 
 export type RecordedOperation = {
   voter: Hex
@@ -31,10 +39,7 @@ export function useBallotHistory(core: Hex, ballotId: Hex) {
     enabled: client !== undefined,
     queryFn: async (): Promise<BallotHistory> => {
       if (!client) throw new Error('unreachable: query disabled')
-      const raw = await client.getLogs({
-        address: core,
-        fromBlock: profile.kind === 'sepolia' ? 11_396_142n : 0n,
-      })
+      const raw = await getEventLogs(client, core, HISTORY_EVENTS)
       const forBallot = <T extends { args: { ballotId?: Hex } }>(logs: T[]) =>
         logs.filter((log) => log.args.ballotId === ballotId)
 
