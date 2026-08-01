@@ -39,22 +39,22 @@ under `src/contracts` and must not import, inherit, or rename the spike as produ
 9. Recorded operations have no administrative expiry. The expected verdict handle and immutable state
    remain usable whenever the correct proof becomes available.
 10. Contracts are non-upgradeable. A new ruleset or dependency set is a new factory/version.
-11. Ethereum Sepolia is the planned first live gate, but deployment and funding are blocked pending
-    explicit authorization and current address verification.
+11. Ethereum Sepolia is the first live gate. On 2026-08-01 the user authorized target accounts,
+    funding checks, deployment, and required external transactions. The same-day dependency and
+    bytecode preflight passes; broadcasting now waits only for a dedicated funded deployer.
 12. Every deployed adapter/core pair has an immutable organization minimum privacy floor of at least
     four. A proposal may choose a higher floor. Its replacement ceiling must be one or two; the judged
     configuration uses two.
 
 ## Open Questions
 
-No contract-design decision is delegated to the implementer. Two external gates remain:
+No contract-design decision is delegated to the implementer. One operational prerequisite remains:
 
-- **Live authorization:** user approval for target accounts, funding, deployment, and external
-  transactions.
-- **Current deployment inventory:** at that later gate, re-verify Nox, Safe, Gateway, and network
-  addresses from official sources immediately before use.
+- **Dedicated funded deployer:** configure the Phase 6 account without reusing unrelated local
+  keystores and satisfy the runner's dynamic funding gate.
 
-Neither gate blocks local contract implementation or real local Nox verification.
+The live dependency inventory and code hashes must be rechecked by the runner immediately before any
+broadcast.
 
 ## Public Contracts, Interfaces, And Data
 
@@ -260,23 +260,23 @@ new immutable Safe-module/core pairs or Governor/core pairs. Adapters construct 
 The required labels below classify whether an integration is real. `REAL_MVP` means “must be real in
 the judged path”; it does not mean product features were cut into an MVP/later list.
 
-| Surface                                   | Classification                    | Concrete path and evidence                                                                                         |
-| ----------------------------------------- | --------------------------------- | ------------------------------------------------------------------------------------------------------------------ |
-| Nox Solidity operations and ACL           | `REAL_MVP`                        | `@iexec-nox/nox-protocol-contracts@0.2.4`; real local NoxCompute and current passing spike evidence                |
-| Handle preparation/input proof            | `REAL_MVP`                        | `@iexec-nox/handle@0.1.0-beta.13`; real Handle Gateway proof bound to wallet and core                              |
-| KMS, Gateway, ingestor, JetStream, Runner | `REAL_MVP`                        | Released Docker stack via `@iexec-nox/nox-hardhat-plugin@0.2.0`; no in-process substitute                          |
-| Verdict public-decryption evidence        | `REAL_MVP`                        | Exact stored `ebool` handle plus released `Nox.publicDecrypt` verification and negative matrix                     |
-| Safe singleton/proxy/module execution     | `REAL_MVP`                        | Official `@safe-global/safe-smart-account@1.5.0` artifacts and owner-enabled module path                           |
-| Safe atomic action batches                | `REAL_MVP`                        | Official `MultiSendCallOnly`; inner calls only; immutable address/code-hash check                                  |
-| Merkle Safe electorate                    | `REAL_MVP`                        | OpenZeppelin `MerkleProof` plus domain-separated weighted leaves                                                   |
-| Governor `IVotes` snapshot                | `REAL_MVP`                        | OpenZeppelin `GovernorVotes`/`IVotes` with the linked core strategy                                                |
-| Governor/timelock execution               | `REAL_MVP`                        | OpenZeppelin 5.6.1 Governor and real `TimelockController` batch queue/execute                                      |
-| Unit-test fixtures                        | `OUT_OF_SCOPE` for product claims | May isolate logic locally; cannot support privacy, Nox, Safe, Governor, or deployment claims                       |
-| Frontend, indexer, visual design          | `OUT_OF_SCOPE` for this plan      | External designer owns direction; a later accepted design document reopens UI planning                             |
-| Database, backend auth, privileged keeper | `OUT_OF_SCOPE`                    | Contract transitions are event-driven and permissionless; no authority-bearing server                              |
-| MACI receipt-freeness/anonymous voting    | `OUT_OF_SCOPE`                    | Explicit product non-goals on released Nox                                                                         |
-| Threshold KMS/Keypers                     | `OUT_OF_SCOPE`                    | Current Nox single-KMS trust is disclosed; no false threshold claim                                                |
-| Ethereum Sepolia judged deployment        | `BLOCKED`                         | Requires explicit user authorization, funded account, and same-day official address verification; no mock fallback |
+| Surface                                   | Classification                    | Concrete path and evidence                                                                                             |
+| ----------------------------------------- | --------------------------------- | ---------------------------------------------------------------------------------------------------------------------- |
+| Nox Solidity operations and ACL           | `REAL_MVP`                        | `@iexec-nox/nox-protocol-contracts@0.2.4`; real local NoxCompute and current passing spike evidence                    |
+| Handle preparation/input proof            | `REAL_MVP`                        | `@iexec-nox/handle@0.1.0-beta.13`; real Handle Gateway proof bound to wallet and core                                  |
+| KMS, Gateway, ingestor, JetStream, Runner | `REAL_MVP`                        | Released Docker stack via `@iexec-nox/nox-hardhat-plugin@0.2.0`; no in-process substitute                              |
+| Verdict public-decryption evidence        | `REAL_MVP`                        | Exact stored `ebool` handle plus released `Nox.publicDecrypt` verification and negative matrix                         |
+| Safe singleton/proxy/module execution     | `REAL_MVP`                        | Official `@safe-global/safe-smart-account@1.5.0` artifacts and owner-enabled module path                               |
+| Safe atomic action batches                | `REAL_MVP`                        | Official `MultiSendCallOnly`; inner calls only; immutable address/code-hash check                                      |
+| Merkle Safe electorate                    | `REAL_MVP`                        | OpenZeppelin `MerkleProof` plus domain-separated weighted leaves                                                       |
+| Governor `IVotes` snapshot                | `REAL_MVP`                        | OpenZeppelin `GovernorVotes`/`IVotes` with the linked core strategy                                                    |
+| Governor/timelock execution               | `REAL_MVP`                        | OpenZeppelin 5.6.1 Governor and real `TimelockController` batch queue/execute                                          |
+| Unit-test fixtures                        | `OUT_OF_SCOPE` for product claims | May isolate logic locally; cannot support privacy, Nox, Safe, Governor, or deployment claims                           |
+| Frontend, indexer, visual design          | `OUT_OF_SCOPE` for this plan      | External designer owns direction; a later accepted design document reopens UI planning                                 |
+| Database, backend auth, privileged keeper | `OUT_OF_SCOPE`                    | Contract transitions are event-driven and permissionless; no authority-bearing server                                  |
+| MACI receipt-freeness/anonymous voting    | `OUT_OF_SCOPE`                    | Explicit product non-goals on released Nox                                                                             |
+| Threshold KMS/Keypers                     | `OUT_OF_SCOPE`                    | Current Nox single-KMS trust is disclosed; no false threshold claim                                                    |
+| Ethereum Sepolia judged deployment        | `AUTHORIZED; PREFLIGHT PASS`      | Same-day official address/code-hash checks pass; transactions wait for the dedicated funded deployer; no mock fallback |
 
 No `REAL_LATER` or `SIMULATED_DEMO_ONLY` integration supports the contract product claim.
 
@@ -950,22 +950,28 @@ an ACL leak, an action mismatch, or an unproven recovery claim.
 
 ### Status
 
-`BLOCKED` pending explicit user authorization. This phase is planned but must not begin automatically.
+`AUTHORIZED; READ-ONLY PREFLIGHT PASS; TRANSACTIONS NOT RUN`. The user authorized target accounts,
+funding checks, deployment, and external transactions on 2026-08-01. No dedicated deployer secret is
+currently configured, so no transaction has been signed or broadcast.
 
 ### Unblocking Actions
 
-1. User approves target accounts, funding, deployment, and external transactions.
+1. **COMPLETE:** user approves target accounts, funding, deployment, and external transactions.
 2. Re-verify official Ethereum Sepolia NoxCompute, Gateway, Safe singleton/proxy factory/batch, and
-   explorer addresses from current primary sources.
-3. Verify bytecode/code hashes before configuring the immutable factory/module.
-4. Deploy versioned strategies, factory, one Safe module/core, one Governor/core, token, and timelock.
-5. Execute the four-wallet floor-four judged path with real Handle Gateway inputs, verdict proof, and
-   exact Safe action; then run the Governor queue/timelock path.
+   explorer addresses from current primary sources. **PASS read-only; the runner repeats this before
+   every execution.**
+3. Verify bytecode/code hashes before configuring the immutable factory/module. **PASS for the current
+   official Nox and Safe deployments and the exact reviewed Foundry creation bytecode.**
+4. Configure one dedicated deployer with the runner's required Sepolia ETH balance. **PENDING.**
+5. Deploy versioned strategies, factory, one Safe module/core, one Governor/core, token, and timelock.
+   **AUTHORIZED; NOT RUN.**
+6. Execute the four-wallet floor-four judged path with real Handle Gateway inputs, verdict proof, and
+   exact Safe action; then run the Governor queue/timelock path. **AUTHORIZED; NOT RUN.**
 
 ### No Fallback
 
-If authorization, funding, official addresses, or real Nox behavior is unavailable, report the live
-phase as not run. Do not replace it with local state, a mock, or a submission claim.
+If funding, official addresses, or real Nox behavior is unavailable, report the transaction portion
+of the live phase as not run. Do not replace it with local state, a mock, or a submission claim.
 
 ## Verification Checkpoint
 
@@ -980,7 +986,7 @@ Before contract completion, a separate verification audit must confirm:
 - Governor threshold/snapshot/cast/state/timelock compatibility;
 - real Nox, Safe, Governor, restart, redelivery, and proof-negative results;
 - static analysis, fuzz, invariant, size, and gas evidence;
-- clear separation between local PASS and any still-blocked live gate.
+- clear separation between local PASS, read-only live preflight PASS, and live transactions NOT RUN.
 
 ## Handoff Notes
 
@@ -988,13 +994,15 @@ Before contract completion, a separate verification audit must confirm:
   in a design document.
 - Contract events/getters are designed for later indexing but no indexer or authority-bearing backend
   is part of this plan.
-- Do not create credentials, start funded services, deploy, commit, publish, or claim submission
-  readiness without the corresponding explicit authorization.
+- Phase 6 credentials, funding checks, deployments, required Sepolia transactions, evidence
+  maintenance, and commits are authorized by the 2026-08-01 decision. Frontend work, billable
+  production infrastructure, publishing, and submission claims remain unauthorized.
 - After plan acceptance, begin only when the user explicitly authorizes implementation.
 
 ## Evidence
 
 - [Contract-planning authorization](../decisions/2026-07-30-contract-planning-authorization.md)
+- [Phase 6 live authorization](../decisions/2026-08-01-phase6-live-authorization.md)
 - [Accepted technical architecture](../design/2026-07-30-confidential-governance-technical-architecture.md)
 - [Contract quality profile](../quality/2026-07-30-contract-quality-profile.md)
 - [Product specification](../specs/2026-07-29-confidential-governance-module.md)

@@ -9,6 +9,7 @@
   },
   "include": [
     "hardhat.config.ts",
+    "scripts/**/*.ts",
     "test/integration/**/*.ts",
     "artifacts/**/*.d.ts"
   ]

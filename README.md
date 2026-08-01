@@ -66,7 +66,9 @@ high-confidence invariants, boundary reports, and three real-Nox repetitions; it
 not yet run on a remote GitHub runner. Four deterministic Safe/Governor gas tests enforce 20%
 regression ceilings, and the reconciled production verification audit passes the authorized local
 contract gate. Phase 5 and local Phase 6 preflight remediation are complete. Slither is not required.
-Live Phase 6 testnet deployment remains unauthorized.
+Phase 6 target accounts, funding checks, deployment, and required Sepolia transactions are now
+authorized. The current read-only live dependency and bytecode preflight passes, while transactions
+remain not run because a dedicated funded deployer has not been configured.
 
 Start here:
 

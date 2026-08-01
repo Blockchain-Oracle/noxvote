@@ -6,7 +6,8 @@
   explicit JetStream negative-acknowledgement redelivery, the full named proof-negative matrix, and real
   Nox-to-compatible-Governor-to-Timelock execution all pass. The contract quality profile and
   contract-only implementation plan are accepted, and local phased contract implementation is
-  authorized. Testnet deployment is not authorized.
+  authorized. On 2026-08-01 the user also authorized Phase 6 target accounts, funding checks,
+  deployment, and required Ethereum Sepolia transactions.
 - **Product shape:** A host-neutral confidential ballot core with a Safe execution adapter and a
   compatible OpenZeppelin Governor counting adapter, not a standalone DAO app. Safe is the primary
   judged retrofit/execution path; Governor is the native governance-framework integration.
@@ -53,9 +54,12 @@
   proof matrix before accepting the correct proof. The contract CI workflow, deterministic
   Safe/Governor gas baselines, and the reconciled local production verification audit are installed;
   the workflow has not yet been observed on a remote runner. Phase 5 and the local Phase 6 preflight
-  remediation are complete. Phase 6 is blocked: stop before frontend implementation, testnet
-  deployment, funded/billable infrastructure, public publishing, or submission claims without another
-  explicit user authorization.
+  remediation are complete. Phase 6 is authorized and its same-day read-only Nox/Safe/Gateway/
+  subgraph/code-hash preflight passes. No transaction has been broadcast because the dedicated funded
+  deployer is not configured. Frontend implementation is now separately authorized: a dedicated
+  frontend agent builds `apps/landing`, `apps/app`, and `apps/docs` from the root `SPEC.md` inside
+  the accepted ORBIT direction (see the 2026-08-01 frontend milestone authorization). Billable
+  production infrastructure, public publishing, and submission claims remain gated on the user.
 - **Implementation progress:** Fifteen bounded RED-to-GREEN/evidence slices now pass locally. Phase 1
   provides production interfaces, immutable adapter-owned core construction, ballot/config commitments,
   registration, derived Scheduled/Open/Closed state, pre-open cancellation, and public reads. Phase 2
@@ -399,7 +403,20 @@
     GitHub Actions workflow now defines static/format, build/unit/fuzz/size, high-confidence invariant,
     selector/storage-boundary, and three-repetition released-Nox jobs. The workflow is installed but has
     not yet been observed on a remote runner. Choice encoding and Slither documentation are reconciled.
-    Live Ethereum Sepolia work remains separately blocked.
+    Live Ethereum Sepolia work remained separately blocked at that review checkpoint.
+37. On 2026-08-01 the user explicitly authorized Phase 6 target accounts, funding checks, deployment,
+    and required Sepolia transactions. The current read-only preflight verifies chain `11155111`, the
+    official Nox proxy and `0.2.4` implementation code hashes, the live Gateway signer and one-hour
+    proof lifetime, HTTP-healthy Handle Gateway and current subgraph, and the official Safe 1.5.0
+    singleton, proxy factory, `MultiSendCallOnly`, and compatibility fallback handler against the
+    current Safe registry. The official Nox production artifact is byte-identical to the live
+    implementation after normalizing only its compiler-declared immutable slots. The runner also pins
+    and uses the exact reviewed Foundry factory, Safe-module, Governor, and Timelock creation bytecode,
+    checkpoints only public addresses and transactions, and performs no write in preflight mode. The
+    local 119-test suite, 960,000-call invariant profile, build/type/format/lint/diff gates, and one
+    fresh Docker-backed 11/11 released-stack run pass. No live transaction has been signed or
+    broadcast: `PHASE6_DEPLOYER_PRIVATE_KEY` is not configured and unrelated local keystores are not
+    authorized substitutes.
 
 ## External Gates And Unclaimed Scale
 
