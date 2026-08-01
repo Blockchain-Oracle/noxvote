@@ -38,7 +38,7 @@ const CARDS = [
 export default function Home() {
   return (
     <HomeLayout {...baseOptions()}>
-      <title>NoxVote Docs — Participation in public. Choice in private.</title>
+      <title>NoxVote Docs — Where private DAO lives.</title>
       <main className="flex-1 px-6 pb-24">
         <div className="mx-auto w-full max-w-5xl pt-20">
           <p className="flex items-center gap-2.5 text-sm font-bold uppercase tracking-[0.04em]">
@@ -49,8 +49,8 @@ export default function Home() {
             />
             Documentation
           </p>
-          <h1 className="mt-4 max-w-[24ch] text-[clamp(36px,4.4vw,64px)] leading-none">
-            Your wallet and participation are public; your choice is private.
+          <h1 className="mt-4 max-w-[16ch] text-[clamp(40px,5vw,72px)] font-medium leading-[0.96] tracking-[-0.03em]">
+            Where private DAO lives.
           </h1>
           <p className="mt-5 max-w-[58ch] text-lg text-fd-muted-foreground">
             NoxVote is a host-neutral confidential ballot core for Safe and OpenZeppelin Governor

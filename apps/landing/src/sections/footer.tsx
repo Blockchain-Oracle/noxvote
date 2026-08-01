@@ -32,7 +32,7 @@ export function Footer() {
   return (
     <footer className="foot on-ink">
       <div className="wrap">
-        <h2 className="foot__lede">Participation in public. Choice in private.</h2>
+        <h2 className="foot__lede">Where private DAO lives.</h2>
         <div className="foot__grid">
           <div>
             <Mark />

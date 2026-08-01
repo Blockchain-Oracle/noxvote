@@ -80,9 +80,13 @@
   color: var(--dust);
 }
 
-.stage h1 {
+.stage__title {
   margin: 22px 0 0;
-  max-width: 15ch;
+  max-width: 14ch;
+  font-size: clamp(42px, 6vw, 80px);
+  font-weight: 520;
+  line-height: 0.94;
+  letter-spacing: -0.035em;
 }
 
 .stage__lead {
@@ -98,10 +102,40 @@
   margin-top: 32px;
 }
 
-.stage__status {
-  margin-top: 24px;
+.stage__evidence {
+  margin-top: 30px;
   color: var(--dust);
-  font-size: 14px;
+  font-family: var(--mono);
+  font-size: 13px;
+  font-weight: 450;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+/* A single ember satellite tracing the inner orbit ring. transform-box: view-box
+ * anchors the rotation to the ring centre in the SVG's own coordinate space.
+ * theme.css neutralises this under prefers-reduced-motion. */
+.stage__satellite {
+  transform-box: view-box;
+  transform-origin: 1210px 118px;
+  animation: stageOrbit 30s linear infinite;
+}
+@keyframes stageOrbit {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* Faint film grain over the flat ink frame — the same fractal-noise texture as
+ * the launch hero banner, dialled down and blended so it reads as tone. */
+.stage__grain {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  opacity: 0.42;
+  mix-blend-mode: soft-light;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 180 180' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.8' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
 }
 
 /* ---- Problem band: ghost watermark behind a 3-up ---- */
@@ -213,7 +247,7 @@
   .stage__body {
     padding: 40px 24px;
   }
-  .stage h1 {
+  .stage__title {
     max-width: none;
   }
   .stage__cta {
