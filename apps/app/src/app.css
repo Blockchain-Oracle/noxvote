@@ -1,0 +1,111 @@
+@import '@noxvote/ui/theme.css';
+
+/* NoxVote app — ORBIT, light-only. Contract: DESIGN.md at the repo root.
+ * Screen-level styles arrive with their screens; this layer carries only the
+ * shared shell and the loading/error/empty convention. */
+
+.shell {
+  min-height: 100dvh;
+  display: flex;
+  flex-direction: column;
+}
+.shell__header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 18px 32px;
+  border-bottom: 1px solid var(--dust);
+  background: var(--lifted);
+}
+.shell__net {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
+.shell__main {
+  flex: 1;
+  width: 100%;
+  max-width: 880px;
+  margin-inline: auto;
+  padding: 48px 32px 96px;
+}
+.shell__promise {
+  padding: 20px 32px;
+  border-top: 1px solid var(--dust);
+  color: var(--slate);
+  font-size: 14px;
+  text-align: center;
+}
+
+/* ---- Loading / error / empty convention ---- */
+
+.skeleton {
+  display: grid;
+  gap: 12px;
+}
+.skeleton__line {
+  height: 16px;
+  border-radius: var(--r-pill);
+  background: var(--ghost);
+  animation: skeleton-breathe 1.2s var(--ease) infinite alternate;
+}
+.skeleton__line:nth-child(2n) {
+  width: 72%;
+}
+@keyframes skeleton-breathe {
+  from {
+    opacity: 0.55;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+.state-card {
+  padding: 28px;
+  border: 1px solid var(--dust);
+  border-radius: var(--r-card);
+  background: var(--lifted);
+}
+.state-card--error {
+  border-color: var(--withheld);
+}
+.state-card__title {
+  margin: 0 0 8px;
+  font-weight: 500;
+}
+.state-card__body {
+  margin: 0;
+  color: var(--slate);
+}
+.state-card__action {
+  margin-top: 16px;
+  padding: 10px 22px;
+  border: 1.5px solid var(--ink);
+  border-radius: var(--r-pill);
+  background: transparent;
+  color: var(--ink);
+  font: inherit;
+  cursor: pointer;
+}
+
+.redacted-result {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+.redacted-result__label {
+  color: var(--slate);
+}
+.redacted-result__note {
+  color: var(--slate);
+}
+
+.fixture-banner {
+  display: inline-block;
+  padding: 6px 14px;
+  border: 1px dashed var(--withheld);
+  border-radius: var(--r-pill);
+  color: var(--withheld);
+}

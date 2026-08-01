@@ -1,0 +1,33 @@
+{
+  "name": "@noxvote/app",
+  "private": true,
+  "version": "0.0.0",
+  "type": "module",
+  "scripts": {
+    "dev": "vite --host 127.0.0.1 --port 5179",
+    "build": "tsc -b && vite build",
+    "start": "vite preview --host 0.0.0.0 --port ${PORT:-4179}",
+    "typecheck": "tsc -b",
+    "preview": "vite preview"
+  },
+  "dependencies": {
+    "@iexec-nox/handle": "0.1.0-beta.13",
+    "@noxvote/ui": "workspace:*",
+    "@tanstack/react-query": "^5.0.0",
+    "react": "19.2.6",
+    "react-dom": "19.2.6",
+    "react-router": "^8.0.1",
+    "viem": "^2.55.10",
+    "wagmi": "^2.0.0"
+  },
+  "devDependencies": {
+    "@tailwindcss/vite": "4.3.2",
+    "@types/node": "^24.12.3",
+    "@types/react": "^19.2.14",
+    "@types/react-dom": "^19.2.3",
+    "@vitejs/plugin-react": "^6.0.1",
+    "tailwindcss": "4.3.2",
+    "typescript": "~6.0.2",
+    "vite": "^8.0.12"
+  }
+}
