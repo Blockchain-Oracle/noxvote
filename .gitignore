@@ -10,8 +10,16 @@ broadcast/
 coverage/
 dist/
 .mise.local.toml
+.mise.toml
 offchain-services.log
-.thoughts/raw/
+
+# Agent / harness process artifacts — kept local, not published to GitHub
+.thoughts/
+.harness.json
+.claude/
+AGENTS.md
+SPEC.md
+DESIGN.md
 
 # Frontend workspace build artifacts
 apps/docs/build/
