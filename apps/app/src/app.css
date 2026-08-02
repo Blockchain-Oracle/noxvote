@@ -356,11 +356,127 @@ a.firstrun__path:hover {
 .acct__item--danger {
   color: var(--danger);
 }
+.acct__note {
+  padding: 8px 12px 6px;
+  font-size: 12px;
+  line-height: 1.4;
+  color: var(--slate);
+}
 
 @media (max-width: 640px) {
   .shell__net {
     display: none;
   }
+}
+
+/* ---- First-run onboarding modal ---- */
+.onb__scrim {
+  position: fixed;
+  inset: 0;
+  z-index: 100;
+  display: grid;
+  place-items: center;
+  padding: 20px;
+  background: rgba(20, 20, 19, 0.28);
+  backdrop-filter: blur(4px);
+}
+.onb {
+  position: relative;
+  width: min(460px, 100%);
+  background: var(--lifted);
+  border: 1px solid var(--ghost);
+  border-radius: var(--r-card);
+  box-shadow: var(--halo);
+  padding: 34px 32px 26px;
+}
+.onb__skip {
+  position: absolute;
+  top: 16px;
+  right: 18px;
+  border: none;
+  background: transparent;
+  color: var(--slate);
+  font-size: 13px;
+  cursor: pointer;
+}
+.onb__skip:hover {
+  color: var(--ink);
+}
+.onb__dots {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 20px;
+}
+.onb__dot {
+  width: 24px;
+  height: 4px;
+  border-radius: 2px;
+  background: var(--ghost);
+  transition: background var(--fast) var(--ease);
+}
+.onb__dot--on {
+  background: var(--ink);
+}
+.onb__title {
+  font-size: 23px;
+  letter-spacing: -0.02em;
+  margin: 8px 0 10px;
+}
+.onb__body {
+  font-size: 15px;
+  line-height: 1.55;
+  color: var(--slate);
+  margin-bottom: 22px;
+}
+.onb__ok {
+  color: var(--passed);
+  font-weight: 500;
+}
+.onb__note {
+  font-size: 13px;
+  margin-top: 14px;
+  color: var(--slate);
+}
+.onb__note a {
+  color: var(--ember);
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+.onb__actions {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+.onb__primary {
+  padding: 11px 22px;
+  border: none;
+  border-radius: var(--r-pill);
+  background: var(--ink);
+  color: var(--lifted);
+  font-weight: 500;
+  font-size: 14px;
+  cursor: pointer;
+  transition: opacity var(--fast) var(--ease);
+}
+.onb__primary:hover:not(:disabled) {
+  opacity: 0.85;
+}
+.onb__primary:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+.onb__ghost {
+  border: none;
+  background: transparent;
+  color: var(--slate);
+  font-size: 14px;
+  cursor: pointer;
+}
+.onb__ghost:hover {
+  color: var(--ink);
+}
+.onb__spacer {
+  flex: 1;
 }
 
 /* ---- 404 / off-orbit ---- */

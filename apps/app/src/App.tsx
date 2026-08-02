@@ -1,6 +1,7 @@
 import { createBrowserRouter, Link, Outlet, RouterProvider } from 'react-router'
 import { Mark } from '@noxvote/ui'
 import { AccountMenu } from './components/AccountMenu.tsx'
+import { Onboarding } from './components/Onboarding.tsx'
 import { activeChain } from './config/chains.ts'
 import { COPY } from './lib/copy.ts'
 import { Create } from './routes/Create.tsx'
@@ -30,6 +31,7 @@ function Shell() {
         <Outlet />
       </main>
       <footer className="shell__promise">{COPY.promise}</footer>
+      <Onboarding />
     </div>
   )
 }
