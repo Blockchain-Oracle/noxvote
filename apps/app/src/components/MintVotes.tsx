@@ -22,7 +22,7 @@ type Step =
  * a connected wallet has no voting power; hides itself once it does. Power
  * applies from the next block, so a proposal must be created after this to vote.
  */
-export function MintVotes() {
+export function MintVotes({ compact = false }: { compact?: boolean } = {}) {
   const token = tokenAddress()
   const { address, isConnected } = useAccount()
   const { data: walletClient } = useWalletClient()
@@ -88,7 +88,10 @@ export function MintVotes() {
   }
 
   return (
-    <section className="mintvotes" aria-label="Get voting power">
+    <section
+      className={compact ? 'mintvotes mintvotes--inline' : 'mintvotes'}
+      aria-label="Get voting power"
+    >
       <Eyebrow>Voting power</Eyebrow>
       <p className="mintvotes__lede">
         This wallet holds no governance voting power yet.{' '}

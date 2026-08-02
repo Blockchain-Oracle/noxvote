@@ -10,6 +10,7 @@ import {
   type BallotReceiptView,
 } from '../../state/chain.ts'
 import type { VoterStanding } from '../../state/proposalDetail.ts'
+import { MintVotes } from '../MintVotes.tsx'
 
 /**
  * The connected wallet's own standing, rendered purely from the standing
@@ -105,6 +106,7 @@ export function VoterCard({
                 </div>
               )}
             </dl>
+            {standing.kind === 'ineligible' && !eligibilityNeedsProof && <MintVotes compact />}
             {onCast && (
               <Pill onClick={onCast} className="voter__action">
                 Cast confidential vote

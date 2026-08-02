@@ -250,6 +250,18 @@ a.firstrun__path:hover {
   color: var(--danger);
 }
 
+/* Inline variant — embedded in the voting card, no panel chrome. */
+.mintvotes--inline {
+  border: none;
+  background: transparent;
+  padding: 0;
+  margin: 14px 0 0;
+}
+.mintvotes--inline .mintvotes__lede {
+  font-size: 14px;
+  margin: 6px 0 14px;
+}
+
 /* ---- 404 / off-orbit ---- */
 .notfound {
   padding: 40px 0 24px;
