@@ -114,6 +114,70 @@ a.firstrun__path:hover {
   text-underline-offset: 3px;
 }
 
+/* ---- Faucet (inside first-run) ---- */
+.faucet {
+  margin-top: 20px;
+  padding-top: 18px;
+  border-top: 1px solid var(--ghost);
+}
+.faucet__lead {
+  font-size: 14px;
+  margin-bottom: 12px;
+}
+.faucet__row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  align-items: center;
+}
+.faucet__input {
+  flex: 1 1 260px;
+  min-width: 0;
+  padding: 10px 14px;
+  border: 1px solid var(--dust);
+  border-radius: 12px;
+  background: var(--white);
+  color: var(--ink);
+  font-size: 13px;
+}
+.faucet__input:focus {
+  outline: none;
+  border-color: var(--slate);
+}
+.faucet__btn {
+  padding: 10px 20px;
+  border: none;
+  border-radius: var(--r-pill);
+  background: var(--ink);
+  color: var(--lifted);
+  font-weight: 500;
+  font-size: 14px;
+  cursor: pointer;
+  transition: opacity var(--fast) var(--ease);
+}
+.faucet__btn:hover:not(:disabled) {
+  opacity: 0.85;
+}
+.faucet__btn:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+.faucet__msg {
+  margin-top: 10px;
+  font-size: 14px;
+}
+.faucet__msg a {
+  color: var(--ember);
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+.faucet__msg--ok {
+  color: var(--passed);
+}
+.faucet__msg--err {
+  color: var(--danger);
+}
+
 /* ---- 404 / off-orbit ---- */
 .notfound {
   padding: 40px 0 24px;

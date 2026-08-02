@@ -1,10 +1,7 @@
 import { Link } from 'react-router'
 import { useAccount } from 'wagmi'
 import { Eyebrow } from '@noxvote/ui'
-
-/** Public Sepolia faucet — the app never holds a funding key (the client bundle
- * is public), so first-timers are pointed outward for test ETH. */
-const SEPOLIA_FAUCET = 'https://cloud.google.com/application/web3/faucet/ethereum/sepolia'
+import { Faucet } from './Faucet.tsx'
 
 /**
  * First-run orientation. There is no DAO directory to land in (by design), so a
@@ -35,12 +32,7 @@ export function FirstRun() {
           <span>Publish a proposal with a confidential outcome →</span>
         </Link>
       </div>
-      <p className="firstrun__foot muted">
-        To vote, connect your wallet — optional until then. No Sepolia ETH?{' '}
-        <a href={SEPOLIA_FAUCET} target="_blank" rel="noreferrer">
-          Get test funds from a faucet ↗
-        </a>
-      </p>
+      <Faucet />
     </section>
   )
 }
