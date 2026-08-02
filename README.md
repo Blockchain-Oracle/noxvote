@@ -124,16 +124,16 @@ The product docs live at **[docs.noxvote.xyz](https://docs.noxvote.xyz)**:
 
 ## Repository map
 
-| Path                                         | Purpose                                                            |
-| -------------------------------------------- | ----------------------------------------------------------------- |
-| [`apps/landing`](apps/landing)               | Public ORBIT launch page (noxvote.xyz)                            |
-| [`apps/app`](apps/app)                       | The product — propose, ballot, tally, execute, verify             |
-| [`apps/docs`](apps/docs)                     | Product and trust-boundary documentation                          |
-| [`src/contracts`](src/contracts)             | Confidential core, Safe module, Governor, strategies, factories   |
-| [`test/foundry`](test/foundry)               | Unit, negative-proof, gas, and invariant suites                   |
-| [`test/integration`](test/integration)       | Released Nox Docker-stack integration harness                     |
-| [`assets/architecture`](assets/architecture) | Editable Mermaid sources and rendered architecture diagrams       |
-| [`assets/brand`](assets/brand)               | ORBIT identity source and review board                            |
+| Path                                         | Purpose                                                         |
+| -------------------------------------------- | --------------------------------------------------------------- |
+| [`apps/landing`](apps/landing)               | Public ORBIT launch page (noxvote.xyz)                          |
+| [`apps/app`](apps/app)                       | The product — propose, ballot, tally, execute, verify           |
+| [`apps/docs`](apps/docs)                     | Product and trust-boundary documentation                        |
+| [`src/contracts`](src/contracts)             | Confidential core, Safe module, Governor, strategies, factories |
+| [`test/foundry`](test/foundry)               | Unit, negative-proof, gas, and invariant suites                 |
+| [`test/integration`](test/integration)       | Released Nox Docker-stack integration harness                   |
+| [`assets/architecture`](assets/architecture) | Editable Mermaid sources and rendered architecture diagrams     |
+| [`assets/brand`](assets/brand)               | ORBIT identity source and review board                          |
 
 ## What NoxVote promises — and what it does not
 
