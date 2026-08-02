@@ -1,7 +1,9 @@
 import type { Hex } from '../config/addresses.ts'
 
-/** The contract's own floor: a privacy floor must count at least one wallet. */
-export const MIN_PRIVACY_FLOOR = 1
+/** The contract's absolute minimum (ConfidentialGovernanceVersion.ABSOLUTE_MINIMUM_PRIVACY_FLOOR).
+ * A floor below this reverts InvalidPrivacyFloor when registerBallot runs, so the
+ * form must refuse it up front. */
+export const MIN_PRIVACY_FLOOR = 4
 
 /** What the author actually controls on `proposeConfidential`; everything else
  * (snapshot timing, replacement ceiling, quorum, choices) is the Governor's
