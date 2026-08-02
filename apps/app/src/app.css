@@ -16,31 +16,144 @@
   display: flex;
   flex-direction: column;
 }
+/* Floating sticky pill — the app header mirrors the landing nav (Contract:
+ * DESIGN.md — true white is reserved for the floating nav). Stays on scroll. */
+.shell__navbar {
+  position: sticky;
+  top: 16px;
+  z-index: 60;
+  width: min(var(--max), 100% - (var(--gutter) * 2));
+  margin: 16px auto 0;
+}
 .shell__header {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: 16px;
-  padding: 18px 32px;
-  border-bottom: 1px solid var(--dust);
-  background: var(--lifted);
+  gap: 32px;
+  padding: 12px 16px 12px 26px;
+  border-radius: var(--r-pill);
+  background: var(--white);
+  box-shadow: var(--halo-nav);
 }
 .shell__nav {
   display: inline-flex;
   align-items: center;
-  gap: 24px;
+  gap: 28px;
 }
 .shell__nav a {
-  color: var(--slate);
+  color: var(--ink);
+  font-size: 16px;
+  font-weight: 500;
+  letter-spacing: -0.03em;
   text-decoration: none;
+  transition: opacity var(--fast) var(--ease);
 }
 .shell__nav a:hover {
-  color: var(--ink);
+  opacity: 0.55;
 }
 .shell__net {
   display: inline-flex;
   align-items: center;
   gap: 8px;
+  color: var(--slate);
+  font-size: 13px;
+}
+
+/* ---- First-run orientation (home; hidden once a wallet connects) ---- */
+.firstrun {
+  border: 1px solid var(--ghost);
+  border-radius: var(--r-card);
+  background: var(--lifted);
+  padding: 28px 28px 22px;
+  margin-bottom: 44px;
+}
+.firstrun__lede {
+  font-size: 18px;
+  line-height: 1.5;
+  letter-spacing: -0.02em;
+  color: var(--ink);
+  max-width: 56ch;
+  margin: 10px 0 22px;
+}
+.firstrun__paths {
+  display: grid;
+  gap: 10px;
+}
+.firstrun__path {
+  display: flex;
+  align-items: baseline;
+  gap: 16px;
+  padding: 13px 16px;
+  border-radius: 16px;
+  background: var(--white);
+  border: 1px solid var(--ghost);
+  color: var(--ink);
+  text-decoration: none;
+  transition:
+    border-color var(--fast) var(--ease),
+    transform var(--fast) var(--ease);
+}
+a.firstrun__path:hover {
+  border-color: var(--dust);
+  transform: translateY(-1px);
+}
+.firstrun__k {
+  flex: 0 0 72px;
+  font-size: 12px;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--slate);
+}
+.firstrun__foot {
+  margin-top: 20px;
+  font-size: 14px;
+}
+.firstrun__foot a {
+  color: var(--ember);
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+/* ---- 404 / off-orbit ---- */
+.notfound {
+  padding: 40px 0 24px;
+  max-width: 52ch;
+}
+.notfound__title {
+  margin: 12px 0 14px;
+}
+.notfound__lead {
+  margin-bottom: 28px;
+}
+.notfound__actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 14px 22px;
+}
+.notfound__cta {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 12px 22px;
+  border-radius: var(--r-pill);
+  background: var(--ink);
+  color: var(--lifted);
+  font-weight: 500;
+  text-decoration: none;
+  transition: opacity var(--fast) var(--ease);
+}
+.notfound__cta:hover {
+  opacity: 0.82;
+}
+.notfound__ghost {
+  color: var(--slate);
+  text-decoration: none;
+  border-bottom: 1px solid var(--dust);
+  transition: color var(--fast) var(--ease);
+}
+.notfound__ghost:hover {
+  color: var(--ink);
 }
 .shell__main {
   flex: 1;
