@@ -2,6 +2,7 @@ import type { CSSProperties } from 'react'
 import { Link } from 'react-router'
 import { Eyebrow, MarkGlyph } from '@noxvote/ui'
 import { FirstRun } from '../components/FirstRun.tsx'
+import { MintVotes } from '../components/MintVotes.tsx'
 import { QueryBoundary } from '../components/QueryBoundary.tsx'
 import { LifecycleChip } from '../components/LifecycleChip.tsx'
 import type { Hex } from '../config/addresses.ts'
@@ -18,6 +19,7 @@ export function ProposalList() {
   return (
     <>
       <FirstRun />
+      <MintVotes />
       <Eyebrow>Confidential outcome</Eyebrow>
       <h1 className="d-lg list__title">Proposals</h1>
       <p className="lead muted list__lead">

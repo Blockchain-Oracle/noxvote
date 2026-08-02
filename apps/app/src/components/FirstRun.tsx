@@ -1,5 +1,5 @@
 import { Link } from 'react-router'
-import { useAccount } from 'wagmi'
+import { useAccount, useConnect } from 'wagmi'
 import { Eyebrow } from '@noxvote/ui'
 import { Faucet } from './Faucet.tsx'
 
@@ -10,6 +10,8 @@ import { Faucet } from './Faucet.tsx'
  */
 export function FirstRun() {
   const { isConnected } = useAccount()
+  const { connect, connectors, isPending } = useConnect()
+  const injectedConnector = connectors[0]
   if (isConnected) return null
   return (
     <section className="firstrun" aria-label="Getting started">
@@ -18,6 +20,14 @@ export function FirstRun() {
         NoxVote turns on confidential outcomes for a DAO’s Safe or Governor. Your wallet and
         participation stay public; your choice stays private.
       </p>
+      <button
+        className="firstrun__connect"
+        type="button"
+        disabled={isPending || !injectedConnector}
+        onClick={() => injectedConnector && connect({ connector: injectedConnector })}
+      >
+        {isPending ? 'Connecting…' : 'Connect wallet to participate'}
+      </button>
       <div className="firstrun__paths">
         <div className="firstrun__path">
           <span className="firstrun__k mono">Browse</span>
