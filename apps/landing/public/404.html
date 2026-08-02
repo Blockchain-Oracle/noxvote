@@ -1,0 +1,117 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>404 — NoxVote</title>
+    <link rel="icon" href="/favicon.svg" />
+    <style>
+      /* ORBIT faces — self-hosted, matching DESIGN.md (no CDN flash/drift). */
+      @font-face {
+        font-family: 'Sofia Sans';
+        src: url('/fonts/sofia-sans-variable.woff2') format('woff2');
+        font-weight: 400 700;
+        font-display: block;
+      }
+      @font-face {
+        font-family: 'JetBrains Mono';
+        src: url('/fonts/jetbrains-mono-variable.woff2') format('woff2');
+        font-weight: 400 600;
+        font-display: block;
+      }
+      :root {
+        --canvas: #f3f0ee;
+        --ink: #141413;
+        --slate: #696969;
+        --ember: #c04a1e;
+        --sans: 'Sofia Sans', Arial, sans-serif;
+        --mono: 'JetBrains Mono', ui-monospace, monospace;
+      }
+      * {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+      }
+      html,
+      body {
+        height: 100%;
+      }
+      body {
+        font-family: var(--sans);
+        background: var(--canvas);
+        color: var(--ink);
+        min-height: 100dvh;
+        display: grid;
+        place-items: center;
+        padding: 32px;
+        -webkit-font-smoothing: antialiased;
+        letter-spacing: -0.01em;
+      }
+      .card {
+        max-width: 520px;
+        text-align: center;
+      }
+      .mark {
+        display: inline-flex;
+        align-items: center;
+        gap: 10px;
+        margin-bottom: 40px;
+        font-weight: 600;
+        font-size: 18px;
+      }
+      .eyebrow {
+        font-family: var(--mono);
+        font-size: 12px;
+        letter-spacing: 0.12em;
+        text-transform: uppercase;
+        color: var(--slate);
+        margin-bottom: 14px;
+      }
+      h1 {
+        font-size: clamp(30px, 6vw, 46px);
+        line-height: 1.05;
+        letter-spacing: -0.03em;
+        font-weight: 600;
+        margin-bottom: 16px;
+      }
+      p {
+        font-size: 17px;
+        line-height: 1.55;
+        color: var(--slate);
+        max-width: 42ch;
+        margin: 0 auto 32px;
+      }
+      .pill {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        padding: 13px 26px;
+        border-radius: 999px;
+        background: var(--ink);
+        color: var(--canvas);
+        text-decoration: none;
+        font-weight: 500;
+        font-size: 15px;
+        transition: opacity 0.2s;
+      }
+      .pill:hover {
+        opacity: 0.85;
+      }
+    </style>
+  </head>
+  <body>
+    <main class="card">
+      <span class="mark">
+        <svg width="26" height="26" viewBox="0 0 24 24" aria-hidden="true">
+          <circle cx="11" cy="13" r="8.2" fill="none" stroke="currentColor" stroke-width="1.7" />
+          <circle cx="18.8" cy="6.2" r="3.1" fill="var(--ember)" />
+        </svg>
+        NoxVote
+      </span>
+      <p class="eyebrow">Error 404</p>
+      <h1>This page isn&rsquo;t on the orbit.</h1>
+      <p>The link may be broken, or the page has moved. Nothing is lost &mdash; head back to solid ground.</p>
+      <a class="pill" href="/">Back to NoxVote <span aria-hidden="true">&rarr;</span></a>
+    </main>
+  </body>
+</html>
