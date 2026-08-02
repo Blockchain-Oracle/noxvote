@@ -21,6 +21,7 @@ function Shell() {
           <nav className="shell__nav">
             <Link to="/create">Create</Link>
             <Link to="/install">Adapters</Link>
+            <Link to="/profile">Profile</Link>
           </nav>
           <div className="shell__right">
             <span className="shell__net mono">{activeChain.name}</span>
