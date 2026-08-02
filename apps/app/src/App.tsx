@@ -8,6 +8,7 @@ import { Create } from './routes/Create.tsx'
 import { Install } from './routes/Install.tsx'
 import { NotFound } from './routes/NotFound.tsx'
 import { ProposalDetail } from './routes/ProposalDetail.tsx'
+import { Profile } from './routes/Profile.tsx'
 import { ProposalList } from './routes/ProposalList.tsx'
 import { VerificationCenter } from './routes/VerificationCenter.tsx'
 
@@ -44,6 +45,7 @@ const router = createBrowserRouter([
       { index: true, element: <ProposalList /> },
       { path: 'create', element: <Create /> },
       { path: 'install', element: <Install /> },
+      { path: 'profile', element: <Profile /> },
       { path: 'b/:core/:ballotId', element: <ProposalDetail /> },
       { path: 'b/:core/:ballotId/verify', element: <VerificationCenter /> },
       { path: '*', element: <NotFound /> },

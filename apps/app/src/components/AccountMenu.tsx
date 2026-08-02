@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from 'react'
-import { parseEther } from 'viem'
+import { Link } from 'react-router'
+import { formatEther, parseEther } from 'viem'
 import { useAccount, useBalance, useConnect, useDisconnect, useSwitchChain } from 'wagmi'
 import { activeChain } from '../config/chains.ts'
 
@@ -97,6 +98,16 @@ export function AccountMenu() {
       </button>
       {open && (
         <div className="acct__menu" role="menu">
+          <div className="acct__balance">
+            <span className="acct__balance-value mono">
+              {balance.data ? Number(formatEther(balance.data.value)).toFixed(4) : '—'}{' '}
+              {balance.data?.symbol ?? 'ETH'}
+            </span>
+            <span className="acct__balance-label">on {activeChain.name}</span>
+          </div>
+          <Link className="acct__item" role="menuitem" to="/profile" onClick={() => setOpen(false)}>
+            Profile — balances &amp; activity
+          </Link>
           {wrongNetwork && (
             <button
               className="acct__item acct__item--warn"
@@ -111,11 +122,13 @@ export function AccountMenu() {
             </button>
           )}
           {lowFunds && (
-            <p className="acct__note">Low on Sepolia ETH — you may not have enough for gas.</p>
+            <>
+              <p className="acct__note">Low on Sepolia ETH — you may not have enough for gas.</p>
+              <button className="acct__item" type="button" role="menuitem" onClick={getFaucet}>
+                Get test ETH
+              </button>
+            </>
           )}
-          <button className="acct__item" type="button" role="menuitem" onClick={getFaucet}>
-            Get test ETH
-          </button>
           {faucetMsg && <p className="acct__note">{faucetMsg}</p>}
           <button
             className="acct__item"

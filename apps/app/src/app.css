@@ -362,6 +362,23 @@ a.firstrun__path:hover {
   line-height: 1.4;
   color: var(--slate);
 }
+.acct__balance {
+  padding: 10px 12px;
+  margin-bottom: 4px;
+  border-bottom: 1px solid var(--ghost);
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+.acct__balance-value {
+  font-size: 17px;
+  color: var(--ink);
+  letter-spacing: -0.02em;
+}
+.acct__balance-label {
+  font-size: 11px;
+  color: var(--slate);
+}
 
 @media (max-width: 640px) {
   .shell__net {
@@ -477,6 +494,92 @@ a.firstrun__path:hover {
 }
 .onb__spacer {
   flex: 1;
+}
+
+/* ---- Profile ---- */
+.profile__addr {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+  font-size: 14px;
+}
+.profile__addr a {
+  color: var(--ember);
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+.profile__stats {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 14px;
+  margin: 28px 0 8px;
+}
+.profile__stat {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 22px 24px;
+  border: 1px solid var(--ghost);
+  border-radius: var(--r-card);
+  background: var(--lifted);
+}
+.profile__stat-value {
+  font-size: 28px;
+  line-height: 1;
+  letter-spacing: -0.02em;
+  color: var(--ink);
+}
+.profile__stat-label {
+  font-size: 13px;
+  color: var(--slate);
+}
+.profile__activity {
+  margin-top: 40px;
+}
+.profile__h2 {
+  font-size: 18px;
+  letter-spacing: -0.02em;
+  margin-bottom: 16px;
+}
+.profile__votes {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.profile__vote {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 14px 18px;
+  border: 1px solid var(--ghost);
+  border-radius: 14px;
+  background: var(--white);
+  color: var(--ink);
+  text-decoration: none;
+  transition:
+    border-color var(--fast) var(--ease),
+    transform var(--fast) var(--ease);
+}
+.profile__vote:hover {
+  border-color: var(--dust);
+  transform: translateY(-1px);
+}
+.profile__vote-tag {
+  font-size: 12px;
+  color: var(--passed);
+  white-space: nowrap;
+}
+.profile__hint {
+  font-size: 12px;
+  margin-top: 6px;
+}
+
+@media (max-width: 560px) {
+  .profile__stats {
+    grid-template-columns: 1fr;
+  }
 }
 
 /* ---- 404 / off-orbit ---- */

@@ -15,7 +15,7 @@
   &nbsp;·&nbsp;
   <a href="https://docs.noxvote.xyz"><b>Documentation</b></a>
   &nbsp;·&nbsp;
-  <a href="https://vimeo.com/1214870008"><b>Demo video</b></a>
+  <a href="https://youtu.be/MGXajGNsCZU"><b>Demo video</b></a>
   &nbsp;·&nbsp;
   <a href="https://noxvote.xyz"><b>noxvote.xyz</b></a>
 </p>
@@ -43,13 +43,13 @@ committed before voting opened can execute.
 ## Demo video
 
 <p align="center">
-  <a href="https://vimeo.com/1214870008">
+  <a href="https://youtu.be/MGXajGNsCZU">
     <img src="https://raw.githubusercontent.com/Blockchain-Oracle/noxvote/main/assets/launch/demo-thumbnail.jpg" width="720" alt="Watch the NoxVote 60-second demo" />
   </a>
 </p>
 
 <p align="center">
-  <a href="https://vimeo.com/1214870008"><b>▶ Watch the 60-second demo</b></a>
+  <a href="https://youtu.be/MGXajGNsCZU"><b>▶ Watch the 60-second demo</b></a>
 </p>
 
 ## How it works
