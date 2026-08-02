@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { useAccount } from 'wagmi'
-import type { Hex } from '../../config/addresses.ts'
+import { profile, type Hex } from '../../config/addresses.ts'
 import { activeChain } from '../../config/chains.ts'
 import { firstCastEligibilityProof } from '../../lib/eligibility.ts'
 import { useEligibilityWeight } from '../../hooks/useEligibility.ts'
@@ -49,6 +49,16 @@ export function VoteFlow({
           ? { kind: 'ineligible', snapshot: record.snapshot }
           : { kind: 'eligible', weight: eligibility.data }
 
+  // A missing proof only explains an error on the Merkle-allowlist strategy.
+  // On the IVotes strategy a revert means zero voting power at the snapshot —
+  // "not eligible", never "needs a proof".
+  const allowlistStrategy =
+    profile.kind === 'sepolia' ? profile.contracts.merkleWeightedAllowlistStrategy : undefined
+  const eligibilityNeedsProof =
+    eligibility.isError &&
+    allowlistStrategy !== undefined &&
+    record.eligibilityStrategy.toLowerCase() === allowlistStrategy.toLowerCase()
+
   const drawer = voteDrawerState(detailed, record, standing, receipt.data)
   const sequence = drawer.phase === 'ready' ? drawer.sequence : 1n
   const cast = useCastVote({
@@ -74,7 +84,7 @@ export function VoteFlow({
         standing={standing}
         receipt={receipt.data}
         wallet={address}
-        eligibilityNeedsProof={eligibility.isError}
+        eligibilityNeedsProof={eligibilityNeedsProof}
         onCast={
           drawer.phase === 'ready' && !drawer.replacement ? () => setDrawerOpen(true) : undefined
         }
