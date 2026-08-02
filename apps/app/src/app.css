@@ -262,6 +262,107 @@ a.firstrun__path:hover {
   margin: 6px 0 14px;
 }
 
+/* ---- Header account menu ---- */
+.shell__right {
+  display: inline-flex;
+  align-items: center;
+  gap: 14px;
+}
+.acct {
+  position: relative;
+}
+.acct__connect {
+  padding: 8px 18px;
+  border: none;
+  border-radius: var(--r-pill);
+  background: var(--ink);
+  color: var(--lifted);
+  font-weight: 500;
+  font-size: 14px;
+  cursor: pointer;
+  transition: opacity var(--fast) var(--ease);
+}
+.acct__connect:hover:not(:disabled) {
+  opacity: 0.85;
+}
+.acct__connect:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+.acct__btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 7px 12px;
+  border: 1px solid var(--ghost);
+  border-radius: var(--r-pill);
+  background: var(--white);
+  color: var(--ink);
+  font-size: 13px;
+  cursor: pointer;
+  transition: border-color var(--fast) var(--ease);
+}
+.acct__btn:hover {
+  border-color: var(--dust);
+}
+.acct__dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--passed);
+  flex: 0 0 auto;
+}
+.acct__dot--warn {
+  background: var(--danger);
+}
+.acct__caret {
+  font-size: 10px;
+  color: var(--slate);
+}
+.acct__menu {
+  position: absolute;
+  right: 0;
+  top: calc(100% + 8px);
+  min-width: 208px;
+  background: var(--white);
+  border: 1px solid var(--ghost);
+  border-radius: 16px;
+  box-shadow: var(--halo);
+  padding: 6px;
+  z-index: 70;
+  display: flex;
+  flex-direction: column;
+}
+.acct__item {
+  display: block;
+  width: 100%;
+  text-align: left;
+  padding: 9px 12px;
+  border: none;
+  background: transparent;
+  color: var(--ink);
+  font-size: 13px;
+  border-radius: 10px;
+  cursor: pointer;
+  text-decoration: none;
+  transition: background var(--fast) var(--ease);
+}
+.acct__item:hover {
+  background: var(--canvas);
+}
+.acct__item--warn {
+  color: var(--ember);
+}
+.acct__item--danger {
+  color: var(--danger);
+}
+
+@media (max-width: 640px) {
+  .shell__net {
+    display: none;
+  }
+}
+
 /* ---- 404 / off-orbit ---- */
 .notfound {
   padding: 40px 0 24px;

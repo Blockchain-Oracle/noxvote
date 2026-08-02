@@ -1,5 +1,6 @@
 import { createBrowserRouter, Link, Outlet, RouterProvider } from 'react-router'
 import { Mark } from '@noxvote/ui'
+import { AccountMenu } from './components/AccountMenu.tsx'
 import { activeChain } from './config/chains.ts'
 import { COPY } from './lib/copy.ts'
 import { Create } from './routes/Create.tsx'
@@ -19,7 +20,10 @@ function Shell() {
             <Link to="/create">Create</Link>
             <Link to="/install">Adapters</Link>
           </nav>
-          <span className="shell__net mono">{activeChain.name}</span>
+          <div className="shell__right">
+            <span className="shell__net mono">{activeChain.name}</span>
+            <AccountMenu />
+          </div>
         </header>
       </div>
       <main className="shell__main">
