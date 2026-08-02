@@ -30,6 +30,9 @@ jobs:
       - name: Enforce reviewed Nox protocol version
         run: |
           node -e "if (require('./package.json').dependencies['@iexec-nox/nox-protocol-contracts'] !== '0.2.4') process.exit(1)"
+      # tsc needs the viem contract types Hardhat generates into artifacts/*.d.ts;
+      # without a compile, typed reads resolve to `unknown` and tsc fails.
+      - run: pnpm build
       - run: pnpm exec tsc --noEmit
       - run: forge fmt --check
       - run: pnpm lint:forge
